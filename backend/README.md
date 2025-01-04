@@ -1,4 +1,4 @@
-# Proyecto Comercio 🗞️
+# Proyecto Comercio 🗞️🐍
 
 El proyecto _Comercio_ es un sistema de gestión de personas que reciben periódicos para vender en Cusco. El sistema asigna y controla los periódicos asignados a las personas, cuántos devuelven y cuánto deben pagar.
 
