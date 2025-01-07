@@ -3,7 +3,7 @@ from core.models import TimeStampedModel
 from seller.models import Seller
 
 # Create your models here.
-class Assigment(TimeStampedModel):
+class Assignment(TimeStampedModel):
 
     ASSIGMENT_STATUS = (
         ('PENDING', 'PENDING'),
@@ -13,7 +13,7 @@ class Assigment(TimeStampedModel):
 
     date_assignment = models.DateField(null=False, blank=False, auto_now=False)
     status = models.CharField(max_length=11, choices=ASSIGMENT_STATUS, default='PENDING', null=False, blank=False)
-    
+
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
