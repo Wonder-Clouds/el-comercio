@@ -1,11 +1,12 @@
-import './App.css'
+import { BrowserRouter } from 'react-router'
+import AppRoutes from './routes/AppRoutes'
 
 function App() {
 
   return (
-    <>
-      <h1 className='text-4xl'>Test</h1>
-    </>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   )
 }
 
