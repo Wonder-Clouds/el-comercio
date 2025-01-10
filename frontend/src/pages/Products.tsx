@@ -1,3 +1,4 @@
+import ProductsTable from "@/components/products/ProductsTable";
 import { Button } from "@/components/ui/button";
 
 const Products = () => {
@@ -10,6 +11,9 @@ const Products = () => {
         <Button>Imprimir</Button>
         <Button>Nuevo producto</Button>
       </div>
+    </div>
+    <div>
+      <ProductsTable />
     </div>
     </>
   );
