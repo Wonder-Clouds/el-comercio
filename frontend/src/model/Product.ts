@@ -1,8 +1,15 @@
+
+enum ProductType {
+  NEWSPAPER = "NEWSPAPER",
+  PRODUCT = "PRODUCT"
+}
+
 interface Product {
-  id: number;
+  id_product: number;
   name: string;
-  type: string;
+  type: ProductType;
   returns_date: number;
 }
 
-export default Product;
+export type { Product };
+export { ProductType };
