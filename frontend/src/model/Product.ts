@@ -1,7 +1,6 @@
-
 enum ProductType {
-  NEWSPAPER = "NEWSPAPER",
-  PRODUCT = "PRODUCT"
+  NEWSPAPER = "PERIODICO",
+  PRODUCT = "PRODUCTO"
 }
 
 interface Product {

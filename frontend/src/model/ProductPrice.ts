@@ -10,7 +10,6 @@ enum DayWeek {
   SATURDAY = "SATURDAY"
 }
 
-
 interface ProductPrice {
   id_price_product: number;
   product: Product;
