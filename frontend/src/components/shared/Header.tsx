@@ -1,27 +1,41 @@
+import { Link } from "react-router";
+
 const Header = () => {
   return (
     <header className="bg-[#131010] text-white py-4">
       <nav className="container mx-auto">
         <ul className="flex justify-center items-center space-x-8">
           <li>
-            <a href="/" className="hover:text-gray-300 transition-colors">
+            <Link
+              to="/"
+              className="hover:text-gray-300 transition-colors"
+            >
               Inicio
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/productos" className="hover:text-gray-300 transition-colors">
+            <Link
+              to="/productos"
+              className="hover:text-gray-300 transition-colors"
+            >
               Productos
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/clientes" className="hover:text-gray-300 transition-colors">
+            <Link
+              to="/clientes"
+              className="hover:text-gray-300 transition-colors"
+            >
               Clientes
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/devoluciones" className="hover:text-gray-300 transition-colors">
+            <Link
+              to="/devoluciones"
+              className="hover:text-gray-300 transition-colors"
+            >
               Devoluciones
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
