@@ -20,7 +20,7 @@ const Products = () => {
     }
   ]
   return (
-    <div className="max-w-7xl mx-auto mt-12">
+    <>
       <div className="flex flex-row justify-between">
         <h1 className="text-4xl font-bold">Productos</h1>
         <div className="flex flex-row gap-5">
@@ -37,7 +37,7 @@ const Products = () => {
       <div className="container mx-auto py-10">
         <ProductTable columns={columns} data={data} />
       </div>
-    </div>
+    </>
   );
 }
 
