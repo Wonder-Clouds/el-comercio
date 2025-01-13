@@ -7,7 +7,9 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      <AppRoutes />
+      <div className="max-w-7xl mx-auto mt-12">
+        <AppRoutes />
+      </div>
     </BrowserRouter>
   )
 }

@@ -22,13 +22,13 @@ function Sellers() {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto mt-12">
+    <>
       <h1 className="text-4xl font-bold">Clientes</h1>
 
       <div className="container mx-auto py-10">
         <SellersTable columns={columns} data={data} />
       </div>
-    </div>
+    </>
   )
 }
 

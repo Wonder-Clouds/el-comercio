@@ -30,14 +30,20 @@ export function ProductTable<TData, TValue>({
   })
  
   return (
-    <div className="rounded-md border">
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow 
+              key={headerGroup.id}
+              className="bg-gray-50 hover:bg-gray-50"
+            >
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead 
+                    key={header.id}
+                    className="py-4 px-6 text-left text-sm font-semibold text-gray-900"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -56,9 +62,13 @@ export function ProductTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="border-t border-gray-200 transition-colors hover:bg-gray-50"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell 
+                    key={cell.id}
+                    className="py-4 px-6 text-sm text-gray-700"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -66,8 +76,11 @@ export function ProductTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              <TableCell 
+                colSpan={columns.length} 
+                className="h-24 text-center text-sm text-gray-500"
+              >
+                No se encontraron resultados.
               </TableCell>
             </TableRow>
           )}

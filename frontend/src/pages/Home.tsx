@@ -5,7 +5,7 @@ import elcomercio from "@/assets/elcomercio_logo.webp";
 
 const Home = () => {
   return (
-    <div className="max-w-7xl mx-auto mt-12">
+    <>
       <div className="flex flex-col items-center justify-center">
         <img src={elcomercio} alt="Logo" className="w-32 h-32 mb-6" />
         <h1 className="text-3xl text-center">Distribuciones El Comercio</h1>
@@ -30,7 +30,7 @@ const Home = () => {
           </Link>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
 
