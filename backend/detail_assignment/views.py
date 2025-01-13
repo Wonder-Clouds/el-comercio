@@ -42,7 +42,7 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'], url_path='calculate-sub-total')
+    @action(detail=True, methods=['get'], url_path='calculate_sub_total')
     def get_sub_total_action(self, request, pk=None):
         detail_assignment = self.get_object()
         sub_total = self.calculate_sub_total(detail_assignment)
