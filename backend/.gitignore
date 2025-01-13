@@ -3,4 +3,4 @@ env
 __pycache__/
 migrations/
 *.sqlite3
-.idea/backend.iml
+.idea/
