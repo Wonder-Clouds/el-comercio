@@ -32,6 +32,9 @@ POSTGRES_DB=name_of_bd
 ENGINE=django.db.backends.postgresql
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
+
+# Django 
+SECRET_KEY=your_secret_key_here
 ```
 
 Asegúrate de reemplazar `custom_user_here`, `password_here` y `name_of_bd` con los valores que desees usar para la base de datos PostgreSQL.
