@@ -4,7 +4,7 @@ import { Assignment, AssignmentStatus } from "@/model/Assignment";
 
 function Assignments() {
 
-  const handleUpdate = (rowIndex: number, columnId: string, value: any) => {
+  const handleUpdate = (rowIndex: number, columnId: string, value: number) => {
     // Aquí puedes manejar la actualización en tu backend o estado global
     console.log(`Updating row ${rowIndex}, column ${columnId} with value ${value}`);
   };
@@ -17,7 +17,8 @@ function Assignments() {
         name: "Pimienta",
         last_name: "123",
         dni: "12345678",
-        status: true
+        status: true,
+        number_seller: "2"
       },
       date_assignment: new Date(),
       status: AssignmentStatus.PAID
@@ -29,7 +30,8 @@ function Assignments() {
         name: "Pedro",
         last_name: "Navaja",
         dni: "87654321",
-        status: false
+        status: false,
+        number_seller: "5"
       },
       date_assignment: new Date(),
       status: AssignmentStatus.PENDING

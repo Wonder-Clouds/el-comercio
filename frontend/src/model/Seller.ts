@@ -4,6 +4,7 @@ interface Seller {
   last_name: string;
   dni: string;
   status: boolean;
+  number_seller: string;
 }
 
 export default Seller;
