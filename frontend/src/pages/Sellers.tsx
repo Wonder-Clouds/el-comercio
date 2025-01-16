@@ -38,8 +38,8 @@ function Sellers() {
     return (
         <>
             <div className="flex container mx-auto justify-between items-center">
-                <h1 className="text-4xl font-bold">Clientes</h1>
-                <Button onClick={openModal}>Crear Clientes</Button>
+                <h1 className="text-4xl font-bold">Vendedores</h1>
+                <Button onClick={openModal}>Crear Vendedor</Button>
             </div>
 
             <div className="container mx-auto py-10">
