@@ -20,7 +20,7 @@ class SellerViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'], url_path='unpaid-assignment')
+    @action(detail=True, methods=['get'], url_path='unpaid_assignment')
     def unpaid_assignment(self, request, pk=None):
         seller = self.get_object()
         assignments = Assignment.objects.filter(seller=seller, status='PENDING')
