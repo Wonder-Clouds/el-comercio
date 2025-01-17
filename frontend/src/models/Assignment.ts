@@ -1,4 +1,4 @@
-import Seller from "./Seller";
+import { defaultSeller, Seller } from "./Seller";
 
 enum AssignmentStatus {
   PENDING = "PENDING",
@@ -15,13 +15,7 @@ interface Assignment {
 
 const defaultAssignment: Assignment = {
   id_assignment: 0,
-  seller: {
-    id_seller: 0,
-    name: "",
-    last_name: "",
-    dni: "",
-    status: false
-  },
+  seller: defaultSeller,
   date_assignment: new Date(),
   status: AssignmentStatus.PENDING
 }

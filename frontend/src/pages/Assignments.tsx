@@ -1,12 +1,13 @@
 import { AssignmentTable } from "@/components/assignments/AssignmentTable";
 import { columns } from "@/components/assignments/columns";
-import { AssignmentStatus } from "@/model/Assignment";
-import { DetailAssignment } from "@/model/DetailAssignment";
+import { AssignmentStatus } from "@/models/Assignment";
+import { DetailAssignment } from "@/models/DetailAssignment";
+import formatSpanishDate from "@/utils/formatDate";
 
 function Assignments() {
 
   const handleUpdate = () => {
-    
+
   };
 
   const data: DetailAssignment[] = [
@@ -18,6 +19,7 @@ function Assignments() {
           id_seller: 1,
           name: "Vendedor 1",
           last_name: "Vendedor apellido",
+          number_seller: "V001",
           dni: "12345678",
           status: true
         },
@@ -38,8 +40,10 @@ function Assignments() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold">Entregas de productos</h1>
-
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="text-4xl font-bold">Entregas de productos</h1>
+        <span className="my-auto text-xl">{formatSpanishDate(data[0].assignment.date_assignment)}</span>
+      </div>
       <div className="container py-10 mx-auto">
         <AssignmentTable columns={columns} data={data} onUpdate={handleUpdate} />
       </div>

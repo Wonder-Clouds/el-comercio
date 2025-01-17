@@ -1,4 +1,4 @@
-import Seller from "@/model/Seller"
+import Seller from "@/models/Seller"
 import { ColumnDef } from "@tanstack/react-table"
 
 export const columns: ColumnDef<Seller>[] = [

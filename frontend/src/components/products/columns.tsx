@@ -1,4 +1,4 @@
-import { ProductPrice } from "@/model/ProductPrice"
+import { ProductPrice } from "@/models/ProductPrice"
 import { ColumnDef } from "@tanstack/react-table"
 
 export const columns: ColumnDef<ProductPrice>[] = [

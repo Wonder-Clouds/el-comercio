@@ -1,9 +1,9 @@
 import { ProductTable } from "@/components/products/ProductTable";
 import { Button } from "@/components/ui/button";
-import { ProductType } from "@/model/Product";
+import { ProductType } from "@/models/Product";
 import { columns } from "../components/products/columns";
 import { Link } from "react-router";
-import { DayWeek, ProductPrice } from "@/model/ProductPrice";
+import { DayWeek, ProductPrice } from "@/models/ProductPrice";
 
 const Products = () => {
   const data: ProductPrice[] = [

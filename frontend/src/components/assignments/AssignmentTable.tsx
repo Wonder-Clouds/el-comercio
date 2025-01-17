@@ -14,8 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import Seller from '@/model/Seller';
-import { AssignmentStatus } from '@/model/Assignment';
+import { AssignmentStatus } from '@/models/Assignment';
+import { Seller } from '@/models/Seller';
 
 type EditableValue = string | number | boolean | Date | Record<string, unknown> | Seller | AssignmentStatus;
 

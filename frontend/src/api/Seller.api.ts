@@ -1,6 +1,6 @@
 import axios from "axios";
-import Seller from "@/model/Seller.ts";
-import PaginatedResponse from "@/model/PaginatedResponse";
+import PaginatedResponse from "@/models/PaginatedResponse";
+import { Seller } from "@/models/Seller";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL + '/sellers',
