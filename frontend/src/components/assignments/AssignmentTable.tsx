@@ -14,11 +14,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { AssignmentStatus } from '@/models/Assignment';
+import { Seller } from '@/models/Seller';
 
-type EditableValue = string | number | boolean | Date | Record<string, unknown>;
+type EditableValue = string | number | boolean | Date | Record<string, unknown> | Seller | AssignmentStatus;
+
+type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
+  editable?: boolean;
+}
 
 interface AssignmentTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+  columns: EditableColumnDef<TData, TValue>[]
   data: TData[]
   onUpdate: (rowIndex: number, columnId: string, value: TValue) => void
 }
@@ -28,6 +34,7 @@ interface EditableCellProps<T extends EditableValue> {
   rowIndex: number
   columnId: string
   onUpdate: (rowIndex: number, columnId: string, value: T) => void
+  editable?: boolean
 }
 
 const formatValue = (value: EditableValue): string => {
@@ -64,7 +71,8 @@ const EditableCell = <T extends EditableValue>({
   value: initialValue, 
   rowIndex, 
   columnId, 
-  onUpdate 
+  onUpdate,
+  editable = true
 }: EditableCellProps<T>) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(formatValue(initialValue));
@@ -76,6 +84,10 @@ const EditableCell = <T extends EditableValue>({
       onUpdate(rowIndex, columnId, parsedValue);
     }
   };
+
+  if (!editable) {
+    return <div className="p-1">{formatValue(initialValue)}</div>;
+  }
 
   if (isEditing) {
     return (
@@ -92,7 +104,7 @@ const EditableCell = <T extends EditableValue>({
 
   return (
     <div 
-      className="cursor-pointer hover:bg-gray-100 p-1 rounded"
+      className="p-1 rounded cursor-pointer hover:bg-gray-100"
       onClick={() => setIsEditing(true)}
     >
       {formatValue(initialValue)}
@@ -124,7 +136,7 @@ export function AssignmentTable<TData, TValue extends EditableValue>({
   })
  
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -135,7 +147,7 @@ export function AssignmentTable<TData, TValue extends EditableValue>({
               {headerGroup.headers.map((header) => (
                 <TableHead 
                   key={header.id}
-                  className="py-4 px-6 text-left text-sm font-semibold text-gray-900"
+                  className="px-6 py-4 text-sm font-semibold text-left text-gray-900"
                 >
                   {header.isPlaceholder
                     ? null
@@ -154,18 +166,19 @@ export function AssignmentTable<TData, TValue extends EditableValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="border-t border-gray-200 transition-colors hover:bg-gray-50"
+                className="transition-colors border-t border-gray-200 hover:bg-gray-50"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell 
                     key={cell.id}
-                    className="py-4 px-6 text-sm text-gray-700"
+                    className="px-6 py-4 text-sm text-gray-700"
                   >
                     <EditableCell
                       value={cell.getValue() as TValue}
                       rowIndex={rowIndex}
                       columnId={cell.column.id}
                       onUpdate={handleUpdate}
+                      editable={(cell.column.columnDef as EditableColumnDef<TData, TValue>).editable}
                     />
                   </TableCell>
                 ))}
@@ -175,7 +188,7 @@ export function AssignmentTable<TData, TValue extends EditableValue>({
             <TableRow>
               <TableCell 
                 colSpan={columns.length} 
-                className="h-24 text-center text-sm text-gray-500"
+                className="h-24 text-sm text-center text-gray-500"
               >
                 No se encontraron resultados.
               </TableCell>

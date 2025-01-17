@@ -1,6 +1,6 @@
 import { columns } from "@/components/sellers/columns";
 import { SellersTable } from "@/components/sellers/SellersTable";
-import Seller from "@/model/Seller";
+import Seller from "@/models/Seller";
 import { useEffect, useState } from "react";
 import { getSellers } from "@/api/Seller.api.ts";
 import { Button } from "@/components/ui/button";
