@@ -1,23 +1,48 @@
 import { ProductTable } from "@/components/products/ProductTable";
 import { Button } from "@/components/ui/button";
-import { Product, ProductType } from "@/model/Product";
+import { ProductType } from "@/model/Product";
 import { columns } from "../components/products/columns";
 import { Link } from "react-router";
+import { DayWeek, ProductPrice } from "@/model/ProductPrice";
 
 const Products = () => {
-  const data: Product[] = [
+  const data: ProductPrice[] = [
     {
-      id_product: 1,
-      name: "Product 1",
-      type: ProductType.NEWSPAPER,
-      returns_date: 1
+      id_price_product: 1,
+      product: {
+        id_product: 1,
+        name: "Producto 1",
+        type: ProductType.PRODUCT,
+        returns_date: 1
+      },
+      price: 100,
+      day_week: DayWeek.SUNDAY,
+      start_date: new Date()
     },
     {
-      id_product: 2,
-      name: "Product 2",
-      type: ProductType.PRODUCT,
-      returns_date: 15
-    }
+      id_price_product: 2,
+      product: {
+        id_product: 2,
+        name: "Producto 2",
+        type: ProductType.PRODUCT,
+        returns_date: 2
+      },
+      price: 200,
+      day_week: DayWeek.TUESDAY,
+      start_date: new Date()
+    },
+    {
+      id_price_product: 3,
+      product: {
+        id_product: 3,
+        name: "Producto 3",
+        type: ProductType.NEWSPAPER,
+        returns_date: 3
+      },
+      price: 300,
+      day_week: DayWeek.WEDNESDAY,
+      start_date: new Date()
+    },
   ]
   return (
     <>
@@ -28,13 +53,13 @@ const Products = () => {
           <Button>Imprimir</Button>
           <Link
             to="/nuevo-producto"
-            className="hover:text-gray-300 transition-colors"
+            className="transition-colors hover:text-gray-300"
           >
             <Button>Nuevo producto</Button>
           </Link>
         </div>
       </div>
-      <div className="container mx-auto py-10">
+      <div className="container py-10 mx-auto">
         <ProductTable columns={columns} data={data} />
       </div>
     </>

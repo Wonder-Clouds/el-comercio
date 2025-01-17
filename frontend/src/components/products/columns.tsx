@@ -1,17 +1,25 @@
-import { Product } from "@/model/Product"
+import { ProductPrice } from "@/model/ProductPrice"
 import { ColumnDef } from "@tanstack/react-table"
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<ProductPrice>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "product.name",
     header: "Nombre",
   },
   {
-    accessorKey: "type",
+    accessorKey: "product.type",
     header: "Tipo",
   },
   {
-    accessorKey: "returns_date",
+    accessorKey: "product.returns_date",
     header: "Dias para retornar",
+  },
+  {
+    accessorKey: "price",
+    header: "Precio",
+  },
+  {
+    accessorKey: "day_week",
+    header: "Lunes",
   },
 ] 

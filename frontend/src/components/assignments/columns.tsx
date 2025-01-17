@@ -1,22 +1,40 @@
-import { Assignment } from "@/model/Assignment"
-import Seller from "@/model/Seller";
+import { AssignmentStatus } from "@/model/Assignment"
+import { DetailAssignment } from "@/model/DetailAssignment";
+import Seller from "@/model/Seller"
 import { ColumnDef } from "@tanstack/react-table"
 
-export const columns: ColumnDef<Assignment>[] = [
+type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
+  editable?: boolean;
+}
+
+export const columns: EditableColumnDef<DetailAssignment, Seller | Date | AssignmentStatus>[] = [
   {
-    accessorKey: "seller",
-    header: "Nombre completo",
-    cell: ({ getValue }) => {
-      const seller = getValue() as Seller;
-      return `${seller.name} ${seller.last_name}`;
-    },
-  },
-  {
-    accessorKey: "date_assignment",
+    accessorKey: "assignment.date_assignment",
     header: "Fecha de asignación",
+    editable: false,
+    cell: ({ getValue }) => {
+      const date = getValue() as Date;
+      return new Date(date).toLocaleDateString();
+    }
   },
   {
-    accessorKey: "status",
-    header: "Estado",
+    accessorKey: "assignment.seller.name",
+    header: "Nombre",
+    editable: false,
   },
-] 
+  {
+    accessorKey: "assignment.seller.last_name",
+    header: "Apellido",
+    editable: false,
+  },
+  {
+    accessorKey: "product.name",
+    header: "Producto",
+    editable: false,
+  },
+  {
+    accessorKey: "quantity",
+    header: "Cantidad entregada",
+    editable: true,
+  }
+]

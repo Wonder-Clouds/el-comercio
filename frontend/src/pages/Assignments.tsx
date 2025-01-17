@@ -1,40 +1,38 @@
 import { AssignmentTable } from "@/components/assignments/AssignmentTable";
 import { columns } from "@/components/assignments/columns";
-import { Assignment, AssignmentStatus } from "@/model/Assignment";
+import { AssignmentStatus } from "@/model/Assignment";
+import { DetailAssignment } from "@/model/DetailAssignment";
 
 function Assignments() {
 
-  const handleUpdate = (rowIndex: number, columnId: string, value: number) => {
-    // Aquí puedes manejar la actualización en tu backend o estado global
-    console.log(`Updating row ${rowIndex}, column ${columnId} with value ${value}`);
+  const handleUpdate = () => {
+    
   };
 
-  const data: Assignment[] = [
+  const data: DetailAssignment[] = [
     {
-      id_assignment: 1,
-      seller: {
-        id_seller: 1,
-        name: "Pimienta",
-        last_name: "123",
-        dni: "12345678",
-        status: true,
-        number_seller: "2"
+      id_detail_asignment: 1,
+      assignment: {
+        id_assignment: 1,
+        seller: {
+          id_seller: 1,
+          name: "Vendedor 1",
+          last_name: "Vendedor apellido",
+          dni: "12345678",
+          status: true
+        },
+        date_assignment: new Date(),
+        status: AssignmentStatus.PENDING
       },
-      date_assignment: new Date(),
-      status: AssignmentStatus.PAID
-    },
-    {
-      id_assignment: 2,
-      seller: {
-        id_seller: 2,
-        name: "Pedro",
-        last_name: "Navaja",
-        dni: "87654321",
-        status: false,
-        number_seller: "5"
+      product: {
+        id_product: 1,
+        name: "Producto 1",
+        type: null,
+        returns_date: 0
       },
-      date_assignment: new Date(),
-      status: AssignmentStatus.PENDING
+      quantity: 10,
+      return_amount: 0,
+      unit_price: 100
     }
   ]
 
@@ -42,7 +40,7 @@ function Assignments() {
     <div>
       <h1 className="text-4xl font-bold">Entregas de productos</h1>
 
-      <div className="container mx-auto py-10">
+      <div className="container py-10 mx-auto">
         <AssignmentTable columns={columns} data={data} onUpdate={handleUpdate} />
       </div>
     </div>

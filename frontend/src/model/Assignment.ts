@@ -13,5 +13,18 @@ interface Assignment {
   status: AssignmentStatus;
 }
 
+const defaultAssignment: Assignment = {
+  id_assignment: 0,
+  seller: {
+    id_seller: 0,
+    name: "",
+    last_name: "",
+    dni: "",
+    status: false
+  },
+  date_assignment: new Date(),
+  status: AssignmentStatus.PENDING
+}
+
 export type { Assignment };
-export { AssignmentStatus };
+export { AssignmentStatus, defaultAssignment };
