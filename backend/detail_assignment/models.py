@@ -7,7 +7,7 @@ from product.models import Product
 class DetailAssignment(TimeStampedModel):
     quantity = models.IntegerField(default=0, null=False, blank=False)
     returned_amount = models.IntegerField(default=0, null=False, blank=False)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, editable=False)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, editable=False, default=0.00)
 
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, null=False, blank=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False, blank=False)
