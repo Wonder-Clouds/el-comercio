@@ -1,4 +1,4 @@
-import Seller from "@/model/Seller"
+import { Seller } from "@/models/Seller"
 import { ColumnDef } from "@tanstack/react-table"
 import {Button} from "@/components/ui/button.tsx";
 import {Pencil, Trash2} from "lucide-react";

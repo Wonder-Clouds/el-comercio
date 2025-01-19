@@ -11,22 +11,22 @@ const Home = () => {
         <h1 className="text-3xl text-center">Distribuciones El Comercio</h1>
       </div>
       <Card className="col-span-4 mt-12">
-        <CardContent className="grid gap-4 md:grid-cols-4 p-5">
-          <Link to="/productos" className="flex items-center p-4 bg-muted rounded-lg hover:bg-muted/80">
-            <Box className="h-6 w-6 mr-2" />
+        <CardContent className="grid gap-4 p-5 md:grid-cols-4">
+          <Link to="/productos" className="flex items-center p-4 rounded-lg bg-muted hover:bg-muted/80">
+            <Box className="w-6 h-6 mr-2" />
             <span>Gestionar Productos</span>
           </Link>
-          <Link to="/clientes" className="flex items-center p-4 bg-muted rounded-lg hover:bg-muted/80">
-            <Users className="h-6 w-6 mr-2" />
+          <Link to="/clientes" className="flex items-center p-4 rounded-lg bg-muted hover:bg-muted/80">
+            <Users className="w-6 h-6 mr-2" />
             <span>Gestionar Clientes</span>
           </Link>
-          <Link to="/ventas" className="flex items-center p-4 bg-muted rounded-lg hover:bg-muted/80">
-            <DollarSign className="h-6 w-6 mr-2" />
-            <span>Ver Ventas</span>
+          <Link to="/entregas" className="flex items-center p-4 rounded-lg bg-muted hover:bg-muted/80">
+            <DollarSign className="w-6 h-6 mr-2" />
+            <span>Ver entregas</span>
           </Link>
-          <Link to="/reportes" className="flex items-center p-4 bg-muted rounded-lg hover:bg-muted/80">
-            <Activity className="h-6 w-6 mr-2" />
-            <span>Generar Reportes</span>
+          <Link to="/devoluciones" className="flex items-center p-4 rounded-lg bg-muted hover:bg-muted/80">
+            <Activity className="w-6 h-6 mr-2" />
+            <span>Ver devoluciones</span>
           </Link>
         </CardContent>
       </Card>

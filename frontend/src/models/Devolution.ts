@@ -1,4 +1,4 @@
-import DetailAssignment from "./DetailAssignment";
+import { DetailAssignment } from "./DetailAssignment";
 
 interface Devolution {
   id_devolution: number;

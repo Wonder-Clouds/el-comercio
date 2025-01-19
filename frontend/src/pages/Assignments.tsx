@@ -1,49 +1,56 @@
-import { AssignmentTable } from "@/components/assignments/AssignmentTable";
+import { getDetailAssignments } from "@/api/DetailAssignment.api";
+import { DetailAssignmentTable } from "@/components/assignments/AssignmentTable";
 import { columns } from "@/components/assignments/columns";
-import { Assignment, AssignmentStatus } from "@/model/Assignment";
+import { DetailAssignment } from "@/models/DetailAssignment";
+import formatSpanishDate from "@/utils/formatDate";
+import { useEffect, useState } from "react";
 
 function Assignments() {
 
-  const handleUpdate = (rowIndex: number, columnId: string, value: number) => {
-    // Aquí puedes manejar la actualización en tu backend o estado global
-    console.log(`Updating row ${rowIndex}, column ${columnId} with value ${value}`);
-  };
+  const [data, setData] = useState<DetailAssignment[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const data: Assignment[] = [
-    {
-      id_assignment: 1,
-      seller: {
-        id_seller: 1,
-        name: "Pimienta",
-        last_name: "123",
-        dni: "12345678",
-        status: true,
-        number_seller: "2"
-      },
-      date_assignment: new Date(),
-      status: AssignmentStatus.PAID
-    },
-    {
-      id_assignment: 2,
-      seller: {
-        id_seller: 2,
-        name: "Pedro",
-        last_name: "Navaja",
-        dni: "87654321",
-        status: false,
-        number_seller: "5"
-      },
-      date_assignment: new Date(),
-      status: AssignmentStatus.PENDING
-    }
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const assignments = await getDetailAssignments(page, pageSize);
+        console.log(assignments)
+        setData(assignments.results);
+        setTotalCount(assignments.count);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
+      }
+    };
+    fetchData();
+  }, [page, pageSize]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   return (
     <div>
-      <h1 className="text-4xl font-bold">Entregas de productos</h1>
-
-      <div className="container mx-auto py-10">
-        <AssignmentTable columns={columns} data={data} onUpdate={handleUpdate} />
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="text-4xl font-bold">Entregas de productos</h1>
+        {data.length > 0 ?
+          <span className="my-auto text-xl">{formatSpanishDate(data[0].assignment.date_assignment)}</span>
+          :
+          null
+        }
+      </div>
+      <div className="container py-10 mx-auto">
+        <DetailAssignmentTable
+          columns={columns}
+          data={data}
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

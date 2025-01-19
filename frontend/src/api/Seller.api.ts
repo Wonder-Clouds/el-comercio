@@ -1,10 +1,6 @@
-import axios from "axios";
-import Seller from "@/model/Seller.ts";
-import PaginatedResponse from "@/model/PaginatedResponse";
-
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL + '/sellers',
-});
+import api from "@/config/axios";
+import PaginatedResponse from "@/models/PaginatedResponse";
+import { Seller } from "@/models/Seller";
 
 export const getSellers = async (page: number, pageSize: number): Promise<PaginatedResponse<Seller>> => {
     if(page <= 0) {
