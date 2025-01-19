@@ -7,16 +7,11 @@ import {Ban, Save} from "lucide-react";
 import {createSeller} from "@/api/Seller.api.ts";
 import {toast} from "@/hooks/use-toast.ts";
 import {Label} from "@/components/ui/label.tsx";
+import {defaultSeller} from "@/models/Seller.ts";
 
 
 const CreateCard = ({closeModal}: { closeModal: () => void }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        last_name: '',
-        dni: '',
-        number_seller: '',
-        status: true
-    });
+    const [formData, setFormData] = useState(defaultSeller);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -6,7 +6,7 @@ export const getSellers = async (page: number, pageSize: number): Promise<Pagina
     if(page <= 0) {
         throw new Error("Invalid page number");
     }
-    const response = await api.get('/', {
+    const response = await api.get('/sellers', {
         params: {
             page,
             page_size: pageSize
@@ -17,7 +17,7 @@ export const getSellers = async (page: number, pageSize: number): Promise<Pagina
 
 export const createSeller = async (seller: Seller): Promise<Seller> => {
     try {
-        const response = await api.post('/', seller);
+        const response = await api.post('/sellers/', seller);
         return response.data;
     } catch (error) {
         if (error instanceof Error) {
@@ -27,11 +27,11 @@ export const createSeller = async (seller: Seller): Promise<Seller> => {
     }
 }
 export const getSellerById = async (id: number): Promise<Seller> => {
-    const response = await api.get(`/${id}`);
+    const response = await api.get(`/sellers/${id}`);
     return response.data;
 }
 
 export const updateSeller = async (id: number, seller: Seller): Promise<Seller> => {
-    const response = await api.patch(`/${id}`, seller);
+    const response = await api.patch(`/sellers/${id}`, seller);
     return response.data;
 }

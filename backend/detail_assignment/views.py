@@ -23,8 +23,9 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
             return Response({'error': 'ProductPrice matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
-        data = request.data
-        product_id = data.get('product')
+        data = request.data.copy()
+        product_id = data.get('product_id')
+        print(product_id)
 
         try:
             product_price = ProductPrice.objects.get(product=product_id)
