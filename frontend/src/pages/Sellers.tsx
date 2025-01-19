@@ -1,10 +1,10 @@
 import { columns } from "@/components/sellers/columns";
-import { SellersTable } from "@/components/sellers/SellersTable";
+import { SellerTable } from "@/components/sellers/SellerTable.tsx";
+import Seller from "@/model/Seller";
 import { useEffect, useState } from "react";
 import { getSellers } from "@/api/Seller.api.ts";
 import { Button } from "@/components/ui/button";
 import CreateCard from "@/components/sellers/SellersCreateCard.tsx";
-import { Seller } from "@/models/Seller";
 
 
 function Sellers() {
@@ -35,23 +35,23 @@ function Sellers() {
     setPage(newPage);
   };
 
-  return (
-    <>
-      <div className="container flex items-center justify-between mx-auto">
-        <h1 className="text-4xl font-bold">Vendedores</h1>
-        <Button onClick={openModal}>Crear Vendedor</Button>
-      </div>
+    return (
+        <>
+            <div className="flex container mx-auto justify-between items-center">
+                <h1 className="text-4xl font-bold">Vendedores</h1>
+                <Button onClick={openModal}>Crear vendedor</Button>
+            </div>
 
-      <div className="container py-10 mx-auto">
-        <SellersTable
-          columns={columns}
-          data={data}
-          page={page}
-          pageSize={pageSize}
-          totalCount={totalCount}
-          onPageChange={handlePageChange}
-        />
-      </div>
+            <div className="container mx-auto py-10">
+                <SellerTable
+                    columns={columns}
+                    data={data}
+                    page={page}
+                    pageSize={pageSize}
+                    totalCount={totalCount}
+                    onPageChange={handlePageChange}
+                />
+            </div>
 
       {showModal && <CreateCard closeModal={closeModal} />}
     </>

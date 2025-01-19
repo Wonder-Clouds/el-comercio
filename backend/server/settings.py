@@ -30,12 +30,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = []
-
-
+# CORS SETTINGS
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOW_ORIGINS').split(',')
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'drf_yasg',
     'core',
     'seller',
@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'product',
     'detail_assignment',
     'devolution',
-    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -64,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'server.urls'

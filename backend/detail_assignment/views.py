@@ -15,20 +15,23 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
 
     def calculate_sub_total(self, detail_assignment):
-        product_price = ProductPrice.objects.get(product=detail_assignment.product)
-        sub_total = product_price.price * detail_assignment.quantity
-        return sub_total
+        try:
+            product_price = ProductPrice.objects.get(product=detail_assignment.product)
+            sub_total = product_price.price * detail_assignment.quantity
+            return sub_total
+        except ProductPrice.DoesNotExist:
+            return Response({'error': 'ProductPrice matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create Method
     def create(self, request, *args, **kwargs):
-        data = request.data
-        product_id = data.get('product')
+        data = request.data.copy()
+        product_id = data.get('product_id')
+        print(product_id)
 
         try:
             product_price = ProductPrice.objects.get(product=product_id)
             data['unit_price'] = product_price.price
         except ProductPrice.DoesNotExist:
-            return Response({'error': 'ProductPrice matching query does not exist.'})
+            return Response({'error': 'ProductPrice matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -36,7 +39,6 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    # Delete Method
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.soft_delete()
