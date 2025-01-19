@@ -1,5 +1,5 @@
 interface Seller {
-  id_seller: number;
+  id_seller?: number;
   name: string;
   last_name: string;
   dni: string;

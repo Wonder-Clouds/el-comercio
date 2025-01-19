@@ -32,7 +32,7 @@ interface SellerTableProps<TData, TValue> {
     onPageChange: (page: number) => void
 }
 
-export function SellersTable<TData, TValue>({
+export function SellerTable<TData, TValue>({
                                                 columns,
                                                 data,
                                                 page,
