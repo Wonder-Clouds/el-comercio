@@ -2,6 +2,8 @@ from django.db import models
 from assignment.models import Assignment
 from core.models import TimeStampedModel
 from product.models import Product
+from product_price.models import ProductPrice
+
 
 # Create your models here.
 class DetailAssignment(TimeStampedModel):
@@ -14,4 +16,13 @@ class DetailAssignment(TimeStampedModel):
 
     def __str__(self):
         return self.assignment.seller.name + ' ' + self.product.name + ' ' + f'{ self.quantity }' + ' ' + f'{ self.unit_price }'
-    
+
+
+    def save(self, *args, **kwargs):
+        if not self.unit_price:
+            try:
+                product_price = ProductPrice.objects.get(product=self.product)
+                self.unit_price = product_price.price
+            except ProductPrice.DoesNotExist:
+                raise ValueError('ProductPrice matching query does not exist.')
+        super().save(*args, **kwargs)
