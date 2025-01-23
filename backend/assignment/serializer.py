@@ -49,5 +49,4 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_detail_assignments(self, obj):
         from detail_assignment.serializer import DetailAssignmentSerializer
-        # Return only the ids or other necessary fields to avoid recursion
         return DetailAssignmentSerializer(obj.detailassignment_set.all(), many=True).data
