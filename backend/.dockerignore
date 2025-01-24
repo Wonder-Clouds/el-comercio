@@ -1,0 +1,5 @@
+.example.env
+.idea
+README.md
+.gitignore
+env
