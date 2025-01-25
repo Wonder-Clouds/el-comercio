@@ -1,13 +1,13 @@
-import { getDetailAssignments } from "@/api/DetailAssignment.api";
-import { DetailAssignmentTable } from "@/components/assignments/AssignmentTable";
+import { getAssignments } from "@/api/Assignment.api";
+import { AssignmentTable } from "@/components/assignments/AssignmentTable";
 import { columns } from "@/components/assignments/columns";
-import { DetailAssignment } from "@/models/DetailAssignment";
+import { Assignment } from "@/models/Assignment";
 import formatSpanishDate from "@/utils/formatDate";
 import { useEffect, useState } from "react";
 
 function Assignments() {
 
-  const [data, setData] = useState<DetailAssignment[]>([]);
+  const [data, setData] = useState<Assignment[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
@@ -15,7 +15,7 @@ function Assignments() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const assignments = await getDetailAssignments(page, pageSize);
+        const assignments = await getAssignments(page, pageSize);
         console.log(assignments)
         setData(assignments.results);
         setTotalCount(assignments.count);
@@ -37,14 +37,14 @@ function Assignments() {
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-4xl font-bold">Entregas de productos</h1>
         {data.length > 0 ?
-          <span className="my-auto text-xl">{formatSpanishDate(data[0].assignment.date_assignment)}</span>
+          <span className="my-auto text-xl">{formatSpanishDate(data[0].date_assignment)}</span>
           :
           null
         }
       </div>
       <div className="container py-10 mx-auto">
-        <DetailAssignmentTable
-          columns={columns}
+        <AssignmentTable
+          columns={columns(data)}
           data={data}
           page={page}
           pageSize={pageSize}

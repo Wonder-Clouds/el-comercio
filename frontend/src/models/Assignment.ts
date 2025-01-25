@@ -1,3 +1,4 @@
+import { DetailAssignment } from "./DetailAssignment";
 import { defaultSeller, Seller } from "./Seller";
 
 enum AssignmentStatus {
@@ -11,13 +12,15 @@ interface Assignment {
   seller: Seller;
   date_assignment: Date;
   status: AssignmentStatus;
+  detail_assignments?: DetailAssignment[];
 }
 
 const defaultAssignment: Assignment = {
   id_assignment: 0,
   seller: defaultSeller,
   date_assignment: new Date(),
-  status: AssignmentStatus.PENDING
+  status: AssignmentStatus.PENDING,
+  detail_assignments: []
 }
 
 export type { Assignment };

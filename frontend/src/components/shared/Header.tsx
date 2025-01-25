@@ -2,13 +2,13 @@ import { Link } from "react-router";
 
 const Header = () => {
   return (
-    <header className="bg-[#131010] text-white py-4">
+    <header className="py-4 text-white bg-gray-950">
       <nav className="container mx-auto">
-        <ul className="flex justify-center items-center space-x-8">
+        <ul className="flex items-center justify-center space-x-8">
           <li>
             <Link
-              to="/"
-              className="hover:text-gray-300 transition-colors"
+              to="/inicio"
+              className="transition-colors hover:text-gray-300"
             >
               Inicio
             </Link>
@@ -16,7 +16,7 @@ const Header = () => {
           <li>
             <Link
               to="/entregas"
-              className="hover:text-gray-300 transition-colors"
+              className="transition-colors hover:text-gray-300"
             >
               Entregas
             </Link>
@@ -24,7 +24,7 @@ const Header = () => {
           <li>
             <Link
               to="/productos"
-              className="hover:text-gray-300 transition-colors"
+              className="transition-colors hover:text-gray-300"
             >
               Productos
             </Link>
@@ -32,7 +32,7 @@ const Header = () => {
           <li>
             <Link
               to="/clientes"
-              className="hover:text-gray-300 transition-colors"
+              className="transition-colors hover:text-gray-300"
             >
               Clientes
             </Link>
@@ -40,7 +40,7 @@ const Header = () => {
           <li>
             <Link
               to="/devoluciones"
-              className="hover:text-gray-300 transition-colors"
+              className="transition-colors hover:text-gray-300"
             >
               Devoluciones
             </Link>
