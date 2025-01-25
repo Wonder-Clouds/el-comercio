@@ -23,7 +23,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-interface DetailAssignmentTableProps<TData, TValue> {
+interface AssignmentTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   page: number
@@ -32,14 +32,14 @@ interface DetailAssignmentTableProps<TData, TValue> {
   onPageChange: (page: number) => void
 }
 
-export function DetailAssignmentTable<TData, TValue>({
+export function AssignmentTable<TData, TValue>({
   columns,
   data,
   page,
   pageSize,
   totalCount,
   onPageChange,
-}: DetailAssignmentTableProps<TData, TValue>) {
+}: AssignmentTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,

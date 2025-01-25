@@ -1,10 +1,10 @@
 import { columns } from "@/components/sellers/columns";
 import { SellerTable } from "@/components/sellers/SellerTable.tsx";
-import Seller from "@/model/Seller";
 import { useEffect, useState } from "react";
 import { getSellers } from "@/api/Seller.api.ts";
 import { Button } from "@/components/ui/button";
 import CreateCard from "@/components/sellers/SellersCreateCard.tsx";
+import { Seller } from "@/models/Seller";
 
 
 function Sellers() {
@@ -37,12 +37,12 @@ function Sellers() {
 
     return (
         <>
-            <div className="flex container mx-auto justify-between items-center">
+            <div className="container flex items-center justify-between mx-auto">
                 <h1 className="text-4xl font-bold">Vendedores</h1>
                 <Button onClick={openModal}>Crear vendedor</Button>
             </div>
 
-            <div className="container mx-auto py-10">
+            <div className="container py-10 mx-auto">
                 <SellerTable
                     columns={columns}
                     data={data}
