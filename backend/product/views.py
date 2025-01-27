@@ -21,7 +21,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-    @action(detail=True, methods=['get'], url_path='get_actual_price')
+    @action(detail=True, methods=['get'], url_path='get-actual-price')
     def get_actual_price(self, request, pk=None):
         product = self.get_object()
 

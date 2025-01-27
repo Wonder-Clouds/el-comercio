@@ -17,7 +17,7 @@ class ProductPriceViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'], url_path='is_current')
+    @action(detail=True, methods=['get'], url_path='is-current')
     def is_current(self, request, pk=None):
         product_price = self.get_object()
         if product_price.end_date is not None:

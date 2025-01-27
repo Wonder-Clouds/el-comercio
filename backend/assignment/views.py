@@ -44,7 +44,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'], url_path='calculate_total_assignment')
+    @action(detail=True, methods=['get'], url_path='calculate-total-assignment')
     def get_total_assignment(self, request, pk=None):
         assignment = self.get_object()
         total_assignment = self.total_assignment(assignment)
@@ -57,7 +57,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             'total': total_assignment
         }, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'], url_path='calculate_total_returned')
+    @action(detail=True, methods=['get'], url_path='calculate-total-returned')
     def get_total_returned(self, request, pk=None):
         assignment = self.get_object()
         total_returned = self.total_returned(assignment)
@@ -70,7 +70,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             'total': total_returned
         }, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'], url_path='calculate_total_pay')
+    @action(detail=True, methods=['get'], url_path='calculate-total-pay')
     def get_total_pay(self, request, pk=None):
         assignment = self.get_object()
         total_pay = self.total_pay(assignment)

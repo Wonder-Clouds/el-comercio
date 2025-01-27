@@ -17,23 +17,13 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'seller_id', 'seller', 'date_assignment', 'status', 'detail_assignments']
 
     def create(self, validated_data):
-        seller_id = validated_data.pop('seller_id')
-        try:
-            seller = Seller.objects.get(id=seller_id)
-        except Seller.DoesNotExist:
-            raise ValidationError({'seller_id': 'The Seller dont exist.'})
-
-        assignment = Assignment.objects.create(
-            seller=seller,
-            **validated_data
-        )
-
+        seller = validated_data.pop('seller_id')
+        assignment = Assignment.objects.create(seller=seller, **validated_data)
         return assignment
 
     def update(self, instance, validated_data):
         seller_id = validated_data.pop('seller_id', None)
         if seller_id:
-            # Verifica si seller_id es un objeto Seller
             if isinstance(seller_id, Seller):
                 seller_id = seller_id.id
             try:

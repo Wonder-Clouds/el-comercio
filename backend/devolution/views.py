@@ -20,7 +20,7 @@ class DevolutionViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['post'], url_path='register_devolution')
+    @action(detail=True, methods=['post'], url_path='register-devolution')
     def register_devolution(self, request, pk=None):
         assignment_detail_id = pk
         quantity = request.data.get('quantity')
