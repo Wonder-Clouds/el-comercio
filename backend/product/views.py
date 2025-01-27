@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from django.utils import timezone
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from product_price.models import ProductPrice
@@ -10,6 +12,10 @@ from rest_framework.response import Response
 
 # Create your views here.
 class ProductViewSet(viewsets.ModelViewSet):
+    # JWT Authentication
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = Product.objects.filter(delete_at__isnull=True)
     serializer_class = ProductSerializer
     pagination_class = CustomPagination
