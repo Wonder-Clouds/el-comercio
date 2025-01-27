@@ -14,6 +14,7 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), source='product', write_only=True
     )
+    returned_amount = serializers.IntegerField(required=False, read_only=True)
 
     class Meta:
         model = DetailAssignment

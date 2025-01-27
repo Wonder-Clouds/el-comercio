@@ -25,7 +25,6 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         product_id = data.get('product_id')
-        print(product_id)
 
         try:
             product_price = ProductPrice.objects.get(product=product_id)
@@ -44,7 +43,7 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'], url_path='calculate_sub_total')
+    @action(detail=True, methods=['get'], url_path='calculate-sub-total')
     def get_sub_total_action(self, request, pk=None):
         detail_assignment = self.get_object()
         sub_total = self.calculate_sub_total(detail_assignment)
