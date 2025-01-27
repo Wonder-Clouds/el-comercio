@@ -1,6 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
 from core.pagination import CustomPagination
@@ -8,6 +11,11 @@ from detail_assignment.models import DetailAssignment
 
 
 class AssignmentViewSet(viewsets.ModelViewSet):
+    # JWT Authentication
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
     queryset = Assignment.objects.filter(delete_at__isnull=True)
     serializer_class = AssignmentSerializer
     pagination_class = CustomPagination

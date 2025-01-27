@@ -1,5 +1,7 @@
 from rest_framework import viewsets, status
 from django.utils import timezone
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
@@ -10,6 +12,10 @@ from rest_framework.decorators import action
 
 # Create your views here.
 class DevolutionViewSet(viewsets.ModelViewSet):
+    # JWT Authentication
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = Devolution.objects.filter(delete_at__isnull=True)
     serializer_class = DevolutionSerializer
     pagination_class = CustomPagination

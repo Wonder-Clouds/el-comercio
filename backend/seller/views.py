@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from seller.models import Seller
@@ -10,6 +12,10 @@ from assignment.serializer import AssignmentSerializer
 
 # Create your views here.
 class SellerViewSet(viewsets.ModelViewSet):
+    # JWT Authentication
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     queryset = Seller.objects.filter(delete_at__isnull=True)
     serializer_class = SellerSerializer
     pagination_class = CustomPagination
