@@ -109,6 +109,19 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Token JWT en formato Bearer. Ejemplo: 'Bearer {token}'",
+        }
+    },
+    "SHOW_REQUEST_HEADERS": True, 
+}
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 

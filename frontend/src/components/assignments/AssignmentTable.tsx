@@ -1,3 +1,5 @@
+// AssignmentTable.tsx
+import { useState } from "react"
 import {
   ColumnDef,
   flexRender,
@@ -23,6 +25,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
+import { Input } from "@/components/ui/input"
+
 interface AssignmentTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -30,6 +34,7 @@ interface AssignmentTableProps<TData, TValue> {
   pageSize: number
   totalCount: number
   onPageChange: (page: number) => void
+  onDataChange?: (rowIndex: number, columnId: string, value: unknown) => void
 }
 
 export function AssignmentTable<TData, TValue>({
@@ -39,7 +44,13 @@ export function AssignmentTable<TData, TValue>({
   pageSize,
   totalCount,
   onPageChange,
+  onDataChange,
 }: AssignmentTableProps<TData, TValue>) {
+  const [editingCell, setEditingCell] = useState<{
+    rowIndex: number;
+    columnId: string;
+  } | null>(null);
+
   const table = useReactTable({
     data,
     columns,
@@ -47,6 +58,23 @@ export function AssignmentTable<TData, TValue>({
   })
 
   const totalPages = Math.ceil(totalCount / pageSize);
+
+  const handleDoubleClick = (rowIndex: number, columnId: string) => {
+    const column = columns.find((col) => col.id === columnId) as any;
+    if (column?.editable) {
+      setEditingCell({ rowIndex, columnId });
+    }
+  };
+
+  const handleBlur = () => {
+    setEditingCell(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setEditingCell(null);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -57,46 +85,64 @@ export function AssignmentTable<TData, TValue>({
               key={headerGroup.id}
               className="bg-gray-50 hover:bg-gray-50"
             >
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    className="px-6 py-4 text-sm font-semibold text-left text-gray-900"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
-                )
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className="px-6 py-4 text-sm font-semibold text-left text-gray-900"
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+            table.getRowModel().rows.map((row, rowIndex) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className="transition-colors border-t border-gray-200 hover:bg-gray-50"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className="px-6 py-4 text-sm text-gray-700"
-                  >
-                    {cell.column.id === 'status' ? (
-                      <span className={cell.getValue() ? 'text-green-500' : 'text-red-500'}>
-                        {cell.getValue() ? 'Activo' : 'Inactivo'}
-                      </span>
-                    ) : (
-                      flexRender(cell.column.columnDef.cell, cell.getContext())
-                    )}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isEditing = editingCell?.rowIndex === rowIndex && 
+                                  editingCell?.columnId === cell.column.id;
+                  const column = columns.find((col) => col.id === cell.column.id) as any;
+                  
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      className="px-6 py-4 text-sm text-gray-700"
+                      onDoubleClick={() => handleDoubleClick(rowIndex, cell.column.id)}
+                    >
+                      {isEditing ? (
+                        <Input
+                          autoFocus
+                          defaultValue={cell.getValue() as string}
+                          onBlur={handleBlur}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) => {
+                            if (onDataChange) {
+                              onDataChange(rowIndex, cell.column.id, e.target.value);
+                            }
+                          }}
+                          className="w-full p-1 text-sm"
+                        />
+                      ) : column?.editable ? (
+                        <div className="cursor-pointer">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                      ) : (
+                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (

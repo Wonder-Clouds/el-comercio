@@ -8,3 +8,11 @@ export const Token = async (username: string, password: string) => {
 
   return res;
 }
+
+export const RefreshToken = async (refresh: string) => {
+  const res = await api.post('/token/refresh/', {
+    refresh
+  });
+
+  return res;
+}
