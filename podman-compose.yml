@@ -52,7 +52,7 @@ services:
       - ./servers.json:/pgadmin4/servers.json
   
   frontend:
-    container_name: dashboard
+    container_name: frontend
     restart: always
     depends_on:
       - db
