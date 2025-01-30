@@ -51,7 +51,7 @@ services:
     volumes:
       - ./servers.json:/pgadmin4/servers.json
   
-  dashboard:
+  frontend:
     container_name: dashboard
     restart: always
     depends_on:
@@ -59,12 +59,12 @@ services:
       - backend
       - nginx
     build:
-      context: ./dashboard
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
     volumes:
-      - ./dashboard:/app
+      - ./frontend:/app
 
 volumes:
   postgresql:
