@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router";
+import logo  from "@/assets/elcomercio_logo.webp";
 import { Token } from "@/api/Token.api";
 
 export default function LoginForm() {
@@ -57,7 +58,7 @@ export default function LoginForm() {
     <Card className="w-[350px] shadow-2xl">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4 overflow-hidden rounded-full">
-          <img src="/api/placeholder/64/64" alt="Logo" className="w-16 h-16 mx-auto" />
+          <img src={logo} alt="Logo" className="w-24 h-24 p-2 mx-auto" />
         </div>
         <CardTitle className="text-2xl font-bold">Bienvenido</CardTitle>
         <CardDescription>Ingresa tus credenciales para acceder</CardDescription>

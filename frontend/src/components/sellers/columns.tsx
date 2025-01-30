@@ -5,6 +5,10 @@ import {Pencil, Trash2} from "lucide-react";
 
 export const columns: ColumnDef<Seller>[] = [
   {
+    accessorKey: "number_seller",
+    header: "Numero",
+  },
+  {
     accessorKey: "name",
     header: "Nombre",
   },
@@ -21,10 +25,6 @@ export const columns: ColumnDef<Seller>[] = [
     header: "Estado",
   },
   {
-    accessorKey: "number_seller",
-    header: "Numero Cliente",
-  },
-  {
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => {
@@ -35,14 +35,14 @@ export const columns: ColumnDef<Seller>[] = [
                 size="icon"
                 onClick={() => console.log('Update', row.original)}
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="w-4 h-4" />
             </Button>
             <Button
                 variant="outline"
                 size="icon"
                 onClick={() => console.log('Delete', row.original)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
       )
