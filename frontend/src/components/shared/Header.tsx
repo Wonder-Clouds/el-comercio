@@ -32,7 +32,7 @@ const Header = () => {
     <header className="py-4 text-white bg-gray-950">
       <nav className="container px-4 mx-auto">
         {/* Mobile menu button */}
-        <div className="flex justify-end md:hidden">
+        <div className="flex justify-end lg:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white focus:outline-none"
@@ -42,13 +42,13 @@ const Header = () => {
         </div>
 
         <div className={`
-          flex flex-col md:flex-row items-center justify-between
-          ${isOpen ? 'block' : 'hidden'} md:flex
+          flex flex-col lg:flex-row items-center justify-between
+          ${isOpen ? 'block' : 'hidden'} lg:flex
           mt-4 md:mt-0
         `}>
           {/* Centered menu items */}
           <div className="flex-1" /> {/* Spacer */}
-          <ul className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-8">
+          <ul className="flex flex-col items-center space-y-4 lg:flex-row lg:space-y-0 lg:space-x-8">
             {menuItems.map((item) => (
               <li key={item.to}>
                 <Link
@@ -65,7 +65,7 @@ const Header = () => {
             {/* Logout button */}
             <button
               onClick={handleLogout}
-              className="flex items-center mt-4 space-x-2 transition-colors hover:text-gray-300 md:mt-0"
+              className="flex items-center mt-4 space-x-2 transition-colors hover:text-gray-300 lg:mt-0"
             >
               <LogOut size={20} />
               <span>Cerrar sesión</span>
