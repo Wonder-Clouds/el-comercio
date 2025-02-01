@@ -17,6 +17,8 @@ class DevolutionSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         detail_assignment = validated_data.pop('detail_assignment_id')
         devolution = Devolution.objects.create(detail_assignment=detail_assignment, **validated_data)
+        detail_assignment.returned_amount += devolution.quantity
+        detail_assignment.save()
         return devolution
 
     def update(self, instance, validated_data):
@@ -29,6 +31,20 @@ class DevolutionSerializer(serializers.HyperlinkedModelSerializer):
                 instance.detail_assignment = detail_assignment
             except DetailAssignment.DoesNotExist:
                 raise ValidationError({'detail_assignment_id': 'The Detail Assignment does not exist.'})
+
+        # Update returned amount
+        if 'quantity' in validated_data:
+            old_quantity = instance.quantity
+            new_quantity = validated_data['quantity']
+            total_returned = instance.detail_assignment.returned_amount - old_quantity + new_quantity
+
+            if total_returned > instance.detail_assignment.quantity:
+                raise ValidationError({'quantity': 'The quantity returned is greater than the quantity assigned.'})
+            if total_returned < 0:
+                raise ValidationError({'quantity': 'The quantity returned cannot be negative.'})
+
+            instance.detail_assignment.returned_amount = total_returned
+            instance.detail_assignment.save()
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
