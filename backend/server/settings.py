@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'core',
     'seller',
     'assignment',
-    'product_price',
     'product',
     'detail_assignment',
     'devolution',
