@@ -3,8 +3,8 @@ from assignment.serializer import AssignmentSerializer
 from product.models import Product
 from product.serializer import ProductSerializer
 from assignment.models import Assignment
-from product_price.models import ProductPrice
 from .models import DetailAssignment
+import datetime
 
 class DetailAssignmentSerializer(serializers.ModelSerializer):
     assignment_id = serializers.PrimaryKeyRelatedField(
@@ -23,24 +23,21 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
     def get_assignment(self, obj):
         return AssignmentSerializer(obj.assignment).data
 
-    def validate(self, data):
-        product_id = data.get('product')
-
-        try:
-            product_price = ProductPrice.objects.get(product=product_id)
-            data['unit_price'] = product_price.price
-        except ProductPrice.DoesNotExist:
-            raise serializers.ValidationError({'error': 'ProductPrice matching query does not exist.'})
-
-        return data
-
     def create(self, validated_data):
         assignment = validated_data.pop('assignment')
         product = validated_data.pop('product')
 
+        current_day = datetime.datetime.now().strftime('%A').lower()
+
+        if product.type == 'PRODUCT':
+            unit_price = product.product_price
+        elif product.type == 'NEWSPAPER':
+            unit_price = getattr(product, f'{current_day}_price')
+
         detail_assignment = DetailAssignment.objects.create(
             assignment=assignment,
             product=product,
+            unit_price=unit_price,
             **validated_data
         )
 
