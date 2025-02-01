@@ -3,9 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
+from assignment.filters import AssignmentFilter
 from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
 
@@ -15,10 +17,11 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-
     queryset = Assignment.objects.filter(delete_at__isnull=True)
     serializer_class = AssignmentSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AssignmentFilter
 
     def total_pay(self, assignment):
         """Helper method to calculate total payment"""

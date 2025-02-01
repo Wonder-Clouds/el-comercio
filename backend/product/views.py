@@ -3,10 +3,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 
 from core.pagination import CustomPagination
 from .models import Product
 from .serializer import ProductSerializer
+from .filters import ProductFilter
 
 # Create your views here.
 class ProductViewSet(viewsets.ModelViewSet):
@@ -17,6 +19,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.filter(delete_at__isnull=True)
     serializer_class = ProductSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     # Delete Method
     def destroy(self, request, *args, **kwargs):
