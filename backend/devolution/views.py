@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
@@ -5,6 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
+from devolution.filters import DevolutionFilter
 from devolution.models import Devolution
 from devolution.serializer import DevolutionSerializer
 from rest_framework.response import Response
@@ -18,6 +20,8 @@ class DevolutionViewSet(viewsets.ModelViewSet):
     queryset = Devolution.objects.filter(delete_at__isnull=True)
     serializer_class = DevolutionSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DevolutionFilter
 
     # Delete Method
     def destroy(self, request, *args, **kwargs):
