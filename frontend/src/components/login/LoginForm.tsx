@@ -12,10 +12,12 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router";
+import logo  from "@/assets/elcomercio_logo.webp";
+import { Token } from "@/api/Token.api";
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +28,25 @@ export default function LoginForm() {
     setError("");
 
     try {
-      // Aquí puedes agregar la lógica de autenticación
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulación de solicitud
-      navigate("/inicio");
+      const response = await Token(username, password);
+
+      if (response.status === 401) {
+        throw new Error("Credenciales inválidas");
+      }
+
+      const { access, refresh } = response.data;
+
+      if (access) {
+        localStorage.setItem("accessToken", access);
+        localStorage.setItem("refreshToken", refresh);
+
+        const tokenPayload = JSON.parse(window.atob(access.split(".")[1]));
+        localStorage.setItem("userId", tokenPayload.user_id);
+
+        navigate("/inicio");
+      } else {
+        throw new Error("Token inválido");
+      }
     } catch {
       setError("Inicio de sesión fallido. Por favor, verifica tus credenciales.");
     } finally {
@@ -40,7 +58,7 @@ export default function LoginForm() {
     <Card className="w-[350px] shadow-2xl">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4 overflow-hidden rounded-full">
-          <img src="" alt="" />
+          <img src={logo} alt="Logo" className="w-24 h-24 p-2 mx-auto" />
         </div>
         <CardTitle className="text-2xl font-bold">Bienvenido</CardTitle>
         <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
@@ -49,14 +67,15 @@ export default function LoginForm() {
         <form onSubmit={handleSubmit}>
           <div className="grid items-center w-full gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="user">Correo electrónico</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="tu@ejemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="user"
+                type="text"
+                placeholder="User"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
+                className="focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -68,11 +87,16 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           <CardFooter className="flex flex-col mt-4">
-            <Button className="w-full" type="submit" disabled={isLoading}>
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              type="submit"
+              disabled={isLoading}
+            >
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
             {error && (
