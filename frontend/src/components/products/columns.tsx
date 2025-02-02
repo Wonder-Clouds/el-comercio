@@ -1,25 +1,42 @@
-import { ProductPrice } from "@/models/ProductPrice"
+import { Product } from "@/models/Product"
 import { ColumnDef } from "@tanstack/react-table"
 
-export const columns: ColumnDef<ProductPrice>[] = [
+export const columns: ColumnDef<Product>[] = [
   {
-    accessorKey: "product.name",
-    header: "Nombre",
+    accessorKey: "name",
+    header: "Nombre"
   },
   {
-    accessorKey: "product.type",
-    header: "Tipo",
+    accessorKey: "type",
+    header: "Tipo"
   },
   {
-    accessorKey: "product.returns_date",
-    header: "Dias para retornar",
+    accessorKey: "returns_date",
+    header: "Dias de devolucion"
   },
   {
-    accessorKey: "price",
-    header: "Precio",
-  },
-  {
-    accessorKey: "day_week",
+    accessorKey: "monday_price",
     header: "Lunes",
+    cell: ({ getValue }) => `S/. ${getValue()}`
+  },
+  {
+    accessorKey: "tuesday_price",
+    header: "Martes",
+    cell: ({ getValue }) => `S/. ${getValue()}`
+  },
+  {
+    accessorKey: "wednesday_price",
+    header: "Miercoles",
+    cell: ({ getValue }) => `S/. ${getValue()}`
+  },
+  {
+    accessorKey: "thursday_price",
+    header: "Jueves",
+    cell: ({ getValue }) => `S/. ${getValue()}`
+  },
+  {
+    accessorKey: "friday_price",
+    header: "viernes",
+    cell: ({ getValue }) => `S/. ${getValue()}`
   },
 ] 

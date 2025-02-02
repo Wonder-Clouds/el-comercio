@@ -8,7 +8,7 @@ enum AssignmentStatus {
 }
 
 interface Assignment {
-  id_assignment: number;
+  id: number;
   seller: Seller;
   date_assignment: Date;
   status: AssignmentStatus;
@@ -16,7 +16,7 @@ interface Assignment {
 }
 
 const defaultAssignment: Assignment = {
-  id_assignment: 0,
+  id: 0,
   seller: defaultSeller,
   date_assignment: new Date(),
   status: AssignmentStatus.PENDING,
