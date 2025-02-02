@@ -35,6 +35,10 @@ function Sellers() {
     }
   }, [page, pageSize]);
 
+  const updateData = () => {
+    fetchData(); // Recargar datos después de crear un vendedor
+  };
+
   // Debounce search
   const debouncedSearch = useMemo(
     () =>
@@ -101,13 +105,13 @@ function Sellers() {
             ${tableRef.current.innerHTML}
           </body>
         </html>
-      `)
-      printWindow?.document.close()
-      printWindow?.focus()
-      printWindow?.print()
-      printWindow?.close()
+      `);
+      printWindow?.document.close();
+      printWindow?.focus();
+      printWindow?.print();
+      printWindow?.close();
     }
-  }
+  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -118,7 +122,6 @@ function Sellers() {
       <div className="mx-auto mt-6 space-y-6 max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
-          {/* Export buttons */}
           <div className="flex flex-wrap gap-3">
             <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
               <FileDown className="w-4 h-4" />
@@ -135,7 +138,6 @@ function Sellers() {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="relative">
           <div className="relative">
             <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
@@ -173,7 +175,7 @@ function Sellers() {
         />
       </div>
 
-      {showModal && <CreateCard closeModal={closeModal} />}
+      {showModal && <CreateCard closeModal={closeModal} updateData={updateData} />}
     </>
   );
 }
