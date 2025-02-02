@@ -2,20 +2,20 @@ import { Assignment, defaultAssignment } from "./Assignment";
 import { defaultProduct, Product } from "./Product";
 
 interface DetailAssignment {
-  id_detail_asignment: number;
+  id: number;
   assignment: Assignment;
   product: Product;
   quantity: number;
-  return_amount: number;
+  returned_amount: number;
   unit_price: number;
 }
 
 const defaultDetailAssignment: DetailAssignment = {
-  id_detail_asignment: 0,
+  id: 0,
   assignment: defaultAssignment,
   product: defaultProduct,
   quantity: 0,
-  return_amount: 0,
+  returned_amount: 0,
   unit_price: 0
 }
 

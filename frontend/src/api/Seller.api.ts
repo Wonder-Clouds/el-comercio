@@ -2,18 +2,32 @@ import api from "@/config/axios";
 import PaginatedResponse from "@/models/PaginatedResponse";
 import { Seller } from "@/models/Seller";
 
-export const getSellers = async (page: number, pageSize: number): Promise<PaginatedResponse<Seller>> => {
-    if(page <= 0) {
-        throw new Error("Invalid page number");
+interface SellersFilters {
+    search?: string;
+    name?: string;
+    last_name?: string;
+    dni?: string;
+    number_seller?: string;
+  }
+  
+  export const getSellers = async (
+    page: number,
+    pageSize: number,
+    filters?: SellersFilters
+  ): Promise<PaginatedResponse<Seller>> => {
+    if (page <= 0) {
+      throw new Error("Invalid page number");
     }
+    
     const response = await api.get('/sellers', {
-        params: {
-            page,
-            page_size: pageSize
-        }
+      params: {
+        page,
+        page_size: pageSize,
+        ...filters
+      }
     });
     return response.data;
-}
+  };
 
 export const createSeller = async (seller: Seller): Promise<Seller> => {
     try {

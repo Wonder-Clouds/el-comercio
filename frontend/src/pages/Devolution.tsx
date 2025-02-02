@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
-import AssignmentTable from "@/components/assignments/AssignmentTable";
 import { Assignment } from "@/models/Assignment";
 import formatSpanishDate from "@/utils/formatDate";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Product, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
+import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 
-function Assignments() {
+function Devolutions() {
   const [data, setData] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [newspapers, setNewspapers] = useState<Product[]>([]);
@@ -73,29 +73,29 @@ function Assignments() {
       
       <TabsContent value="periodicos">
         <div className="flex flex-col items-center space-y-3">
-          <h1 className="text-4xl font-bold text-center">Periodicos</h1>
+          <h1 className="text-4xl font-bold text-center">Devoluciones de Periodicos</h1>
           {data.length > 0 ? (
             <span className="my-auto text-xl">{capitalizeFirstLetter(formatSpanishDate(data[0].date_assignment))}</span>
           ) : null}
         </div>
         <div className="container py-10 mx-auto">
-          <AssignmentTable data={data} products={newspapers} />
+          <DevolutionTable data={data} products={newspapers} />
         </div>
       </TabsContent>
       
       <TabsContent value="productos">
         <div className="flex flex-col items-center space-y-3">
-          <h1 className="text-4xl font-bold text-center">Productos</h1>
+          <h1 className="text-4xl font-bold text-center">Devoluciones de Productos</h1>
           {data.length > 0 ? (
             <span className="my-auto text-xl">{capitalizeFirstLetter(formatSpanishDate(data[0].date_assignment))}</span>
           ) : null}
         </div>
         <div className="container py-10 mx-auto">
-          <AssignmentTable data={data} products={products} />
+          <DevolutionTable data={data} products={products} />
         </div>
       </TabsContent>
     </Tabs>
   );
 }
 
-export default Assignments;
+export default Devolutions;

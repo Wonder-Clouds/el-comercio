@@ -37,29 +37,31 @@ function Sellers() {
 
   // Debounce search
   const debouncedSearch = useMemo(
-    () => debounce(async (term: string) => {
-      if (term) {
-        setIsSearching(true);
-        try {
-          // Asumiendo que getSellers acepta un parámetro de búsqueda
-          //const sellers = await getSellers(1, pageSize, term);
-          const sellers = await getSellers(1, pageSize);
-          setData(sellers.results);
-          setTotalCount(sellers.count);
-          setPage(1);
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message);
+    () =>
+      debounce(async (term: string) => {
+        if (term) {
+          setIsSearching(true);
+          try {
+            const sellers = await getSellers(1, pageSize, {
+              search: term
+            });
+            
+            setData(sellers.results);
+            setTotalCount(sellers.count);
+            setPage(1);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
+          setIsSearching(false);
+        } else {
+          fetchData();
         }
-        setIsSearching(false);
-      } else {
-        fetchData();
-      }
-    }, 300),
+      }, 300),
     [pageSize, fetchData]
   );
-
+  
   useEffect(() => {
     if (!searchTerm) {
       fetchData();

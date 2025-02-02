@@ -35,8 +35,7 @@ const Products = () => {
       if (productName) {
         setIsSearching(true);
         try {
-          // Asumiendo que getProducts acepta un parámetro de búsqueda
-          const products = await getProducts(1, pageSize, productName);
+          const products = await getProducts(1, pageSize, undefined, productName);
           setData(products.results);
           setTotalCount(products.count);
           setPage(1);
