@@ -45,7 +45,7 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
 
         try:
             detail_assignment = DetailAssignment.objects.get(assignment_id=assignment_id, product_id=product_id)
-            detail_assignment.quantity += int(data.get('quantity', 0))
+            detail_assignment.quantity = int(data.get('quantity', 0))
             detail_assignment.save()
             serializer = self.get_serializer(detail_assignment)
         except DetailAssignment.DoesNotExist:
