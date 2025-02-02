@@ -2,13 +2,16 @@ import { ProductTable } from "@/components/products/ProductTable";
 import { Button } from "@/components/ui/button";
 import { columns } from "../components/products/columns";
 import { Product } from "@/models/Product";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { getProducts } from "@/api/Product.api";
 import { debounce } from "lodash";
+import printElement from "@/utils/printElement";
 
 const Products = () => {
+  const tableRef = useRef<HTMLDivElement>(null);
+  
   const [data, setData] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
@@ -72,18 +75,27 @@ const Products = () => {
     setPage(1);
   };
 
-  return (
-    <div className="mx-auto mt-6 space-y-6 max-w-7xl">
+  const handlePrint = () => {
+    if (tableRef.current) {
+      printElement(tableRef.current, "Reporte de Ventas");
+    }
+  };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  return (
+    <div className="container mx-auto mt-6 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-4xl font-bold">Productos</h1>
+        <h1 className="text-4xl font-bold">Periodicos</h1>
         {/* Export buttons */}
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" className="flex items-center gap-2">
             <FileDown className="w-4 h-4" />
             Exportar
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
             <Printer className="w-4 h-4" />
             Imprimir
           </Button>
@@ -126,6 +138,8 @@ const Products = () => {
         page={page}
         pageSize={pageSize}
         totalCount={totalCount}
+        onPageChange={handlePageChange}
+        tableRef={tableRef}
       />
     </div>
   );

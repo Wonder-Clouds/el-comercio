@@ -8,6 +8,7 @@ import { Seller } from "@/models/Seller";
 import { Input } from "@/components/ui/input";
 import { Search, FileDown, Printer, UserPlus, X } from "lucide-react";
 import debounce from 'lodash/debounce';
+import printElement from "@/utils/printElement";
 
 function Sellers() {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -49,7 +50,7 @@ function Sellers() {
             const sellers = await getSellers(1, pageSize, {
               search: term
             });
-            
+
             setData(sellers.results);
             setTotalCount(sellers.count);
             setPage(1);
@@ -65,7 +66,7 @@ function Sellers() {
       }, 300),
     [pageSize, fetchData]
   );
-  
+
   useEffect(() => {
     if (!searchTerm) {
       fetchData();
@@ -110,16 +111,17 @@ function Sellers() {
       printWindow?.focus();
       printWindow?.print();
       printWindow?.close();
+      printElement(tableRef.current, "Reporte de Ventas");
     }
   };
-
+  
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
   return (
     <>
-      <div className="mx-auto mt-6 space-y-6 max-w-7xl">
+      <div className="container mx-auto mt-6 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
           <div className="flex flex-wrap gap-3">
@@ -127,7 +129,7 @@ function Sellers() {
               <FileDown className="w-4 h-4" />
               Exportar
             </Button>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
               <Printer className="w-4 h-4" />
               Imprimir
             </Button>
