@@ -7,8 +7,11 @@ from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
 from detail_assignment.serializer import DetailAssignmentSerializer
 from rest_framework.decorators import action
-from product_price.models import ProductPrice
 from rest_framework.response import Response
+import datetime
+
+from product.models import Product
+
 
 # Create your views here.
 class DetailAssignmentViewSet(viewsets.ModelViewSet):
@@ -16,31 +19,40 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = DetailAssignment.objects.filter(delete_at__isnull=True)
+    queryset = DetailAssignment.objects.all()
     serializer_class = DetailAssignmentSerializer
     pagination_class = CustomPagination
 
     def calculate_sub_total(self, detail_assignment):
-        try:
-            product_price = ProductPrice.objects.get(product=detail_assignment.product)
-            sub_total = product_price.price * detail_assignment.quantity
-            return sub_total
-        except ProductPrice.DoesNotExist:
-            return Response({'error': 'ProductPrice matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+        sub_total = detail_assignment.unit_price * detail_assignment.quantity
+        return sub_total
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         product_id = data.get('product_id')
+        assignment_id = data.get('assignment_id')
 
         try:
-            product_price = ProductPrice.objects.get(product=product_id)
-            data['unit_price'] = product_price.price
-        except ProductPrice.DoesNotExist:
-            return Response({'error': 'ProductPrice matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+            product = Product.objects.get(id=product_id)
+            current_day = datetime.datetime.now().strftime('%A').lower()
 
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+            if product.type == 'PRODUCT':
+                data['unit_price'] = product.product_price
+            elif product.type == 'NEWSPAPER':
+                data['unit_price'] = getattr(product, f'{current_day}_price')
+        except Product.DoesNotExist:
+            return Response({'error': 'Product matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            detail_assignment = DetailAssignment.objects.get(assignment_id=assignment_id, product_id=product_id)
+            detail_assignment.quantity = int(data.get('quantity', 0))
+            detail_assignment.save()
+            serializer = self.get_serializer(detail_assignment)
+        except DetailAssignment.DoesNotExist:
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

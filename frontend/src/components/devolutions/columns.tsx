@@ -11,7 +11,7 @@ export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
 
 export const columns = (
   products: Product[],
-  onValueChange: (assignmentId: number, productId: number, value: number) => void
+  onValueChange: (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => void
 ): EditableColumnDef<Assignment, Seller | Date | AssignmentStatus | number>[] => {
   return [
     {
@@ -41,20 +41,33 @@ export const columns = (
         const assignment = row.original;
         const detailAssignment = assignment.detail_assignments?.find(
           (d) => d.product.id === product.id
-        );
-        const value = detailAssignment?.quantity || 0;
-
+        );      
         return (
-          <EditableCell
-            value={value}
-            row={row}
-            column={{ id: `quantity_${product.id}` }}
-            onValueChange={(newValue) => {
-              onValueChange(assignment.id, product.id, newValue);
-            }}
-          />
+          <>
+            {detailAssignment?.quantity === 0 || detailAssignment?.quantity == null ? (
+              <span className="text-gray-500 text-sm">No se le asignó nada</span>
+            ) : (
+              <div className="flex flex-col space-y-1 p-2 border rounded-lg">
+                <span className="text-gray-700 font-semibold">
+                  Cantidad asignada: {detailAssignment?.quantity}
+                </span>
+                  <span className="text-gray-700 font-semibold">
+                    Cantidad devuelta: {detailAssignment?.returned_amount}
+                  </span>
+                <span className="text-gray-500 text-sm">Cantidad que va devolver:</span>
+                <EditableCell
+                  value={0}
+                  row={row}
+                  column={{ id: `quantity_${product.id}` }}
+                  onValueChange={(newValue) => {
+                    onValueChange(assignment.id, detailAssignment?.id as number, product.id, newValue);
+                  }}
+                />
+              </div>
+            )}
+          </>
         );
-      },
+      }
     })),
   ];
 };

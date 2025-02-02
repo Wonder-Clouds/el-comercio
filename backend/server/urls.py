@@ -23,7 +23,6 @@ urlpatterns = [
     path('api/v1/', include('seller.urls')),
     path('api/v1/', include('assignment.urls')),
     path('api/v1/', include('product.urls')),
-    path('api/v1/', include('product_price.urls')),
     path('api/v1/', include('detail_assignment.urls')),
 
     path('api/v1/', include('devolution.urls')),

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router";
+import logo  from "@/assets/elcomercio_logo.webp";
 import { Token } from "@/api/Token.api";
 
 export default function LoginForm() {
@@ -57,7 +58,7 @@ export default function LoginForm() {
     <Card className="w-[350px] shadow-2xl">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4 overflow-hidden rounded-full">
-          <img src="/api/placeholder/64/64" alt="Logo" className="w-16 h-16 mx-auto" />
+          <img src={logo} alt="Logo" className="w-24 h-24 p-2 mx-auto" />
         </div>
         <CardTitle className="text-2xl font-bold">Bienvenido</CardTitle>
         <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
@@ -66,11 +67,11 @@ export default function LoginForm() {
         <form onSubmit={handleSubmit}>
           <div className="grid items-center w-full gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="user">Correo electrónico</Label>
+              <Label htmlFor="user">Usuario</Label>
               <Input
                 id="user"
                 type="text"
-                placeholder="User"
+                placeholder="Usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -92,7 +93,7 @@ export default function LoginForm() {
           </div>
           <CardFooter className="flex flex-col mt-4">
             <Button
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-gray-900 hover:bg-gray-950"
               type="submit"
               disabled={isLoading}
             >

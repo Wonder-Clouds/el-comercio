@@ -6,14 +6,16 @@ import Sellers from "@/pages/Sellers";
 import Assignments from "@/pages/Assignments";
 import Login from "@/pages/Login";
 import MainLayout from "@/components/shared/MainLayout";
+import Devolutions from "@/pages/Devolution";
 
 const routes = [
   { path: "/", element: <Login /> },
   { path: "/inicio", element: <Home /> },
   { path: "/entregas", element: <Assignments /> },
   { path: "/productos", element: <Products /> },
-  { path: "/nuevo-producto", element: <AddProduct /> },
+  { path: "/devoluciones", element: <Devolutions /> },
   { path: "/clientes", element: <Sellers /> },
+  { path: "/nuevo-producto", element: <AddProduct /> },
 ];
 
 const AppRoutes = () => {

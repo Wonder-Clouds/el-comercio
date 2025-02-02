@@ -1,14 +1,14 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 
 from core.pagination import CustomPagination
-from product_price.models import ProductPrice
 from .models import Product
 from .serializer import ProductSerializer
-from rest_framework.response import Response
+from .filters import ProductFilter
 
 # Create your views here.
 class ProductViewSet(viewsets.ModelViewSet):
@@ -16,45 +16,25 @@ class ProductViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Product.objects.filter(delete_at__isnull=True)
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     # Delete Method
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.selft_delete()
+        instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-    @action(detail=True, methods=['get'], url_path='get-actual-price')
-    def get_actual_price(self, request, pk=None):
-        product = self.get_object()
-
-        DAYS_OF_WEEK = {
-            0: 'MONDAY',
-            1: 'TUESDAY',
-            2: 'WEDNESDAY',
-            3: 'THURSDAY',
-            4: 'FRIDAY',
-            5: 'SATURDAY',
-            6: 'SUNDAY'
-        }
-
-        try:
-            today =  DAYS_OF_WEEK.get(timezone.now().date().weekday())
-        except ProductPrice.DoesNotExist:
-            return Response({
-                'message': 'Day not found'
-            }, status=status.HTTP_404_NOT_FOUND)
-
-        try:
-            product_price = ProductPrice.objects.get(product=product, day_week=today)
-            return Response({
-                'product': product.name,
-                'price': product_price.price
-            }, status=status.HTTP_200_OK)
-        except ProductPrice.DoesNotExist:
-            return Response({
-                'message': 'Price not found'
-            }, status=status.HTTP_404_NOT_FOUND)
+    # Custom action to list products with status_product set to False
+    @action(detail=False, methods=['get'], url_path='inactive-products')
+    def inactive_products(self, request):
+        inactive_products = Product.objects.filter(status_product=False, delete_at__isnull=True)
+        page = self.paginate_queryset(inactive_products)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(inactive_products, many=True)
+        return Response(serializer.data)

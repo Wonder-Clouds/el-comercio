@@ -1,11 +1,15 @@
 from rest_framework import viewsets, status
+from django.utils import timezone
+from seller.models import Seller
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
+from assignment.filters import AssignmentFilter
 from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
 
@@ -15,10 +19,11 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-
-    queryset = Assignment.objects.filter(delete_at__isnull=True)
+    queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AssignmentFilter
 
     def total_pay(self, assignment):
         """Helper method to calculate total payment"""
@@ -90,3 +95,24 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             'status': assignment.status,
             'total_pay': total_pay
         }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='create-assignments')
+    def create_assignments(self, request):
+        today = timezone.now().date()
+        active_sellers = Seller.objects.filter(status=True)
+        created_assignments = []
+
+        for seller in active_sellers:
+            if Assignment.objects.filter(date_assignment=today, seller=seller).exists():
+                return Response({'message': f'Assignment already created for seller {seller.name} today'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            assignment = Assignment.objects.create(
+                date_assignment=today,
+                status='PENDING',
+                seller=seller
+            )
+            created_assignments.append(assignment)
+
+        serializer = AssignmentSerializer(created_assignments, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

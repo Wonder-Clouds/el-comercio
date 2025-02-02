@@ -6,26 +6,24 @@ import {
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { Assignment } from '@/models/Assignment';
-import { postDetailAssignments } from '@/api/DetailAssignment.api';
-import { PostDetailAssignment } from '@/models/DetailAssignment';
 import { Product } from '@/models/Product';
+import { DevolutionQuantity } from '@/models/Devolution';
+import { postDevolution } from '@/api/Devolution.api';
 
 interface TableProps {
   data: Assignment[];
   products: Product[]
 }
 
-const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
-  const handleValueChange = async (assignmentId: number, productId: number, value: number) => {
-    const data: PostDetailAssignment = {
-      product_id: productId,
-      assignment_id: assignmentId,
+const DevolutionTable: React.FC<TableProps> = ({ data, products }) => {
+  const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
+    const data: DevolutionQuantity = {
       quantity: value
     };
 
     try {
-      await postDetailAssignments(data);
-      console.log('Valor actualizado:', { assignmentId, productId, value });
+      await postDevolution(detailAssignmentId, data);
+      console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
     } catch (error) {
       console.error('Error al actualizar:', error);
     }
@@ -79,4 +77,4 @@ const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
   );
 };
 
-export default AssignmentTable;
+export default DevolutionTable;

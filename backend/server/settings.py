@@ -34,6 +34,9 @@ DEBUG = True
 # CORS SETTINGS
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOW_ORIGINS').split(',')
 
+# ALLOWED HOSTS
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -46,11 +49,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_filters',
     'drf_yasg',
     'core',
     'seller',
     'assignment',
-    'product_price',
     'product',
     'detail_assignment',
     'devolution',
@@ -108,6 +111,19 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Token JWT en formato Bearer. Ejemplo: 'Bearer {token}'",
+        }
+    },
+    "SHOW_REQUEST_HEADERS": True, 
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -171,7 +187,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 # Django Simple JWT
