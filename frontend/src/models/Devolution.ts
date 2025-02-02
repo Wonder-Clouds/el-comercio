@@ -7,4 +7,6 @@ interface Devolution {
   quantity: number;
 }
 
-export default Devolution;
+type DevolutionQuantity = Pick<Devolution, "quantity">;
+
+export type { Devolution, DevolutionQuantity };
