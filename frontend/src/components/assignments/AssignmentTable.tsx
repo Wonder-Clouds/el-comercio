@@ -1,185 +1,82 @@
-// AssignmentTable.tsx
-import { useState } from "react"
+import React from 'react';
 import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+  getCoreRowModel,
+  flexRender,
+} from '@tanstack/react-table';
+import { columns } from './columns';
+import { Assignment } from '@/models/Assignment';
+import { postDetailAssignments } from '@/api/DetailAssignment.api';
+import { PostDetailAssignment } from '@/models/DetailAssignment';
+import { Product } from '@/models/Product';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-
-import { Input } from "@/components/ui/input"
-
-interface AssignmentTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  page: number
-  pageSize: number
-  totalCount: number
-  onPageChange: (page: number) => void
-  onDataChange?: (rowIndex: number, columnId: string, value: unknown) => void
+interface TableProps {
+  data: Assignment[];
+  products: Product[]
 }
 
-export function AssignmentTable<TData, TValue>({
-  columns,
-  data,
-  page,
-  pageSize,
-  totalCount,
-  onPageChange,
-  onDataChange,
-}: AssignmentTableProps<TData, TValue>) {
-  const [editingCell, setEditingCell] = useState<{
-    rowIndex: number;
-    columnId: string;
-  } | null>(null);
+const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
+  const handleValueChange = async (assignmentId: number, productId: number, value: number) => {
+    const data: PostDetailAssignment = {
+      product_id: productId,
+      assignment_id: assignmentId,
+      quantity: value
+    };
+
+    try {
+      await postDetailAssignments(data);
+      console.log('Valor actualizado:', { assignmentId, productId, value });
+    } catch (error) {
+      console.error('Error al actualizar:', error);
+    }
+  };
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns(products, handleValueChange),
     getCoreRowModel: getCoreRowModel(),
-  })
-
-  const totalPages = Math.ceil(totalCount / pageSize);
-
-  const handleDoubleClick = (rowIndex: number, columnId: string) => {
-    const column = columns.find((col) => col.id === columnId) as any;
-    if (column?.editable) {
-      setEditingCell({ rowIndex, columnId });
-    }
-  };
-
-  const handleBlur = () => {
-    setEditingCell(null);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      setEditingCell(null);
-    }
-  };
+  });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className="bg-gray-50 hover:bg-gray-50"
-            >
-              {headerGroup.headers.map((header) => (
-                <TableHead
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th
                   key={header.id}
-                  className="px-6 py-4 text-sm font-semibold text-left text-gray-900"
+                  className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                </TableHead>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </th>
               ))}
-            </TableRow>
+            </tr>
           ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row, rowIndex) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="transition-colors border-t border-gray-200 hover:bg-gray-50"
-              >
-                {row.getVisibleCells().map((cell) => {
-                  const isEditing = editingCell?.rowIndex === rowIndex && 
-                                  editingCell?.columnId === cell.column.id;
-                  const column = columns.find((col) => col.id === cell.column.id) as any;
-                  
-                  return (
-                    <TableCell
-                      key={cell.id}
-                      className="px-6 py-4 text-sm text-gray-700"
-                      onDoubleClick={() => handleDoubleClick(rowIndex, cell.column.id)}
-                    >
-                      {isEditing ? (
-                        <Input
-                          autoFocus
-                          defaultValue={cell.getValue() as string}
-                          onBlur={handleBlur}
-                          onKeyDown={handleKeyDown}
-                          onChange={(e) => {
-                            if (onDataChange) {
-                              onDataChange(rowIndex, cell.column.id, e.target.value);
-                            }
-                          }}
-                          className="w-full p-1 text-sm"
-                        />
-                      ) : column?.editable ? (
-                        <div className="cursor-pointer">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
-                      ) : (
-                        flexRender(cell.column.columnDef.cell, cell.getContext())
-                      )}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 text-sm text-center text-gray-500"
-              >
-                No se encontraron resultados.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <Pagination>
-        <PaginationPrevious
-          onClick={() => onPageChange(page - 1)}
-        >
-          Anterior
-        </PaginationPrevious>
-        <PaginationContent>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <PaginationItem key={index}>
-              <PaginationLink
-                onClick={() => onPageChange(index + 1)}
-              >
-                {index + 1}
-              </PaginationLink>
-            </PaginationItem>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td
+                  key={cell.id}
+                  className="px-6 py-4 whitespace-nowrap"
+                >
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                </td>
+              ))}
+            </tr>
           ))}
-        </PaginationContent>
-        <PaginationNext
-          onClick={() => onPageChange(page + 1)}
-        >
-          Siguiente
-        </PaginationNext>
-      </Pagination>
+        </tbody>
+      </table>
     </div>
-  )
-}
+  );
+};
+
+export default AssignmentTable;

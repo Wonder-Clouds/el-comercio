@@ -1,6 +1,6 @@
 import { columns } from "@/components/sellers/columns";
 import { SellerTable } from "@/components/sellers/SellerTable.tsx";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { getSellers } from "@/api/Seller.api.ts";
 import { Button } from "@/components/ui/button";
 import CreateCard from "@/components/sellers/SellersCreateCard.tsx";
@@ -11,7 +11,7 @@ import debounce from 'lodash/debounce';
 
 function Sellers() {
   const tableRef = useRef<HTMLDivElement>(null);
-  
+
   const [data, setData] = useState<Seller[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
@@ -22,28 +22,6 @@ function Sellers() {
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-
-  // Debounce search
-  const debouncedSearch = debounce(async (term: string) => {
-    if (term) {
-      setIsSearching(true);
-      try {
-        // Asumiendo que getSellers acepta un parámetro de búsqueda
-        //const sellers = await getSellers(1, pageSize, term);
-        const sellers = await getSellers(1, pageSize);
-        setData(sellers.results);
-        setTotalCount(sellers.count);
-        setPage(1);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        }
-      }
-      setIsSearching(false);
-    } else {
-      fetchData();
-    }
-  }, 300);
 
   const fetchData = useCallback(async () => {
     try {
@@ -56,6 +34,31 @@ function Sellers() {
       }
     }
   }, [page, pageSize]);
+
+  // Debounce search
+  const debouncedSearch = useMemo(
+    () => debounce(async (term: string) => {
+      if (term) {
+        setIsSearching(true);
+        try {
+          // Asumiendo que getSellers acepta un parámetro de búsqueda
+          //const sellers = await getSellers(1, pageSize, term);
+          const sellers = await getSellers(1, pageSize);
+          setData(sellers.results);
+          setTotalCount(sellers.count);
+          setPage(1);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message);
+          }
+        }
+        setIsSearching(false);
+      } else {
+        fetchData();
+      }
+    }, 300),
+    [pageSize, fetchData]
+  );
 
   useEffect(() => {
     if (!searchTerm) {
@@ -107,10 +110,10 @@ function Sellers() {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-  
+
   return (
     <>
-      <div className="container mx-auto space-y-6">
+      <div className="mx-auto mt-6 space-y-6 max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
           {/* Export buttons */}

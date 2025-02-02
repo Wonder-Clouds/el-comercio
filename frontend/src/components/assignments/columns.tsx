@@ -1,13 +1,18 @@
 import { Assignment, AssignmentStatus } from "@/models/Assignment";
 import { Seller } from "@/models/Seller";
 import { ColumnDef } from "@tanstack/react-table";
+import EditableCell from './editable-cell';
+import { Product } from "@/models/Product";
 
 // Definición correcta del tipo para columnas editables
 export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
   editable?: boolean;
 };
 
-export const columns = (data: Assignment[]): EditableColumnDef<Assignment, Seller | Date | AssignmentStatus>[] => {
+export const columns = (
+  products: Product[],
+  onValueChange: (assignmentId: number, productId: number, value: number) => void
+): EditableColumnDef<Assignment, Seller | Date | AssignmentStatus | number>[] => {
   return [
     {
       id: "number_seller",
@@ -27,15 +32,29 @@ export const columns = (data: Assignment[]): EditableColumnDef<Assignment, Selle
       header: "Apellido",
       editable: false,
     },
-    ...(data[0]?.detail_assignments?.map((detail) => ({
-      id: `quantity_${detail.product.id_product}`,
-      accessorKey: `detail_assignments.${detail.product.id_product}.quantity`,
-      header: detail.product.name,
+    ...products.map((product) => ({
+      id: `quantity_${product.id}`,
+      accessorKey: `detail_assignments.${product.id}.quantity`,
+      header: product.name,
       editable: true,
-      cell: ({ getValue }: { getValue: () => unknown }) => {
-        const value = getValue() as number;
-        return value || 0;
+      cell: ({ row }: { row: { original: Assignment } }) => {
+        const assignment = row.original;
+        const detailAssignment = assignment.detail_assignments?.find(
+          (d) => d.product.id === product.id
+        );
+        const value = detailAssignment?.quantity || 0;
+
+        return (
+          <EditableCell
+            value={value}
+            row={row}
+            column={{ id: `quantity_${product.id}` }}
+            onValueChange={(newValue) => {
+              onValueChange(assignment.id, product.id, newValue);
+            }}
+          />
+        );
       },
-    })) || []),
+    })),
   ];
 };

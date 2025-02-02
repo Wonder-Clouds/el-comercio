@@ -1,5 +1,5 @@
 import { Assignment, defaultAssignment } from "./Assignment";
-import { Product } from "./Product";
+import { defaultProduct, Product } from "./Product";
 
 interface DetailAssignment {
   id_detail_asignment: number;
@@ -13,16 +13,19 @@ interface DetailAssignment {
 const defaultDetailAssignment: DetailAssignment = {
   id_detail_asignment: 0,
   assignment: defaultAssignment,
-  product: {
-    id_product: 0,
-    name: "",
-    type: null,
-    returns_date: 0
-  },
+  product: defaultProduct,
   quantity: 0,
   return_amount: 0,
   unit_price: 0
 }
 
-export type { DetailAssignment };
+interface PostDetailAssignment {
+  product_id: number;
+  assignment_id: number;
+  quantity: number;
+  returned_amount?: number;
+  unit_price?: string;
+}
+
+export type { DetailAssignment, PostDetailAssignment };
 export { defaultDetailAssignment };

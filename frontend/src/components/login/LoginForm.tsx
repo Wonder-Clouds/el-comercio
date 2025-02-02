@@ -67,11 +67,11 @@ export default function LoginForm() {
         <form onSubmit={handleSubmit}>
           <div className="grid items-center w-full gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="user">Correo electrónico</Label>
+              <Label htmlFor="user">Usuario</Label>
               <Input
                 id="user"
                 type="text"
-                placeholder="User"
+                placeholder="Usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -93,7 +93,7 @@ export default function LoginForm() {
           </div>
           <CardFooter className="flex flex-col mt-4">
             <Button
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-gray-900 hover:bg-gray-950"
               type="submit"
               disabled={isLoading}
             >
