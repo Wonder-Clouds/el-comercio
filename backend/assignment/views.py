@@ -19,7 +19,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Assignment.objects.filter(delete_at__isnull=True)
+    queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]

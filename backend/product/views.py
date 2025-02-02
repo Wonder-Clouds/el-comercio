@@ -16,7 +16,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Product.objects.filter(delete_at__isnull=True)
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]

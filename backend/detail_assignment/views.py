@@ -19,7 +19,7 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = DetailAssignment.objects.filter(delete_at__isnull=True)
+    queryset = DetailAssignment.objects.all()
     serializer_class = DetailAssignmentSerializer
     pagination_class = CustomPagination
 

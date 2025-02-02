@@ -17,7 +17,7 @@ class DevolutionViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Devolution.objects.filter(delete_at__isnull=True)
+    queryset = Devolution.objects.all()
     serializer_class = DevolutionSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
