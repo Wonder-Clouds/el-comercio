@@ -30,6 +30,7 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
         product_id = data.get('product_id')
+        assignment_id = data.get('assignment_id')
 
         try:
             product = Product.objects.get(id=product_id)
@@ -42,9 +43,16 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
         except Product.DoesNotExist:
             return Response({'error': 'Product matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        try:
+            detail_assignment = DetailAssignment.objects.get(assignment_id=assignment_id, product_id=product_id)
+            detail_assignment.quantity += int(data.get('quantity', 0))
+            detail_assignment.save()
+            serializer = self.get_serializer(detail_assignment)
+        except DetailAssignment.DoesNotExist:
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
