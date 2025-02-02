@@ -34,6 +34,9 @@ DEBUG = True
 # CORS SETTINGS
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOW_ORIGINS').split(',')
 
+# ALLOWED HOSTS
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+
 
 # Application definition
 INSTALLED_APPS = [
