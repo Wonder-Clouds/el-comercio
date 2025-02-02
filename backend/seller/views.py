@@ -16,7 +16,7 @@ class SellerViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Seller.objects.filter(delete_at__isnull=True)
+    queryset = Seller.objects.all()
     serializer_class = SellerSerializer
     pagination_class = CustomPagination
 
