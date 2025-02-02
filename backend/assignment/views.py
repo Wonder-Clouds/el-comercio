@@ -1,4 +1,6 @@
 from rest_framework import viewsets, status
+from django.utils import timezone
+from seller.models import Seller
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -93,3 +95,24 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             'status': assignment.status,
             'total_pay': total_pay
         }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='create-assignments')
+    def create_assignments(self, request):
+        today = timezone.now().date()
+        active_sellers = Seller.objects.filter(status=True)
+        created_assignments = []
+
+        for seller in active_sellers:
+            if Assignment.objects.filter(date_assignment=today, seller=seller).exists():
+                return Response({'message': f'Assignment already created for seller {seller.name} today'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            assignment = Assignment.objects.create(
+                date_assignment=today,
+                status='PENDING',
+                seller=seller
+            )
+            created_assignments.append(assignment)
+
+        serializer = AssignmentSerializer(created_assignments, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
