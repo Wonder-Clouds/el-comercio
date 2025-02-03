@@ -19,6 +19,9 @@ COPY . .
 # Build the application
 RUN pnpm run build
 
+# Verificar la existencia de la carpeta 'dist' después del build
+RUN ls -l /app/dist
+
 # Stage 2: Serve the React application
 FROM node:current-alpine3.20
 
@@ -27,6 +30,9 @@ RUN npm install -g serve
 
 # Copy the build output from the previous stage
 COPY --from=build /app/dist /app/dist
+
+# Verificar que la carpeta 'dist' esté correctamente copiada
+RUN ls -l /app/dist
 
 # Copy the wait_for_backend.sh script
 COPY wait_for_backend.sh /app/
