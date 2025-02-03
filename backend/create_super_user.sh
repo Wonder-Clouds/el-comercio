@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Verificando si el superusuario existe..."
 python manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists())"
