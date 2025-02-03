@@ -8,7 +8,7 @@ import { createSeller } from "@/api/Seller.api.ts";
 import { Label } from "@/components/ui/label.tsx";
 import { defaultSeller } from "@/models/Seller.ts";
 import { Toaster } from "@/components/ui/toaster"; 
-import { useToast } from "@/hooks/use-toast.ts"; // Import useToast
+import { useToast } from "@/hooks/use-toast.ts"; 
 
 const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, updateData: () => void }) => {
     const [formData, setFormData] = useState(defaultSeller);
@@ -41,7 +41,7 @@ const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, update
             });
             return;
         }
-        
+
         if (formData.dni.length !== 8) {
             toast({
                 title: "Error",

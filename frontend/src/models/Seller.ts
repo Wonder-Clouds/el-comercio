@@ -1,5 +1,5 @@
-interface Seller {
-  id_seller?: number;
+export interface Seller {
+  id?: number;
   number_seller: string;
   name: string;
   last_name: string;
@@ -7,14 +7,10 @@ interface Seller {
   status: boolean;
 }
 
-const defaultSeller = {
-  id_seller: 0,
+export const defaultSeller: Seller = {
   number_seller: "",
   name: "",
   last_name: "",
   dni: "",
-  status: false,
+  status: true,
 }
-
-export type { Seller }
-export { defaultSeller } 
