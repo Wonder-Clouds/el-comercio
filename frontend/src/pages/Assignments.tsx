@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getAssignments } from "@/api/Assignment.api";
+import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import { Assignment } from "@/models/Assignment";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -17,10 +17,10 @@ function Assignments() {
   const [newspapers, setNewspapers] = useState<Product[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
 
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
 
   const fetchAssignments = useCallback(async () => {
@@ -82,6 +82,17 @@ function Assignments() {
     setPage(newPage);
   };
 
+  const handleCreateAssignments = async () => {
+    try {
+      await postAllAssignments();
+      fetchAssignments();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  };
+
   return (
     <Tabs defaultValue="periodicos" className="mx-auto space-y-6 ">
       <TabsList className="flex bg-gray-900 rounded-none py-7">
@@ -92,25 +103,40 @@ function Assignments() {
       <TabsContent value="periodicos">
         <div className="flex flex-col items-center space-y-3">
           <div className="flex items-center space-x-5">
-            <h1 className="text-4xl font-bold text-center">Periódicos</h1>
+            <h1 className="text-4xl font-bold text-center">Asignar Periódicos</h1>
             <button onClick={() => setActiveCalendar(!activeCalendar)} className="flex items-center p-2 text-gray-700 rounded-xl hover:bg-gray-200">
               <Calendar className="w-8 h-8 text-gray-700" />
             </button>
           </div>
-          {data.length > 0 && !activeCalendar ? (
-            <span className="my-auto text-xl">{capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}</span>
-          ) : null}
+          <span className="my-auto text-xl">
+            {capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate as string))}
+          </span>
         </div>
+        {data.length === 0 && selectedDate == getLocalDate() ? (
+          <button
+            onClick={handleCreateAssignments}
+            className="flex py-4 px-8 mx-auto my-5 text-white bg-blue-900 hover:bg-blue-950 text-2xl font-bold rounded-xl shadow-lg transition-all duration-300"
+          >
+            Asignar periódicos para hoy
+          </button>
+        ) : null}
         {!activeCalendar ? (
-          <div className="p-5 mx-auto">
-            <AssignmentTable
-              data={data}
-              products={newspapers}
-              page={page}
-              pageSize={pageSize}
-              totalCount={totalCount}
-              onPageChange={handlePageChange} />
-          </div>
+          data.length > 0 ? (
+            <div className="p-5 mx-auto">
+              <AssignmentTable
+                data={data}
+                products={newspapers}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-5 text-xl text-gray-500">
+              <p>No hay entregas disponibles para esta fecha.</p>
+            </div>
+          )
         ) : (
           <CalendarPicker
             onDateSelect={setSelectedDate}

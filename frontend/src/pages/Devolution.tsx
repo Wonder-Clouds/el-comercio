@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -7,18 +7,18 @@ import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
+import { getLocalDate } from "@/utils/getLocalDate";
 
 function Devolutions() {
   const [data, setData] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [newspapers, setNewspapers] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchData = async () => {
-    // Assignments are fetched for today
-    const today = new Date().toISOString().split('T')[0];
+  const fetchData = useCallback(async () => {
+    const today = getLocalDate();
     try {
       const assignments = await getAssignments(page, pageSize, today);
       setData(assignments.results);
@@ -28,9 +28,9 @@ function Devolutions() {
         console.error(error.message);
       }
     }
-  };
+  }, [page, pageSize]);
 
-  const fetchNewspapers = async () => {
+  const fetchNewspapers = useCallback(async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
       setNewspapers(newspapers.results);
@@ -40,9 +40,9 @@ function Devolutions() {
         console.error(error.message);
       }
     }
-  };
+  }, [page, pageSize]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const products = await getProducts(page, pageSize, ProductType.PRODUCT);
       setProducts(products.results);
@@ -52,13 +52,13 @@ function Devolutions() {
         console.error(error.message);
       }
     }
-  };
+  }, [page, pageSize]);
 
   useEffect(() => {
     fetchData();
     fetchNewspapers();
     fetchProducts();
-  }, [page, pageSize]);
+  }, [fetchData, fetchNewspapers, fetchProducts]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
