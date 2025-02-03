@@ -3,7 +3,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import {Button} from "@/components/ui/button.tsx";
 import {Pencil, Trash2} from "lucide-react";
 
-export const columns: ColumnDef<Seller>[] = [
+interface ColumnsProps {
+  onDelete: (seller: Seller) => void;
+}
+
+export const getColumns = ({ onDelete }: ColumnsProps): ColumnDef<Seller>[] => [
   {
     accessorKey: "number_seller",
     header: "Numero",
@@ -40,7 +44,7 @@ export const columns: ColumnDef<Seller>[] = [
             <Button
                 variant="outline"
                 size="icon"
-                onClick={() => console.log('Delete', row.original)}
+                onClick={() => onDelete(row.original)}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -48,4 +52,4 @@ export const columns: ColumnDef<Seller>[] = [
       )
     },
   },
-] 
+]

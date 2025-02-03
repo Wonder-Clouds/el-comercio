@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
-import formatSpanishDate from "@/utils/formatDate";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Product, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
+import { formatDateToSpanishSafe } from "@/utils/formatDate";
 
 function Devolutions() {
   const [data, setData] = useState<Assignment[]>([]);
@@ -29,7 +29,7 @@ function Devolutions() {
       }
     }
   };
-  
+
   const fetchNewspapers = async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
@@ -53,7 +53,7 @@ function Devolutions() {
       }
     }
   };
-  
+
   useEffect(() => {
     fetchData();
     fetchNewspapers();
@@ -65,33 +65,45 @@ function Devolutions() {
   };
 
   return (
-    <Tabs defaultValue="periodicos" className="mx-auto space-y-6 ">
+    <Tabs defaultValue="periodicos" className="mx-auto space-y-6">
       <TabsList className="flex bg-gray-900 rounded-none py-7">
         <TabsTrigger value="periodicos" className="px-5 text-lg data-[state=active]:text-black text-white">Periódicos</TabsTrigger>
         <TabsTrigger value="productos" className="px-5 text-lg data-[state=active]:text-black text-white">Productos</TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="periodicos">
         <div className="flex flex-col items-center space-y-3">
           <h1 className="text-4xl font-bold text-center">Devoluciones de Periodicos</h1>
           {data.length > 0 ? (
-            <span className="my-auto text-xl">{capitalizeFirstLetter(formatSpanishDate(data[0].date_assignment))}</span>
+            <span className="my-auto text-xl">{capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}</span>
           ) : null}
         </div>
-        <div className="container py-10 mx-auto">
-          <DevolutionTable data={data} products={newspapers} />
+        <div className="p-5 mx-auto">
+          <DevolutionTable
+            data={data}
+            products={newspapers}
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onPageChange={handlePageChange} />
         </div>
       </TabsContent>
-      
+
       <TabsContent value="productos">
         <div className="flex flex-col items-center space-y-3">
           <h1 className="text-4xl font-bold text-center">Devoluciones de Productos</h1>
           {data.length > 0 ? (
-            <span className="my-auto text-xl">{capitalizeFirstLetter(formatSpanishDate(data[0].date_assignment))}</span>
+            <span className="my-auto text-xl">{capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}</span>
           ) : null}
         </div>
-        <div className="container py-10 mx-auto">
-          <DevolutionTable data={data} products={products} />
+        <div className="p-5 mx-auto">
+          <DevolutionTable
+            data={data}
+            products={products}
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onPageChange={handlePageChange} />
         </div>
       </TabsContent>
     </Tabs>

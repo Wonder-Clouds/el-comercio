@@ -3,49 +3,65 @@ import PaginatedResponse from "@/models/PaginatedResponse";
 import { Seller } from "@/models/Seller";
 
 interface SellersFilters {
-    search?: string;
-    name?: string;
-    last_name?: string;
-    dni?: string;
-    number_seller?: string;
+  search?: string;
+  name?: string;
+  last_name?: string;
+  dni?: string;
+  number_seller?: string;
+}
+
+export const getSellers = async (
+  page: number,
+  pageSize: number,
+  filters?: SellersFilters
+): Promise<PaginatedResponse<Seller>> => {
+  if (page <= 0) {
+    throw new Error("Invalid page number");
   }
   
-  export const getSellers = async (
-    page: number,
-    pageSize: number,
-    filters?: SellersFilters
-  ): Promise<PaginatedResponse<Seller>> => {
-    if (page <= 0) {
-      throw new Error("Invalid page number");
+  const response = await api.get('/sellers', {
+    params: {
+      page,
+      page_size: pageSize,
+      ...filters
     }
-    
-    const response = await api.get('/sellers', {
-      params: {
-        page,
-        page_size: pageSize,
-        ...filters
-      }
-    });
-    return response.data;
-  };
+  });
+  return response.data;
+};
 
-export const createSeller = async (seller: Seller): Promise<Seller> => {
-    try {
-        const response = await api.post('/sellers/', seller);
-        return response.data;
-    } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(error.message);
-        }
-        throw error;
-    }
-}
-export const getSellerById = async (id: number): Promise<Seller> => {
-    const response = await api.get(`/sellers/${id}`);
+export const createSeller = async (seller: Omit<Seller, 'id_seller'>): Promise<Seller> => {
+  try {
+    const response = await api.post('/sellers/', seller);
     return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw error;
+  }
+}
+
+export const getSellerById = async (id: number): Promise<Seller> => {
+  const response = await api.get(`/sellers/${id}`);
+  return response.data;
 }
 
 export const updateSeller = async (id: number, seller: Seller): Promise<Seller> => {
-    const response = await api.patch(`/sellers/${id}`, seller);
-    return response.data;
+  const response = await api.patch(`/sellers/${id}`, seller);
+  return response.data;
 }
+
+export const deleteSeller = async (id: number): Promise<void> => {
+  if (!id) {
+    throw new Error("Seller ID is required");
+  }
+  
+  try {
+    await api.delete(`/sellers/${id}/`);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw error;
+  }
+};

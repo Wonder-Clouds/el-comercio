@@ -17,9 +17,9 @@ const Header = () => {
   const menuItems = [
     { to: "/inicio", text: "Inicio", icon: Home },
     { to: "/entregas", text: "Entregas", icon: Truck },
+    { to: "/devoluciones", text: "Devoluciones", icon: RotateCcw },
     { to: "/productos", text: "Productos", icon: Package },
     { to: "/clientes", text: "Clientes", icon: Users },
-    { to: "/devoluciones", text: "Devoluciones", icon: RotateCcw },
   ];
 
   const handleLogout = () => {

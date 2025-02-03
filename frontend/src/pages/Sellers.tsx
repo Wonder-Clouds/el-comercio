@@ -1,13 +1,15 @@
-import { columns } from "@/components/sellers/columns";
 import { SellerTable } from "@/components/sellers/SellerTable.tsx";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { getSellers } from "@/api/Seller.api.ts";
+
 import { Button } from "@/components/ui/button";
 import CreateCard from "@/components/sellers/SellersCreateCard.tsx";
 import { Seller } from "@/models/Seller";
 import { Input } from "@/components/ui/input";
 import { Search, FileDown, Printer, UserPlus, X } from "lucide-react";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
+import printElement from "@/utils/printElement";
+import { deleteSeller, getSellers } from "@/api/Seller.api";
+import { getColumns } from "@/components/sellers/columns";
 
 function Sellers() {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -35,7 +37,10 @@ function Sellers() {
     }
   }, [page, pageSize]);
 
-  // Debounce search
+  const updateData = () => {
+    fetchData();
+  };
+
   const debouncedSearch = useMemo(
     () =>
       debounce(async (term: string) => {
@@ -43,9 +48,9 @@ function Sellers() {
           setIsSearching(true);
           try {
             const sellers = await getSellers(1, pageSize, {
-              search: term
+              search: term,
             });
-            
+
             setData(sellers.results);
             setTotalCount(sellers.count);
             setPage(1);
@@ -61,7 +66,7 @@ function Sellers() {
       }, 300),
     [pageSize, fetchData]
   );
-  
+
   useEffect(() => {
     if (!searchTerm) {
       fetchData();
@@ -84,7 +89,7 @@ function Sellers() {
 
   const handlePrint = () => {
     if (tableRef.current) {
-      const printWindow = window.open("", "_blank")
+      const printWindow = window.open("", "_blank");
       printWindow?.document.write(`
         <html>
           <head>
@@ -101,30 +106,57 @@ function Sellers() {
             ${tableRef.current.innerHTML}
           </body>
         </html>
-      `)
-      printWindow?.document.close()
-      printWindow?.focus()
-      printWindow?.print()
-      printWindow?.close()
+      `);
+      printWindow?.document.close();
+      printWindow?.focus();
+      printWindow?.print();
+      printWindow?.close();
+      printElement(tableRef.current, "Reporte de Ventas");
     }
-  }
+  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
+  const handleDelete = async (seller: Seller) => {
+    const sellerId = seller.id ?? seller.id;
+    if (sellerId === undefined) {
+      console.error("No se puede eliminar un vendedor sin ID");
+      return;
+    }
+
+    try {
+      await deleteSeller(sellerId);
+      fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  };
+
+  const columns = getColumns({ onDelete: handleDelete });
+
   return (
     <>
-      <div className="mx-auto mt-6 space-y-6 max-w-7xl">
+      <div className="container mx-auto mt-6 space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
-          {/* Export buttons */}
           <div className="flex flex-wrap gap-3">
-            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
               <FileDown className="w-4 h-4" />
               Exportar
             </Button>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
               <Printer className="w-4 h-4" />
               Imprimir
             </Button>
@@ -135,13 +167,12 @@ function Sellers() {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="relative">
           <div className="relative">
             <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <Input
               type="text"
-              placeholder="Buscar vendedor por nombre, código o email..."
+              placeholder="Buscar vendedor por nombre, DNI, por codigo de vendedor"
               value={searchTerm}
               onChange={handleSearch}
               className="pl-10 pr-10"
@@ -173,7 +204,9 @@ function Sellers() {
         />
       </div>
 
-      {showModal && <CreateCard closeModal={closeModal} />}
+      {showModal && (
+        <CreateCard closeModal={closeModal} updateData={updateData} />
+      )}
     </>
   );
 }
