@@ -28,11 +28,11 @@ FROM nginx:alpine
 # Copy the built React application from the first stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Verificar que la carpeta 'dist' esté correctamente copiada
+# Verify the contents of the 'html' folder
 RUN ls -l /usr/share/nginx/html
 
-# Expose port 5173 for the app
-EXPOSE 5173
+# Copy the Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Start Nginx and bind it to port 5173
-CMD ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/nginx.conf", "-p", "5173"]
+# Expose the port
+EXPOSE 5173
