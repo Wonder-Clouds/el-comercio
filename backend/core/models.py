@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.utils.timezone import now
 from core.managers import SoftDeleteManager
@@ -11,8 +12,8 @@ class TimeStampedModel(models.Model):
     update_at = models.DateTimeField(auto_now=True)
     delete_at = models.DateTimeField(null=True, blank=True, editable=False)
 
-    objects = SoftDeleteManager()  # Manager that excludes logically deleted objects
-    all_objects = models.Manager()  # Manager to access all objects, including logically deleted ones
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
 
     class Meta:
         abstract = True
@@ -22,10 +23,18 @@ class TimeStampedModel(models.Model):
         Marks the object as deleted by setting the `delete_at` field
         to the current time and applies soft delete in cascade.
         """
+        unique_suffix = str(uuid.uuid4().hex)[:4]
+        for field in self._meta.fields:
+            if field.unique and field.name != 'id':
+                original_value = getattr(self, field.name)
+                max_length = field.max_length
+                truncated_value = original_value[:max_length - len(unique_suffix) - 1]
+                setattr(self, f'original_{field.name}', original_value)
+                setattr(self, field.name, f'{truncated_value}_{unique_suffix}')
+
         self.delete_at = now()
         self.save()
 
-        # Apply soft delete in cascade to related objects
         for related_object in self._meta.related_objects:
             related_name = related_object.get_accessor_name()
             related_manager = getattr(self, related_name)
@@ -37,6 +46,13 @@ class TimeStampedModel(models.Model):
         Restores the object by setting the `delete_at` field to None.
         """
         self.delete_at = None
+
+        for field in self._meta.fields:
+            if field.unique and field.name != 'id':
+                original_value = getattr(self, f'original_{field.name}', None)
+                if original_value:
+                    setattr(self, field.name, original_value)
+
         self.save()
 
     @property
