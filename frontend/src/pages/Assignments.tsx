@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import { Assignment } from "@/models/Assignment";
@@ -7,8 +7,9 @@ import { Product, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { Calendar } from "lucide-react";
-import AssignmentsCalendar from "@/components/assignments/AssignmentsCalendar";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
+import CalendarPicker from "@/components/shared/CalendarPicker";
+import { getLocalDate } from "@/utils/getLocalDate";
 
 function Assignments() {
   const [data, setData] = useState<Assignment[]>([]);
@@ -16,26 +17,38 @@ function Assignments() {
   const [newspapers, setNewspapers] = useState<Product[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchData = async () => {
-    // Assignments are fetched for today
-    const today = new Date().toISOString().split('T')[0];
-    try {
-      const assignments = await getAssignments(page, pageSize, today);
-      setData(assignments.results);
-      setTotalCount(assignments.count);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
+  const fetchAssignments = useCallback(async () => {
+    if (selectedDate) {
+      try {
+        const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
+        setData(assignments.results);
+        setTotalCount(assignments.count);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
+      }
+    } else {
+      const today = getLocalDate();
+      try {
+        const assignments = await getAssignments(page, pageSize, today);
+        setData(assignments.results);
+        setTotalCount(assignments.count);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
       }
     }
-  };
+  }, [page, pageSize, selectedDate]);
 
-  const fetchNewspapers = async () => {
+  const fetchNewspapers = useCallback(async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
       setNewspapers(newspapers.results);
@@ -45,9 +58,9 @@ function Assignments() {
         console.error(error.message);
       }
     }
-  };
+  }, [page, pageSize]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const products = await getProducts(page, pageSize, ProductType.PRODUCT);
       setProducts(products.results);
@@ -57,13 +70,13 @@ function Assignments() {
         console.error(error.message);
       }
     }
-  };
+  }, [page, pageSize]);
 
   useEffect(() => {
-    fetchData();
+    fetchAssignments();
     fetchNewspapers();
     fetchProducts();
-  }, [page, pageSize]);
+  }, [fetchAssignments, fetchNewspapers, fetchProducts]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -88,12 +101,21 @@ function Assignments() {
             <span className="my-auto text-xl">{capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}</span>
           ) : null}
         </div>
-        {data.length > 0 && !activeCalendar ? (
+        {!activeCalendar ? (
           <div className="p-5 mx-auto">
-            <AssignmentTable data={data} products={newspapers} />
+            <AssignmentTable
+              data={data}
+              products={newspapers}
+              page={page}
+              pageSize={pageSize}
+              totalCount={totalCount}
+              onPageChange={handlePageChange} />
           </div>
         ) : (
-          <AssignmentsCalendar />
+          <CalendarPicker
+            onDateSelect={setSelectedDate}
+            changeStatusCalendar={() => setActiveCalendar(false)}
+          />
         )}
       </TabsContent>
 
@@ -105,7 +127,13 @@ function Assignments() {
           ) : null}
         </div>
         <div className="p-5 mx-auto">
-          <AssignmentTable data={data} products={products} />
+          <AssignmentTable
+            data={data}
+            products={products}
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onPageChange={handlePageChange} />
         </div>
       </TabsContent>
     </Tabs>
