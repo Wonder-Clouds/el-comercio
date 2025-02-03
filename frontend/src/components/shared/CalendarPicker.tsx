@@ -1,7 +1,12 @@
 import { formatDateToSpanishSafe, formatDateToYYYYMMDD } from '@/utils/formatDate';
 import { useState } from 'react';
 
-const Calendar = () => {
+interface CalendarProps {
+  onDateSelect: (date: string | null) => void;
+  changeStatusCalendar: (status: boolean) => void;
+}
+
+const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCalendar }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -35,7 +40,8 @@ const Calendar = () => {
   const handleDateClick = (day: number) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     setSelectedDate(newDate);
-    console.log(formatDateToYYYYMMDD(newDate));
+    onDateSelect(formatDateToYYYYMMDD(newDate));
+    changeStatusCalendar(false);
   };
   
   const getDayClass = (day: number) => {
@@ -124,4 +130,4 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
+export default CalendarPicker;

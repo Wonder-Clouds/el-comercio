@@ -9,13 +9,18 @@ import { Assignment } from '@/models/Assignment';
 import { postDetailAssignments } from '@/api/DetailAssignment.api';
 import { PostDetailAssignment } from '@/models/DetailAssignment';
 import { Product } from '@/models/Product';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TableProps {
   data: Assignment[];
-  products: Product[]
+  products: Product[];
+  page: number;
+  pageSize: number;
+  totalCount: number
+  onPageChange: (page: number) => void;
 }
 
-const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
+const AssignmentTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange }) => {
   const handleValueChange = async (assignmentId: number, productId: number, value: number) => {
     const data: PostDetailAssignment = {
       product_id: productId,
@@ -25,7 +30,7 @@ const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
 
     try {
       await postDetailAssignments(data);
-      console.log('Valor actualizado:', { assignmentId, productId, value });
+      // console.log('Valor actualizado:', { assignmentId, productId, value });
     } catch (error) {
       console.error('Error al actualizar:', error);
     }
@@ -36,6 +41,8 @@ const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
     columns: columns(products, handleValueChange),
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div className="overflow-x-auto">
@@ -75,6 +82,72 @@ const AssignmentTable: React.FC<TableProps> = ({ data, products }) => {
           ))}
         </tbody>
       </table>
+      <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
+        <div className="p-4 text-sm font-medium text-gray-500">
+          Página {page} de {totalPages}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => page > 1 && onPageChange(page - 1)}
+            disabled={page <= 1}
+            className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            Anterior
+          </button>
+
+          <div className="flex items-center">
+            {Array.from({ length: totalPages }, (_, index) => {
+              const pageNumber = index + 1;
+              const isCurrentPage = pageNumber === page;
+              const isFirstPage = pageNumber === 1;
+              const isLastPage = pageNumber === totalPages;
+              const isWithinRange = Math.abs(pageNumber - page) <= 1;
+
+              if (isFirstPage || isLastPage || isWithinRange) {
+                return (
+                  <button
+                    key={index}
+                    onClick={() => onPageChange(pageNumber)}
+                    className={`
+                inline-flex items-center justify-center w-10 h-10 text-sm font-medium
+                transition-colors duration-200 rounded-lg focus:outline-none
+                ${isCurrentPage
+                        ? 'bg-blue-50 text-gray-500'
+                        : 'text-gray-700 hover:bg-gray-50'
+                      }
+              `}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              } else if (
+                (pageNumber === page - 2 && pageNumber > 2) ||
+                (pageNumber === page + 2 && pageNumber < totalPages - 1)
+              ) {
+                return (
+                  <span
+                    key={index}
+                    className="px-2 text-gray-400"
+                  >
+                    •••
+                  </span>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          <button
+            onClick={() => page < totalPages && onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Siguiente
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
