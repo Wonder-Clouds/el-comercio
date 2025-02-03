@@ -37,6 +37,9 @@ RUN ls -l /app/dist
 # Copy the wait_for_backend.sh script
 COPY wait_for_backend.sh /app/
 
+# Verificar que el script se haya copiado correctamente
+RUN ls -l /app/
+
 # Make the script executable
 RUN chmod +x /app/wait_for_backend.sh
 
