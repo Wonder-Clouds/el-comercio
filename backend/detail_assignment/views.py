@@ -15,6 +15,9 @@ from product.models import Product
 
 # Create your views here.
 class DetailAssignmentViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing detail assignment instances.
+    """
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -24,10 +27,28 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
 
     def calculate_sub_total(self, detail_assignment):
+        """
+        Calculate the subtotal for a given detail assignment.
+
+        Args:
+            detail_assignment (DetailAssignment): The detail assignment instance.
+
+        Returns:
+            float: The calculated subtotal.
+        """
         sub_total = detail_assignment.unit_price * detail_assignment.quantity
         return sub_total
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a new detail assignment instance.
+
+        Args:
+            request (Request): The request object containing the data.
+
+        Returns:
+            Response: The response object with the created detail assignment data.
+        """
         data = request.data.copy()
         product_id = data.get('product_id')
         assignment_id = data.get('assignment_id')
@@ -57,12 +78,31 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete a detail assignment instance.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object with no content.
+        """
         instance = self.get_object()
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'], url_path='calculate-sub-total')
     def get_sub_total_action(self, request, pk=None):
+        """
+        Custom action to calculate the subtotal for a detail assignment.
+
+        Args:
+            request (Request): The request object.
+            pk (int, optional): The primary key of the detail assignment.
+
+        Returns:
+            Response: The response object with the subtotal data.
+        """
         detail_assignment = self.get_object()
         sub_total = self.calculate_sub_total(detail_assignment)
 

@@ -31,8 +31,7 @@ class SellerViewSet(viewsets.ModelViewSet):
                 Q(dni__icontains=search) |
                 Q(number_seller__icontains=search)
             ).distinct()
-            
-        # Filtramos los registros no eliminados (donde delete_at es None)
+
         return queryset.filter(delete_at__isnull=True)
 
     # Delete Method

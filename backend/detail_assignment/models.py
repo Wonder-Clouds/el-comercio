@@ -6,6 +6,10 @@ import datetime
 
 # Create your models here.
 class DetailAssignment(TimeStampedModel):
+    """
+    Model representing the details of an assignment, including the quantity,
+    returned amount, unit price, and references to the assignment and product.
+    """
     quantity = models.IntegerField(default=0, null=False, blank=False)
     returned_amount = models.IntegerField(default=0, null=False, blank=False)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, editable=False, default=0.00)
@@ -14,9 +18,17 @@ class DetailAssignment(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
+        """
+        Returns a string representation of the DetailAssignment instance,
+        including the seller's name, product name, quantity, and unit price.
+        """
         return self.assignment.seller.name + ' ' + self.product.name + ' ' + f'{ self.quantity }' + ' ' + f'{ self.unit_price }'
 
     def save(self, *args, **kwargs):
+        """
+        Overrides the save method to set the unit price based on the product type
+        and the current day if the unit price is not already set.
+        """
         if not self.unit_price:
             current_day = datetime.datetime.now().strftime('%A').lower()
             if self.product.type == 'PRODUCT':
