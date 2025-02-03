@@ -7,6 +7,10 @@ from .models import DetailAssignment
 import datetime
 
 class DetailAssignmentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for DetailAssignment model.
+    """
+
     assignment_id = serializers.PrimaryKeyRelatedField(
         queryset=Assignment.objects.all(), source='assignment', write_only=True
     )
@@ -17,13 +21,34 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
     returned_amount = serializers.IntegerField(required=False, read_only=True)
 
     class Meta:
+        """
+        Meta class for DetailAssignmentSerializer.
+        """
         model = DetailAssignment
         fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price']
 
     def get_assignment(self, obj):
+        """
+        Get the assignment data for the given object.
+
+        Args:
+            obj: The object instance.
+
+        Returns:
+            dict: Serialized assignment data.
+        """
         return AssignmentSerializer(obj.assignment).data
 
     def create(self, validated_data):
+        """
+        Create a new DetailAssignment instance.
+
+        Args:
+            validated_data (dict): Validated data for creating the instance.
+
+        Returns:
+            DetailAssignment: The created DetailAssignment instance.
+        """
         assignment = validated_data.pop('assignment')
         product = validated_data.pop('product')
 
