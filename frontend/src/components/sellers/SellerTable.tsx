@@ -34,7 +34,7 @@ export function SellerTable<TData, TValue>({
   pageSize,
   totalCount,
   tableRef,
-  onPageChange
+  onPageChange,
 }: SellerTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -54,15 +54,16 @@ export function SellerTable<TData, TValue>({
                 {headerGroup.headers.map((header, index) => (
                   <TableHead
                     key={header.id}
-                    className={`px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-50 first:rounded-tl-lg last:rounded-tr-lg border-b border-gray-200 ${index === columns.length - 1 ? 'no-print' : ''
-                      }`}
+                    className={`px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-50 border-b border-gray-200 ${
+                      index === columns.length - 1 ? "no-print" : ""
+                    }`}
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -73,20 +74,18 @@ export function SellerTable<TData, TValue>({
               table.getRowModel().rows.map((row, rowIndex) => (
                 <TableRow
                   key={row.id}
-                  className={`
-                    border-b border-gray-100 last:border-0
-                    transition-colors duration-200
-                    hover:bg-gray-50/70
-                    ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}
-                  `}
+                  className={`border-b border-gray-100 last:border-0 transition-colors duration-200 hover:bg-gray-50/70 ${
+                    rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                  }`}
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={cell.id}
-                      className={`px-6 py-4 text-sm text-gray-600 ${index === columns.length - 1 ? 'no-print' : ''
-                        }`}
+                      className={`px-6 py-4 text-sm text-gray-600 ${
+                        index === columns.length - 1 ? "no-print" : ""
+                      }`}
                     >
-                      {cell.column.id === 'status' ? (
+                      {cell.column.id === "status" ? (
                         <div className="flex items-center gap-2">
                           {cell.getValue() ? (
                             <>
@@ -94,17 +93,24 @@ export function SellerTable<TData, TValue>({
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
                                 <span className="absolute top-0 left-0 w-5 h-5 bg-green-400 rounded-full animate-ping opacity-20" />
                               </div>
-                              <span className="font-medium text-green-600">Activo</span>
+                              <span className="font-medium text-green-600">
+                                Activo
+                              </span>
                             </>
                           ) : (
                             <>
                               <XCircle className="w-5 h-5 text-red-500 animate-pulse" />
-                              <span className="font-medium text-red-600">Inactivo</span>
+                              <span className="font-medium text-red-600">
+                                Inactivo
+                              </span>
                             </>
                           )}
                         </div>
                       ) : (
-                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )
                       )}
                     </TableCell>
                   ))}
@@ -133,31 +139,29 @@ export function SellerTable<TData, TValue>({
             disabled={page <= 1}
             className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Anterior
+            <ChevronLeft className="w-4 h-4 mr-1" /> Anterior
           </button>
 
           <div className="flex items-center">
             {Array.from({ length: totalPages }, (_, index) => {
               const pageNumber = index + 1;
               const isCurrentPage = pageNumber === page;
-              const isFirstPage = pageNumber === 1;
-              const isLastPage = pageNumber === totalPages;
               const isWithinRange = Math.abs(pageNumber - page) <= 1;
 
-              if (isFirstPage || isLastPage || isWithinRange) {
+              if (
+                pageNumber === 1 ||
+                pageNumber === totalPages ||
+                isWithinRange
+              ) {
                 return (
                   <button
                     key={index}
                     onClick={() => onPageChange(pageNumber)}
-                    className={`
-                inline-flex items-center justify-center w-10 h-10 text-sm font-medium
-                transition-colors duration-200 rounded-lg focus:outline-none
-                ${isCurrentPage
-                        ? 'bg-blue-50 text-gray-500'
-                        : 'text-gray-700 hover:bg-gray-50'
-                      }
-              `}
+                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${
+                      isCurrentPage
+                        ? "bg-blue-50 text-gray-500"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
                     {pageNumber}
                   </button>
@@ -167,10 +171,7 @@ export function SellerTable<TData, TValue>({
                 (pageNumber === page + 2 && pageNumber < totalPages - 1)
               ) {
                 return (
-                  <span
-                    key={index}
-                    className="px-2 text-gray-400"
-                  >
+                  <span key={index} className="px-2 text-gray-400">
                     •••
                   </span>
                 );
@@ -184,8 +185,7 @@ export function SellerTable<TData, TValue>({
             disabled={page >= totalPages}
             className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Siguiente
-            <ChevronRight className="w-4 h-4 ml-1" />
+            Siguiente <ChevronRight className="w-4 h-4 ml-1" />
           </button>
         </div>
       </div>
