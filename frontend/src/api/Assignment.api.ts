@@ -13,3 +13,8 @@ export const getAssignments = async (page: number, pageSize: number, startDate: 
   });
   return response.data;
 }
+
+export const postAllAssignments = async () => {
+  const response = await api.post('/assignments/create-assignments/');
+  return response.data;
+}
