@@ -177,18 +177,18 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         today = timezone.now().date()
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []
+        existing_assignments = []
 
         for seller in active_sellers:
-            if Assignment.objects.filter(date_assignment=today, seller=seller).exists():
-                return Response({'message': f'Assignment already created for seller {seller.name} today'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            assignment = Assignment.objects.create(
+            assignment, created = Assignment.objects.get_or_create(
                 date_assignment=today,
-                status='PENDING',
-                seller=seller
+                seller=seller,
+                defaults={'status': 'PENDING'}
             )
-            created_assignments.append(assignment)
+            if created:
+                created_assignments.append(assignment)
+            else:
+                existing_assignments.append(assignment)
 
-        serializer = AssignmentSerializer(created_assignments, many=True)
+        serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
