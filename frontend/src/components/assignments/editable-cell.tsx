@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Assignment } from "@/models/Assignment";
 
 interface EditableCellProps {
-  value: number;
-  row: { original: Assignment };
-  column: { id: string };
-  onValueChange: (value: number) => void;
+  value: number | string;
+  row?: { original: Assignment };
+  column?: { id: string };
+  onValueChange: (value: number | string) => void;
 }
 
 const EditableCell = ({

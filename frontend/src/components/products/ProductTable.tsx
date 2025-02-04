@@ -1,25 +1,16 @@
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
 import { RefObject } from "react";
-import { CheckCircle2, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Product } from "@/models/Product";
+import { columns } from "./columns";
 
-interface ProductTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface ProductTableProps {
+  data: Product[];
   page: number;
   pageSize: number;
   totalCount: number;
@@ -27,18 +18,32 @@ interface ProductTableProps<TData, TValue> {
   tableRef: RefObject<HTMLDivElement>;
 }
 
-export function ProductTable<TData, TValue>({
-  columns,
+export function ProductTable({
   data,
   page,
   pageSize,
   totalCount,
   tableRef,
   onPageChange
-}: ProductTableProps<TData, TValue>) {
+}: ProductTableProps) {
+  const handleValueChange = async (assignmentId: number, productId: number, value: string | number) => {
+    // const data: PostDetailAssignment = {
+    //   product_id: productId,
+    //   assignment_id: assignmentId,
+    //   quantity: value
+    // };
+
+    // try {
+    //   await postDetailAssignments(data);
+    //   // console.log('Valor actualizado:', { assignmentId, productId, value });
+    // } catch (error) {
+    //   console.error('Error al actualizar:', error);
+    // }
+  };
+
   const table = useReactTable({
     data,
-    columns,
+    columns: columns(data, handleValueChange),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -47,81 +52,42 @@ export function ProductTable<TData, TValue>({
   return (
     <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
       <div ref={tableRef} className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header, index) => (
-                  <TableHead
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
                     key={header.id}
-                    className={`px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-50 first:rounded-tl-lg last:rounded-tr-lg border-b border-gray-200 ${index === columns.length - 1 ? 'no-print' : ''
-                      }`}
+                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row, rowIndex) => (
-                <TableRow
-                  key={row.id}
-                  className={`
-                    border-b border-gray-100 last:border-0
-                    transition-colors duration-200
-                    hover:bg-gray-50/70
-                    ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}
-                  `}
-                >
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell
-                      key={cell.id}
-                      className={`px-6 py-4 text-sm text-gray-600 ${index === columns.length - 1 ? 'no-print' : ''
-                        }`}
-                    >
-                      {cell.column.id === 'status' ? (
-                        <div className="flex items-center gap-2">
-                          {cell.getValue() ? (
-                            <>
-                              <div className="relative flex">
-                                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                <span className="absolute top-0 left-0 w-5 h-5 bg-green-400 rounded-full animate-ping opacity-20" />
-                              </div>
-                              <span className="font-medium text-green-600">Activo</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="w-5 h-5 text-red-500 animate-pulse" />
-                              <span className="font-medium text-red-600">Inactivo</span>
-                            </>
-                          )}
-                        </div>
-                      ) : (
-                        flexRender(cell.column.columnDef.cell, cell.getContext())
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="py-8 text-center text-gray-500"
-                >
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td
+                    key={cell.id}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
       <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
