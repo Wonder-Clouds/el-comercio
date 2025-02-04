@@ -1,142 +1,139 @@
-import { SellerTable } from "@/components/sellers/SellerTable.tsx";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-
-import { Button } from "@/components/ui/button";
-import CreateCard from "@/components/sellers/SellersCreateCard.tsx";
-import { Seller } from "@/models/Seller";
-import { Input } from "@/components/ui/input";
-import { Search, FileDown, Printer, UserPlus, X } from "lucide-react";
-import debounce from "lodash/debounce";
-import printElement from "@/utils/printElement";
-import { deleteSeller, getSellers } from "@/api/Seller.api";
-import { getColumns } from "@/components/sellers/columns";
+import { SellerTable } from "@/components/sellers/SellerTable"
+import { useEffect, useRef, useState, useCallback, useMemo } from "react"
+import { Button } from "@/components/ui/button"
+import CreateCard from "@/components/sellers/SellersCreateCard"
+import UpdateCard from "@/components/sellers/SellerUpdateCard"
+import type { Seller } from "@/models/Seller"
+import { Input } from "@/components/ui/input"
+import { Search, FileDown, Printer, UserPlus, X } from "lucide-react"
+import debounce from "lodash/debounce"
+import printElement from "@/utils/printElement"
+import { deleteSeller, getSellers } from "@/api/Seller.api"
+import { getColumns } from "@/components/sellers/columns"
+import { useToast } from "@/hooks/use-toast"
 
 function Sellers() {
-  const tableRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
 
-  const [data, setData] = useState<Seller[]>([]);
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
+  const [data, setData] = useState<Seller[]>([])
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [isSearching, setIsSearching] = useState(false)
 
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
+  const openCreateModal = () => setShowCreateModal(true)
+  const closeCreateModal = () => setShowCreateModal(false)
+  const openUpdateModal = (seller: Seller) => {
+    setSelectedSeller(seller)
+    setShowUpdateModal(true)
+  }
+  const closeUpdateModal = () => {
+    setSelectedSeller(null)
+    setShowUpdateModal(false)
+  }
 
   const fetchData = useCallback(async () => {
     try {
-      const sellers = await getSellers(page, pageSize);
-      setData(sellers.results);
-      setTotalCount(sellers.count);
+      const sellers = await getSellers(page, pageSize)
+      setData(sellers.results)
+      setTotalCount(sellers.count)
     } catch (error) {
       if (error instanceof Error) {
-        console.error(error.message);
+        console.error(error.message)
+        toast({
+          title: "Error",
+          description: "Error al cargar los vendedores",
+          variant: "destructive",
+        })
       }
     }
-  }, [page, pageSize]);
+  }, [page, pageSize, toast])
 
   const updateData = () => {
-    fetchData();
-  };
+    fetchData()
+  }
 
   const debouncedSearch = useMemo(
     () =>
       debounce(async (term: string) => {
         if (term) {
-          setIsSearching(true);
+          setIsSearching(true)
           try {
             const sellers = await getSellers(1, pageSize, {
               search: term,
-            });
+            })
 
-            setData(sellers.results);
-            setTotalCount(sellers.count);
-            setPage(1);
+            setData(sellers.results)
+            setTotalCount(sellers.count)
+            setPage(1)
           } catch (error) {
             if (error instanceof Error) {
-              console.error(error.message);
+              console.error(error.message)
+              toast({
+                title: "Error",
+                description: "Error al buscar vendedores",
+                variant: "destructive",
+              })
             }
           }
-          setIsSearching(false);
+          setIsSearching(false)
         } else {
-          fetchData();
+          fetchData()
         }
       }, 300),
-    [pageSize, fetchData]
-  );
+    [pageSize, fetchData, toast],
+  )
 
   useEffect(() => {
     if (!searchTerm) {
-      fetchData();
+      fetchData()
     } else {
-      debouncedSearch(searchTerm);
+      debouncedSearch(searchTerm)
     }
     return () => {
-      debouncedSearch.cancel();
-    };
-  }, [page, pageSize, searchTerm, debouncedSearch, fetchData]);
+      debouncedSearch.cancel()
+    }
+  }, [searchTerm, debouncedSearch, fetchData])
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+    setSearchTerm(event.target.value)
+  }
 
   const clearSearch = () => {
-    setSearchTerm("");
-    setPage(1);
-  };
+    setSearchTerm("")
+    setPage(1)
+  }
 
   const handlePrint = () => {
     if (tableRef.current) {
-      const printWindow = window.open("", "_blank");
-      printWindow?.document.write(`
-        <html>
-          <head>
-            <title>Imprimir Tabla</title>
-            <style>
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid black; padding: 8px; text-align: left; }
-              th { background-color: #f4f4f4; }
-              .no-print { display: none; }
-            </style>
-          </head>
-          <body>
-            <h2>Reporte de Ventas</h2>
-            ${tableRef.current.innerHTML}
-          </body>
-        </html>
-      `);
-      printWindow?.document.close();
-      printWindow?.focus();
-      printWindow?.print();
-      printWindow?.close();
-      printElement(tableRef.current, "Reporte de Ventas");
+      printElement(tableRef.current, "Reporte de Ventas")
     }
-  };
+  }
 
   const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   const handleDelete = async (seller: Seller) => {
-    const sellerId = seller.id ?? seller.id;
-    if (sellerId === undefined) {
-      console.error("No se puede eliminar un vendedor sin ID");
-      return;
-    }
+    await deleteSeller(seller.id)
+    toast({
+      title: "Éxito",
+      variant: "default",
+      description: "Vendedor eliminado exitosamente",
+    })
+    fetchData()
+  }
 
-    try {
-      await deleteSeller(sellerId);
-      fetchData();
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  };
+  const handleUpdate = (seller: Seller) => {
+    openUpdateModal(seller)
+  }
 
-  const columns = getColumns({ onDelete: handleDelete });
+  const columns = getColumns({ onDelete: handleDelete, onUpdate: handleUpdate })
 
   return (
     <>
@@ -144,23 +141,15 @@ function Sellers() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
           <div className="flex flex-wrap gap-3">
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
+            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
               <FileDown className="w-4 h-4" />
               Exportar
             </Button>
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
+            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
               <Printer className="w-4 h-4" />
               Imprimir
             </Button>
-            <Button onClick={openModal} className="flex items-center gap-2">
+            <Button onClick={openCreateModal} className="flex items-center gap-2">
               <UserPlus className="w-4 h-4" />
               Crear vendedor
             </Button>
@@ -204,11 +193,14 @@ function Sellers() {
         />
       </div>
 
-      {showModal && (
-        <CreateCard closeModal={closeModal} updateData={updateData} />
+      {showCreateModal && <CreateCard closeModal={closeCreateModal} updateData={updateData} />}
+
+      {showUpdateModal && selectedSeller && (
+        <UpdateCard closeModal={closeUpdateModal} updateData={updateData} sellerData={selectedSeller} />
       )}
     </>
-  );
+  )
 }
 
-export default Sellers;
+export default Sellers
+
