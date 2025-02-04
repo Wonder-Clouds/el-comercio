@@ -29,7 +29,7 @@ export const getSellers = async (
   return response.data;
 };
 
-export const createSeller = async (seller: Omit<Seller, 'id_seller'>): Promise<Seller> => {
+export const createSeller = async (seller: Seller): Promise<Seller> => {
   try {
     const response = await api.post('/sellers/', seller);
     return response.data;
@@ -46,22 +46,11 @@ export const getSellerById = async (id: number): Promise<Seller> => {
   return response.data;
 }
 
-export const updateSeller = async (id: number, seller: Seller): Promise<Seller> => {
-  const response = await api.patch(`/sellers/${id}`, seller);
+export const updateSeller = async (seller: Seller): Promise<Seller> => {
+  const response = await api.patch(`/sellers/${seller.id}/`, seller);
   return response.data;
 }
 
 export const deleteSeller = async (id: number): Promise<void> => {
-  if (!id) {
-    throw new Error("Seller ID is required");
-  }
-  
-  try {
-    await api.delete(`/sellers/${id}/`);
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw error;
-  }
-};
+  await api.delete(`/sellers/${id}/`);
+}
