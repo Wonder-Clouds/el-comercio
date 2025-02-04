@@ -8,41 +8,30 @@ import { updateSeller } from "@/api/Seller.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { Seller } from '@/models/Seller';
 
 interface UpdateCardProps {
   closeModal: () => void;
   updateData: () => void;
-  sellerData: { 
-    id: number; 
-    name: string; 
-    last_name: string; 
-    dni: string; 
-    number_seller: string; 
-    status: boolean; 
-  };
+  sellerData: Seller; 
 }
 
 const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => {
-  const [formData, setFormData] = useState(sellerData);
+  const [formData, setFormData] = useState<Seller>(sellerData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast(); 
 
   useEffect(() => {
-    setFormData(sellerData);
+    setFormData(prev => (prev.id !== sellerData.id ? sellerData : prev));
   }, [sellerData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
   const handleStatusChange = (value: string) => {
-    setFormData({
-      ...formData,
-      status: value === 'true'
-    });
+    setFormData(prev => ({ ...prev, status: value === 'true' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,10 +46,10 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
       return;
     }
 
-    if (formData.dni.length !== 8) {
+    if (!/^\d{8}$/.test(formData.dni)) {
       toast({
         title: "Error",
-        description: "El DNI debe tener 8 dígitos",
+        description: "El DNI debe contener exactamente 8 dígitos numéricos",
         variant: "destructive"
       });
       return;
@@ -68,14 +57,14 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
 
     try {
       setIsSubmitting(true);
-      await updateSeller(formData.id, formData); 
+      await updateSeller(formData);
       toast({
         title: "Éxito",
         description: "Vendedor actualizado exitosamente",
         variant: "default"
       });
-      updateData(); 
-      closeModal(); 
+      updateData();
+      closeModal();
     } catch (error) {
       console.error("Error al actualizar el vendedor", error);
       toast({
@@ -87,7 +76,6 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <Card className="w-[35rem]">
@@ -107,7 +95,7 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
                 <Label htmlFor="last_name">Apellidos</Label>
                 <Input id="last_name" placeholder="Apellidos" value={formData.last_name} onChange={handleChange} />
               </div>
-              <div className="flex flex-col space-y=1.5">
+              <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="dni">DNI</Label>
                 <Input id="dni" type="text" maxLength={8} placeholder="DNI" value={formData.dni} onChange={handleChange} />
               </div>

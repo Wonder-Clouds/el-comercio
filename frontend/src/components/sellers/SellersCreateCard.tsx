@@ -32,7 +32,6 @@ const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, update
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-
         if (!formData.name || !formData.last_name || !formData.dni || !formData.number_seller) {
             toast({
                 title: "Error",
@@ -99,6 +98,10 @@ const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, update
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="number_seller">Codigo del Vendedor</Label>
                                 <Input id="number_seller" type="text" placeholder="Codigo del vendedor" value={formData.number_seller} onChange={handleChange} />
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="phone">Teléfono</Label>
+                                <Input id="phone" type="text" placeholder="Teléfono" value={formData.phone} onChange={handleChange} />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="status">Estado</Label>
