@@ -1,15 +1,20 @@
+// src/components/products/newspaper/NewspaperManagement.tsx
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Product, ProductType } from "@/models/Product";
 import printElement from "@/utils/printElement";
-import { getProducts } from "@/api/Product.api";
+import { getProducts, deleteProduct } from "@/api/Product.api";
 import { debounce } from "lodash";
 import { NewspaperTable } from "./newspaper/NewspaperTable";
+import CreateNewspaperCard from "./newspaper/CreateNewspaperCard";
+import UpdateNewspaperCard from "./newspaper/UpdateNewspaperCard";
+import { useToast } from "@/hooks/use-toast";
 
 function NewspaperManagement() {
   const tableRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const [newspapers, setNewspapers] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -19,38 +24,51 @@ function NewspaperManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
+  // Estados para los modales
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Función para obtener productos filtrando los periódicos
   const fetchNewspapers = useCallback(async () => {
     try {
-      const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
-      setNewspapers(newspapers.results);
-      setTotalCount(newspapers.count);
+      // Se llama al endpoint getProducts con el filtro del tipo periódico.
+      const response = await getProducts(page, pageSize, ProductType.NEWSPAPER, searchTerm);
+      setNewspapers(response.results);
+      setTotalCount(response.count);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error al cargar los periódicos",
+        variant: "destructive",
+      });
     }
-  }, [page, pageSize]);
+  }, [page, pageSize, searchTerm, toast]);
 
-  // Debounce search
+  useEffect(() => {
+    fetchNewspapers();
+  }, [fetchNewspapers]);
+
+  // Búsqueda con debounce
   const debouncedSearch = useMemo(
-    () => debounce(async (productName: string) => {
-        if (productName) {
+    () =>
+      debounce(async (term: string) => {
+        if (term) {
           setIsSearching(true);
           try {
-            const newspapers = await getProducts(1, pageSize, ProductType.NEWSPAPER, productName);
-            setNewspapers(newspapers.results);
-            setTotalCount(newspapers.count);
+            const response = await getProducts(1, pageSize, ProductType.NEWSPAPER, term);
+            setNewspapers(response.results);
+            setTotalCount(response.count);
             setPage(1);
           } catch (error) {
-            if (error instanceof Error) {
-              console.error(error.message);
-            }
+            console.error(error);
           }
           setIsSearching(false);
         } else {
           fetchNewspapers();
         }
-    }, 300),
+      }, 300),
     [pageSize, fetchNewspapers]
   );
 
@@ -76,7 +94,7 @@ function NewspaperManagement() {
 
   const handlePrint = () => {
     if (tableRef.current) {
-      printElement(tableRef.current, "Reporte de Ventas");
+      printElement(tableRef.current, "Reporte de Periódicos");
     }
   };
 
@@ -84,11 +102,39 @@ function NewspaperManagement() {
     setPage(newPage);
   };
 
+  // Función para abrir el modal de actualización
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setShowUpdateModal(true);
+  };
+
+  // Función para eliminar un periódico
+  const handleDelete = async (product: Product) => {
+    if (confirm("¿Estás seguro de eliminar este periódico?")) {
+      try {
+        await deleteProduct(product.id);
+        toast({
+          title: "Éxito",
+          description: "Periódico eliminado exitosamente",
+          variant: "default",
+        });
+        fetchNewspapers();
+      } catch (error) {
+        console.error("Error al eliminar el periódico:", error);
+        toast({
+          title: "Error",
+          description: "Error al eliminar el periódico",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <>
+      {/* Cabecera */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-4xl font-bold">Periodicos</h1>
-        {/* Export buttons */}
+        <h1 className="text-4xl font-bold">Periódicos</h1>
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" className="flex items-center gap-2">
             <FileDown className="w-4 h-4" />
@@ -98,19 +144,20 @@ function NewspaperManagement() {
             <Printer className="w-4 h-4" />
             Imprimir
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2">
             <UserPlus className="w-4 h-4" />
-            Nuevo periodico
+            Nuevo periódico
           </Button>
         </div>
       </div>
-      {/* Search Bar */}
+
+      {/* Barra de búsqueda */}
       <div className="relative">
         <div className="relative">
           <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
           <Input
             type="text"
-            placeholder="Buscar producto por nombre"
+            placeholder="Buscar periódico por nombre"
             value={searchTerm}
             onChange={handleSearch}
             className="pl-10 pr-10"
@@ -131,6 +178,7 @@ function NewspaperManagement() {
         )}
       </div>
 
+      {/* Tabla de periódicos */}
       <NewspaperTable
         data={newspapers}
         page={page}
@@ -138,7 +186,23 @@ function NewspaperManagement() {
         totalCount={totalCount}
         onPageChange={handlePageChange}
         tableRef={tableRef}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
+
+      {/* Modal de creación */}
+      {showCreateModal && (
+        <CreateNewspaperCard closeModal={() => setShowCreateModal(false)} updateData={fetchNewspapers} />
+      )}
+
+      {/* Modal de actualización */}
+      {showUpdateModal && selectedProduct && (
+        <UpdateNewspaperCard
+          closeModal={() => setShowUpdateModal(false)}
+          updateData={fetchNewspapers}
+          productData={selectedProduct}
+        />
+      )}
     </>
   );
 }

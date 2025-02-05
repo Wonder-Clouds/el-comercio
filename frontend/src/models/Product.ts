@@ -1,9 +1,9 @@
-enum ProductType {
+export enum ProductType {
   NEWSPAPER = "NEWSPAPER",
-  PRODUCT = "PRODUCT"
+  PRODUCT = "PRODUCT",
 }
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   type: ProductType | null;
@@ -19,7 +19,7 @@ interface Product {
   status_product: boolean;
 }
 
-const defaultProduct = {
+export const defaultProduct: Product = {
   id: 0,
   name: "",
   type: null,
@@ -32,8 +32,5 @@ const defaultProduct = {
   saturday_price: 0,
   sunday_price: 0,
   product_price: 0,
-  status_product: false
-}
-
-export type { Product };
-export { ProductType, defaultProduct };
+  status_product: false,
+};
