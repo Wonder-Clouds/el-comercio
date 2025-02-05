@@ -1,20 +1,19 @@
-interface Seller {
-  id_seller?: number;
+export interface Seller {
+  id: number;
+  number_seller: string;
   name: string;
   last_name: string;
   dni: string;
+  phone?: string;
   status: boolean;
-  number_seller: string;
 }
 
-const defaultSeller = {
-  id_seller: 0,
+export const defaultSeller: Seller = {
+  id: 0,
+  number_seller: "",
   name: "",
   last_name: "",
   dni: "",
-  status: false,
-  number_seller: "",
+  phone: "",
+  status: true,
 }
-
-export type { Seller }
-export { defaultSeller } 

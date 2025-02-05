@@ -1,5 +1,5 @@
 import api from "@/config/axios";
-import { DetailAssignment } from "@/models/DetailAssignment";
+import { DetailAssignment, PostDetailAssignment } from "@/models/DetailAssignment";
 import PaginatedResponse from "@/models/PaginatedResponse";
 
 export const getDetailAssignments = async (page: number, pageSize: number): Promise<PaginatedResponse<DetailAssignment>> => {
@@ -9,5 +9,10 @@ export const getDetailAssignments = async (page: number, pageSize: number): Prom
       page_size: pageSize
     }
   });
+  return response.data;
+}
+
+export const postDetailAssignments = async (data: PostDetailAssignment) => { 
+  const response = await api.post('/detail-assignments/', data);
   return response.data;
 }
