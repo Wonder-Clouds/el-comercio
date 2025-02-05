@@ -7,9 +7,10 @@ import {
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Product } from "@/models/Product";
-import { columns } from "./columns";
+import { updateProduct } from "@/api/Product.api";
+import { columnsNewspaper } from "./columns-newspaper";
 
-interface ProductTableProps {
+interface NewspaperTableProps {
   data: Product[];
   page: number;
   pageSize: number;
@@ -18,32 +19,48 @@ interface ProductTableProps {
   tableRef: RefObject<HTMLDivElement>;
 }
 
-export function ProductTable({
+export function NewspaperTable({
   data,
   page,
   pageSize,
   totalCount,
   tableRef,
   onPageChange
-}: ProductTableProps) {
-  const handleValueChange = async (assignmentId: number, productId: number, value: string | number) => {
-    // const data: PostDetailAssignment = {
-    //   product_id: productId,
-    //   assignment_id: assignmentId,
-    //   quantity: value
-    // };
-
-    // try {
-    //   await postDetailAssignments(data);
-    //   // console.log('Valor actualizado:', { assignmentId, productId, value });
-    // } catch (error) {
-    //   console.error('Error al actualizar:', error);
-    // }
+}: NewspaperTableProps) {
+  const handleValueChange = async (
+    productId: number, 
+    value: string | number
+  ) => {
+    try {
+      const currentProduct = data.find(p => p.id === productId);
+      
+      if (!currentProduct) {
+        console.error('Product not found');
+        return;
+      }
+  
+      const updatedProduct: Product = {
+        ...currentProduct,
+        ...(typeof value === 'string' && { name: value }),
+        ...(typeof value === 'number' && { 
+          returns_date: value,
+          monday_price: value,
+          tuesday_price: value,
+          wednesday_price: value,
+          thursday_price: value,
+          friday_price: value
+        })
+      };
+  
+      await updateProduct(updatedProduct);
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
   };
 
   const table = useReactTable({
     data,
-    columns: columns(data, handleValueChange),
+    columns: columnsNewspaper(handleValueChange),
     getCoreRowModel: getCoreRowModel(),
   });
 

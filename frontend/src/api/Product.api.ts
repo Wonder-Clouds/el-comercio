@@ -25,7 +25,7 @@ export const createProduct = async (product: Product): Promise<Product> => {
 }
 
 export const updateProduct = async (product: Product): Promise<Product> => {
-  const response = await api.put(`/products/${product.id}`, product);
+  const response = await api.patch(`/products/${product.id}`, product);
   return response.data;
 }
 
