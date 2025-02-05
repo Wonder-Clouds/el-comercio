@@ -1,3 +1,4 @@
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from rest_framework import viewsets, status
 from django.utils import timezone
 from seller.models import Seller
@@ -192,3 +193,125 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
         serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'], url_path='sales-by-seller')
+    def sales_by_seller(self, request):
+        """
+        Get sales by seller.
+
+        Args:
+            request (Request): The request instance.
+
+        Returns:
+            Response: The sales by seller.
+        """
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_amount=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
+        ).order_by('-total_amount')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='top-products')
+    def top_products(self, request):
+        """
+        Get top products.
+
+        Args:
+            request (Request): The request instance.
+        Returns:
+            Response: The top products.
+        """
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'product__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_amount=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
+        ).order_by('-total_sold')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='returns-and-efficiency')
+    def returns_and_efficiency(self, request):
+        """
+        Get returns and efficiency.
+
+        Args:
+            request (Request): The request instance.
+        Returns:
+            Response: The returns and efficiency.
+        """
+
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_returned=Sum('returned_amount'),
+            return_percentage=ExpressionWrapper(
+                F('total_returned') * 100.0 / F('total_sold'), output_field=DecimalField()
+            ),
+            impact_on_sales=Sum(
+                ExpressionWrapper(
+                    F('returned_amount') * F('unit_price'), output_field=DecimalField()
+                )
+            )
+        ).order_by('assignment__seller__name')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='profits')
+    def profits(self, request):
+        """
+        Get profits.
+
+        Args:
+            request (Request): The request instance.
+        Returns:
+            Response: The profits.
+        """
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_profit=Sum(
+                ExpressionWrapper(
+                    F('quantity') * F('unit_price') - F('returned_amount') * F('unit_price'),
+                    output_field=DecimalField()
+                )
+            )
+        ).order_by('-total_profit')
+
+        return Response(report, status=status.HTTP_200_OK)
