@@ -1,9 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router";
 import { Box, Users, TrendingUp, RotateCcw, Truck } from 'lucide-react';
+import useSellersCount from "@/hooks/useSellersCount";
+import useProductsCount from "@/hooks/useProductsCount";
+import useAssignmentsCount from "@/hooks/useAssignment";
 import elcomercio from "@/assets/elcomercio_logo.webp";
 
 const Home = () => {
+  const { totalSellers, loading, error } = useSellersCount();
+  const { totalProducts, loading: loadingProducts, error: errorProducts } = useProductsCount();
+  const { totalAssignments, loading: assignmentsLoading, error: assignmentsError } = useAssignmentsCount();
   const menuItems = [
     {
       title: "Gestionar Productos",
@@ -58,7 +64,13 @@ const Home = () => {
               <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Entregas totales</p>
-                <h3 className="text-2xl font-bold text-gray-800">$24,500</h3>
+                {assignmentsLoading ? (
+                  <h3 className="text-2xl font-bold text-gray-800">Cargando...</h3>
+                ) : errorProducts ? (
+                  <h3 className="text-2xl font-bold text-red-600">{assignmentsError}</h3>
+                ) : (
+                  <h3 className="text-2xl font-bold text-gray-800">{totalAssignments}</h3>
+                )}
               </div>
             </div>
           </CardContent>
@@ -69,7 +81,13 @@ const Home = () => {
               <Box className="w-8 h-8 text-green-600" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Productos Activos</p>
-                <h3 className="text-2xl font-bold text-gray-800">1,234</h3>
+                {loadingProducts ? (
+                  <h3 className="text-2xl font-bold text-gray-800">Cargando...</h3>
+                ) : errorProducts ? (
+                  <h3 className="text-2xl font-bold text-red-600">{errorProducts}</h3>
+                ) : (
+                  <h3 className="text-2xl font-bold text-gray-800">{totalProducts}</h3>
+                )}
               </div>
             </div>
           </CardContent>
@@ -80,7 +98,13 @@ const Home = () => {
               <Users className="w-8 h-8 text-purple-600" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Vendedores activos</p>
-                <h3 className="text-2xl font-bold text-gray-800">856</h3>
+                {loading ? (
+                  <h3 className="text-2xl font-bold text-gray-800">Cargando...</h3>
+                ) : error ? (
+                  <h3 className="text-2xl font-bold text-red-600">{error}</h3>
+                ) : (
+                  <h3 className="text-2xl font-bold text-gray-800">{totalSellers}</h3>
+                )}
               </div>
             </div>
           </CardContent>

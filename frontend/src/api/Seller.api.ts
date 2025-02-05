@@ -8,6 +8,7 @@ interface SellersFilters {
   last_name?: string;
   dni?: string;
   number_seller?: string;
+  status?: boolean| string;
 }
 
 export const getSellers = async (
