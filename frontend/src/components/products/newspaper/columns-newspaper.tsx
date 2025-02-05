@@ -1,9 +1,8 @@
 import { Product, ProductType } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
-import EditableCell from "../assignments/editable-cell";
+import EditableCell from "../../assignments/editable-cell";
 
-export const columns = (
-  products: Product[],
+export const columnsNewspaper = (
   onValueChange: (assignmentId: number, productId: number, value: number | string) => void
 ): ColumnDef<Product>[] => {
   return [
