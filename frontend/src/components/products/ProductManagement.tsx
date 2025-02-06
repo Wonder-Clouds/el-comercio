@@ -1,55 +1,71 @@
 import { Product, ProductType } from "@/models/Product";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { ProductTable } from "./product/ProductTable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getProducts } from "@/api/Product.api";
+import { getProducts, deleteProduct } from "@/api/Product.api";
 import { debounce } from "lodash";
 import printElement from "@/utils/printElement";
+import { useToast } from "@/hooks/use-toast";
+import CreateProductCard from "./product/CreateProductCard";
+import UpdateProductCard from "./product/UpdateProductCard";
 
 function ProductManagement() {
   const tableRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
+  // Estados para los modales
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Función para obtener productos filtrando por type PRODUCT
   const fetchProduct = useCallback(async () => {
     try {
-      const products = await getProducts(page, pageSize, ProductType.PRODUCT);
-      setProducts(products.results);
-      setTotalCount(products.count);
+      const response = await getProducts(page, pageSize, ProductType.PRODUCT, searchTerm);
+      setProducts(response.results);
+      setTotalCount(response.count);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error al cargar los productos",
+        variant: "destructive",
+      });
     }
-  }, [page, pageSize]);
+  }, [page, pageSize, searchTerm, toast]);
 
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
+
+  // Búsqueda con debounce
   const debouncedSearch = useMemo(
-    () => debounce(async (productName: string) => {
-      if (productName) {
-        setIsSearching(true);
-        try {
-          const products = await getProducts(1, pageSize, ProductType.PRODUCT, productName);
-          setProducts(products.results);
-          setTotalCount(products.count);
-          setPage(1);
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message);
+    () =>
+      debounce(async (productName: string) => {
+        if (productName) {
+          setIsSearching(true);
+          try {
+            const response = await getProducts(1, pageSize, ProductType.PRODUCT, productName);
+            setProducts(response.results);
+            setTotalCount(response.count);
+            setPage(1);
+          } catch (error) {
+            console.error(error);
           }
+          setIsSearching(false);
+        } else {
+          fetchProduct();
         }
-        setIsSearching(false);
-      } else {
-        fetchProduct();
-      }
-    }, 300),
+      }, 300),
     [pageSize, fetchProduct]
   );
 
@@ -62,7 +78,7 @@ function ProductManagement() {
     return () => {
       debouncedSearch.cancel();
     };
-  }, [page, pageSize, searchTerm, debouncedSearch, fetchProduct]);
+  }, [searchTerm, debouncedSearch, fetchProduct]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -75,7 +91,7 @@ function ProductManagement() {
 
   const handlePrint = () => {
     if (tableRef.current) {
-      printElement(tableRef.current, "Reporte de Ventas");
+      printElement(tableRef.current, "Reporte de Productos");
     }
   };
 
@@ -83,12 +99,37 @@ function ProductManagement() {
     setPage(newPage);
   };
 
+  // Funciones para editar y eliminar productos
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setShowUpdateModal(true);
+  };
+
+  const handleDelete = async (product: Product) => {
+    if (confirm("¿Estás seguro de eliminar este producto?")) {
+      try {
+        await deleteProduct(product.id);
+        toast({
+          title: "Éxito",
+          description: "Producto eliminado exitosamente",
+          variant: "default",
+        });
+        fetchProduct();
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+        toast({
+          title: "Error",
+          description: "Error al eliminar el producto",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   return (
     <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-4xl font-bold">Productos</h1>
-        {/* Export buttons */}
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" className="flex items-center gap-2">
             <FileDown className="w-4 h-4" />
@@ -98,13 +139,13 @@ function ProductManagement() {
             <Printer className="w-4 h-4" />
             Imprimir
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2">
             <UserPlus className="w-4 h-4" />
             Nuevo producto
           </Button>
         </div>
       </div>
-      {/* Search Bar */}
+      {/* Barra de búsqueda */}
       <div className="relative">
         <div className="relative">
           <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
@@ -116,10 +157,7 @@ function ProductManagement() {
             className="pl-10 pr-10"
           />
           {searchTerm && (
-            <button
-              onClick={clearSearch}
-              className="absolute text-gray-500 -translate-y-1/2 right-3 top-1/2 hover:text-gray-700"
-            >
+            <button onClick={clearSearch} className="absolute text-gray-500 -translate-y-1/2 right-3 top-1/2 hover:text-gray-700">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -130,7 +168,7 @@ function ProductManagement() {
           </div>
         )}
       </div>
-
+      {/* Tabla de productos */}
       <ProductTable
         data={products}
         page={page}
@@ -138,7 +176,19 @@ function ProductManagement() {
         totalCount={totalCount}
         onPageChange={handlePageChange}
         tableRef={tableRef}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
+
+      {/* Modal de creación */}
+      {showCreateModal && (
+        <CreateProductCard closeModal={() => setShowCreateModal(false)} updateData={fetchProduct} />
+      )}
+
+      {/* Modal de actualización */}
+      {showUpdateModal && selectedProduct && (
+        <UpdateProductCard closeModal={() => setShowUpdateModal(false)} updateData={fetchProduct} productData={selectedProduct} />
+      )}
     </>
   );
 }
