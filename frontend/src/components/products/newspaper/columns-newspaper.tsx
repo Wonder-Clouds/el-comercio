@@ -1,18 +1,18 @@
 import { Product, ProductType } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
-import EditableCell from "../../assignments/editable-cell";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
 
 /**
  * Genera las columnas de la tabla de periódicos.
+ * 
+ * Ahora la edición directa en celdas se ha deshabilitado; la única forma de editar o eliminar
+ * es a través de los botones en la columna "Acciones".
  *
- * @param onValueChange Función para actualizar valores editables.
  * @param onEdit Función que se llama al hacer clic en el botón de editar.
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
 export const columnsNewspaper = (
-  onValueChange: (productId: number, field: string, value: number | string | boolean) => void,
   onEdit: (product: Product) => void,
   onDelete: (product: Product) => void
 ): ColumnDef<Product>[] => {
@@ -22,12 +22,7 @@ export const columnsNewspaper = (
       header: "Nombre",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.name}
-            onValueChange={(newValue) => onValueChange(product.id, "name", newValue)}
-          />
-        );
+        return <span>{product.name}</span>;
       },
     },
     {
@@ -36,10 +31,9 @@ export const columnsNewspaper = (
       cell: ({ row }) => {
         const product = row.original;
         return (
-          <EditableCell
-            value={product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
-            onValueChange={(newValue) => onValueChange(product.id, "type", newValue)}
-          />
+          <span>
+            {product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
+          </span>
         );
       },
     },
@@ -48,14 +42,7 @@ export const columnsNewspaper = (
       header: "Días de devolución",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.returns_date}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "returns_date", Number(newValue))
-            }
-          />
-        );
+        return <span>{product.returns_date}</span>;
       },
     },
     {
@@ -63,14 +50,7 @@ export const columnsNewspaper = (
       header: "Lunes",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.monday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "monday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.monday_price}</span>;
       },
     },
     {
@@ -78,14 +58,7 @@ export const columnsNewspaper = (
       header: "Martes",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.tuesday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "tuesday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.tuesday_price}</span>;
       },
     },
     {
@@ -93,14 +66,7 @@ export const columnsNewspaper = (
       header: "Miércoles",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.wednesday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "wednesday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.wednesday_price}</span>;
       },
     },
     {
@@ -108,14 +74,7 @@ export const columnsNewspaper = (
       header: "Jueves",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.thursday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "thursday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.thursday_price}</span>;
       },
     },
     {
@@ -123,14 +82,7 @@ export const columnsNewspaper = (
       header: "Viernes",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.friday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "friday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.friday_price}</span>;
       },
     },
     {
@@ -138,14 +90,7 @@ export const columnsNewspaper = (
       header: "Sábado",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.saturday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "saturday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.saturday_price}</span>;
       },
     },
     {
@@ -153,17 +98,9 @@ export const columnsNewspaper = (
       header: "Domingo",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.sunday_price}
-            onValueChange={(newValue) =>
-              onValueChange(product.id, "sunday_price", newValue)
-            }
-          />
-        );
+        return <span>{product.sunday_price}</span>;
       },
     },
-    // Se ha eliminado la columna "Precio producto"
     {
       id: "status_product",
       header: "Estado",

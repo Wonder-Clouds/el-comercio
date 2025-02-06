@@ -1,18 +1,19 @@
 import { Product, ProductType } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
-import EditableCell from "../../assignments/editable-cell";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
 
 /**
  * Genera las columnas de la tabla de productos.
  *
- * @param onValueChange Función para actualizar valores editables.
+ * Ahora se muestra el contenido de cada celda de forma estática, sin edición inline,
+ * y se añade la columna de estado. La edición y eliminación se realizan únicamente
+ * mediante los botones de la columna "Acciones".
+ *
  * @param onEdit Función que se llama al hacer clic en el botón de editar.
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
 export const columnsProduct = (
-  onValueChange: (assignmentId: number, productId: number, value: number | string) => void,
   onEdit: (product: Product) => void,
   onDelete: (product: Product) => void
 ): ColumnDef<Product>[] => {
@@ -22,12 +23,7 @@ export const columnsProduct = (
       header: "Nombre",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.name}
-            onValueChange={(newValue) => onValueChange(product.id, product.id, newValue)}
-          />
-        );
+        return <span>{product.name}</span>;
       },
     },
     {
@@ -36,10 +32,9 @@ export const columnsProduct = (
       cell: ({ row }) => {
         const product = row.original;
         return (
-          <EditableCell
-            value={product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
-            onValueChange={(newValue) => onValueChange(product.id, product.id, newValue as string)}
-          />
+          <span>
+            {product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
+          </span>
         );
       },
     },
@@ -48,12 +43,7 @@ export const columnsProduct = (
       header: "Días de devolución",
       cell: ({ row }) => {
         const product = row.original;
-        return (
-          <EditableCell
-            value={product.returns_date}
-            onValueChange={(newValue) => onValueChange(product.id, product.id, newValue as number)}
-          />
-        );
+        return <span>{product.returns_date}</span>;
       },
     },
     {
@@ -61,11 +51,29 @@ export const columnsProduct = (
       header: "Precio producto",
       cell: ({ row }) => {
         const product = row.original;
+        return <span>{product.product_price}</span>;
+      },
+    },
+    {
+      id: "status_product",
+      header: "Estado",
+      cell: ({ row }) => {
+        const product = row.original;
         return (
-          <EditableCell
-            value={product.product_price}
-            onValueChange={(newValue) => onValueChange(product.id, product.id, newValue as number)}
-          />
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-sm font-semibold ${
+                product.status_product ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {product.status_product ? "Activo" : "Inactivo"}
+            </span>
+            {product.status_product ? (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            ) : (
+              <XCircle className="w-5 h-5 text-red-500" />
+            )}
+          </div>
         );
       },
     },
