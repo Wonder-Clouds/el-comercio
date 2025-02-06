@@ -1,5 +1,8 @@
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+from django.db.models.functions import TruncMonth
 from rest_framework import viewsets, status
 from django.utils import timezone
+import calendar
 from seller.models import Seller
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +15,7 @@ from assignment.serializer import AssignmentSerializer
 from assignment.filters import AssignmentFilter
 from core.pagination import CustomPagination
 from detail_assignment.models import DetailAssignment
+
 
 class AssignmentViewSet(viewsets.ModelViewSet):
     """
@@ -177,18 +181,173 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         today = timezone.now().date()
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []
+        existing_assignments = []
 
         for seller in active_sellers:
-            if Assignment.objects.filter(date_assignment=today, seller=seller).exists():
-                return Response({'message': f'Assignment already created for seller {seller.name} today'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            assignment = Assignment.objects.create(
+            assignment, created = Assignment.objects.get_or_create(
                 date_assignment=today,
-                status='PENDING',
-                seller=seller
+                seller=seller,
+                defaults={'status': 'PENDING'}
             )
-            created_assignments.append(assignment)
+            if created:
+                created_assignments.append(assignment)
+            else:
+                existing_assignments.append(assignment)
 
-        serializer = AssignmentSerializer(created_assignments, many=True)
+        serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ReportViewSet(viewsets.ViewSet):
+    """
+    A viewset for viewing and generating reports.
+    """
+
+    # JWT Authentication
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['get'], url_path='sales-by-seller')
+    def sales_by_seller(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_sold=Sum(F('quantity') - F('returned_amount')),
+            total_amount=Sum(ExpressionWrapper((F('quantity') - F('returned_amount')) * F('unit_price'),
+                                               output_field=DecimalField()))
+        ).order_by('-total_amount')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='top-newspapers')
+    def top_newspapers(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date],
+            product__type='NEWSPAPER'
+        ).values(
+            'product__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_amount=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
+        ).order_by('-total_sold')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='top-products')
+    def top_products(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date],
+            product__type='PRODUCT'
+        ).values(
+            'product__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_amount=Sum(ExpressionWrapper(F('quantity') * F('unit_price'), output_field=DecimalField()))
+        ).order_by('-total_sold')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='returns-and-efficiency')
+    def returns_and_efficiency(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_sold=Sum('quantity'),
+            total_returned=Sum('returned_amount'),
+            return_percentage=ExpressionWrapper(
+                F('total_returned') * 100.0 / F('total_sold'), output_field=DecimalField()
+            ),
+            impact_on_sales=Sum(
+                ExpressionWrapper(
+                    F('returned_amount') * F('unit_price'), output_field=DecimalField()
+                )
+            )
+        ).order_by('assignment__seller__name')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='profits')
+    def profits(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).values(
+            'assignment__seller__name'
+        ).annotate(
+            total_profit=Sum(
+                ExpressionWrapper(
+                    F('quantity') * F('unit_price') - F('returned_amount') * F('unit_price'),
+                    output_field=DecimalField()
+                )
+            )
+        ).order_by('-total_profit')
+
+        return Response(report, status=status.HTTP_200_OK)
+
+    import calendar
+
+    @action(detail=False, methods=['get'], url_path='monthly-earnings')
+    def monthly_earnings(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment__range=[start_date, end_date]
+        ).annotate(
+            month=TruncMonth('assignment__date_assignment')
+        ).values(
+            'month'
+        ).annotate(
+            total_earnings=Sum(ExpressionWrapper(
+                (F('quantity') - F('returned_amount')) * F('unit_price'),
+                output_field=DecimalField()
+            ))
+        ).order_by('month')
+
+        # Format the month to the last day of the month
+        formatted_report = []
+        for entry in report:
+            month = entry['month']
+            last_day_of_month = month.replace(day=calendar.monthrange(month.year, month.month)[1])
+            formatted_report.append({
+                'month': last_day_of_month,
+                'total_earnings': entry['total_earnings']
+            })
+
+        return Response(formatted_report, status=status.HTTP_200_OK)

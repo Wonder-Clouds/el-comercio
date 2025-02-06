@@ -11,7 +11,12 @@ export const getAssignments = async (page: number, pageSize: number, startDate: 
       ...(endDate && { end_date: endDate }),
     }
   });
-  return response.data;
+  return {
+    count: response.data.count,
+    next: response.data.next,
+    previous: response.data.previous,
+    results: response.data.results
+  };
 }
 
 export const postAllAssignments = async () => {

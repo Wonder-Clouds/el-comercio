@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import { Assignment } from "@/models/Assignment";
@@ -6,12 +6,18 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Product, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
-import { Calendar } from "lucide-react";
+import { Calendar, FileDown, Printer, UserPlus } from "lucide-react";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { getLocalDate } from "@/utils/getLocalDate";
+import { Button } from "@/components/ui/button";
+import printElement from "@/utils/printElement";
 
 function Assignments() {
+  // Refs para cada sección
+  const tableRefNewspapers = useRef<HTMLDivElement>(null);
+  const tableRefProducts = useRef<HTMLDivElement>(null);
+
   const [data, setData] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [newspapers, setNewspapers] = useState<Product[]>([]);
@@ -93,18 +99,80 @@ function Assignments() {
     }
   };
 
+  // Funciones de impresión para cada tabla:
+  const handlePrintNewspapers = () => {
+    if (tableRefNewspapers.current) {
+      const clone = tableRefNewspapers.current.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".action-column").forEach((el) => el.remove());
+      printElement(clone, "Reporte de Periódicos");
+    }
+  };
+
+  const handlePrintProducts = () => {
+    if (tableRefProducts.current) {
+      const clone = tableRefProducts.current.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".action-column").forEach((el) => el.remove());
+      printElement(clone, "Reporte de Productos");
+    }
+  };
+
   return (
-    <Tabs defaultValue="periodicos" className="mx-auto space-y-6 ">
+    <Tabs defaultValue="periodicos" className="mx-auto space-y-6">
       <TabsList className="flex bg-gray-900 rounded-none py-7">
-        <TabsTrigger value="periodicos" className="px-5 text-lg data-[state=active]:text-black text-white">Periódicos</TabsTrigger>
-        <TabsTrigger value="productos" className="px-5 text-lg data-[state=active]:text-black text-white">Productos</TabsTrigger>
+        <TabsTrigger
+          value="periodicos"
+          className="px-5 text-lg data-[state=active]:text-black text-white"
+        >
+          Periódicos
+        </TabsTrigger>
+        <TabsTrigger
+          value="productos"
+          className="px-5 text-lg data-[state=active]:text-black text-white"
+        >
+          Productos
+        </TabsTrigger>
       </TabsList>
 
+      {/* Pestaña de Periódicos */}
       <TabsContent value="periodicos">
         <div className="flex flex-col items-center space-y-3">
           <div className="flex items-center space-x-5">
             <h1 className="text-4xl font-bold text-center">Asignar Periódicos</h1>
-            <button onClick={() => setActiveCalendar(!activeCalendar)} className="flex items-center p-2 text-gray-700 rounded-xl hover:bg-gray-200">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={handlePrintNewspapers}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Exportar
+              </Button>
+              <Button
+                onClick={handlePrintNewspapers}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Imprimir
+              </Button>
+              {/** Si ya existen asignaciones o la fecha seleccionada no es la actual,
+               * se muestra el botón "Asignar" en el encabezado.
+               */}
+              {(data.length > 0 || selectedDate !== getLocalDate()) && (
+                <Button
+                  onClick={handleCreateAssignments}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Asignar
+                </Button>
+              )}
+            </div>
+            <button
+              onClick={() => setActiveCalendar(!activeCalendar)}
+              className="flex items-center p-2 text-gray-700 rounded-xl hover:bg-gray-200"
+            >
               <Calendar className="w-8 h-8 text-gray-700" />
             </button>
           </div>
@@ -112,14 +180,15 @@ function Assignments() {
             {capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate as string))}
           </span>
         </div>
-        {data.length === 0 && selectedDate == getLocalDate() ? (
+        {/** Si no hay registros y la fecha es la actual, mostramos el botón grande "Asignar periódicos para hoy" */}
+        {data.length === 0 && selectedDate === getLocalDate() && (
           <button
             onClick={handleCreateAssignments}
             className="flex py-4 px-8 mx-auto my-5 text-white bg-blue-900 hover:bg-blue-950 text-2xl font-bold rounded-xl shadow-lg transition-all duration-300"
           >
             Asignar periódicos para hoy
           </button>
-        ) : null}
+        )}
         {!activeCalendar ? (
           data.length > 0 ? (
             <div className="p-5 mx-auto">
@@ -130,6 +199,8 @@ function Assignments() {
                 pageSize={pageSize}
                 totalCount={totalCount}
                 onPageChange={handlePageChange}
+                tableRef={tableRefNewspapers}
+                tableType="newspaper"
               />
             </div>
           ) : (
@@ -145,12 +216,42 @@ function Assignments() {
         )}
       </TabsContent>
 
+      {/* Pestaña de Productos */}
       <TabsContent value="productos">
         <div className="flex flex-col items-center space-y-3">
           <h1 className="text-4xl font-bold text-center">Productos</h1>
-          {data.length > 0 ? (
-            <span className="my-auto text-xl">{capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}</span>
-          ) : null}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={handlePrintProducts}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <FileDown className="w-4 h-4" />
+              Exportar
+            </Button>
+            <Button
+              onClick={handlePrintProducts}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              Imprimir
+            </Button>
+            {/** En Productos siempre se muestra el botón "Asignar" en el encabezado */}
+            <Button
+              onClick={handleCreateAssignments}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <UserPlus className="w-4 h-4" />
+              Asignar
+            </Button>
+          </div>
+          {data.length > 0 && (
+            <span className="my-auto text-xl">
+              {capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}
+            </span>
+          )}
         </div>
         <div className="p-5 mx-auto">
           <AssignmentTable
@@ -159,7 +260,10 @@ function Assignments() {
             page={page}
             pageSize={pageSize}
             totalCount={totalCount}
-            onPageChange={handlePageChange} />
+            onPageChange={handlePageChange}
+            tableRef={tableRefProducts}
+            tableType="product"
+          />
         </div>
       </TabsContent>
     </Tabs>

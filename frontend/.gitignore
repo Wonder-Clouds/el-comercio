@@ -25,3 +25,5 @@ env
 *.njsproj
 *.sln
 *.sw?
+
+.editorconfig

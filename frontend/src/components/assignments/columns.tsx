@@ -50,7 +50,7 @@ export const columns = (
             row={row}
             column={{ id: `quantity_${product.id}` }}
             onValueChange={(newValue) => {
-              onValueChange(assignment.id, product.id, newValue);
+              onValueChange(assignment.id, product.id, newValue as number);
             }}
           />
         );
