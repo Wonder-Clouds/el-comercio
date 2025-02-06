@@ -27,7 +27,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
     id: 0,
     name: "",
     type: ProductType.NEWSPAPER,
-    // Se elimina product_price
     monday_price: 0,
     tuesday_price: 0,
     wednesday_price: 0,
@@ -45,13 +44,8 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    let newValue: string | number | boolean = value;
-
-    // Convertir a número para todos los campos, excepto para el nombre
-    if (id !== "name") {
-      newValue = value === "" ? 0 : parseFloat(value);
-    }
-
+    // Para el campo "name" se mantiene el string; para los demás se convierte a número.
+    const newValue: string | number = id === "name" ? value : value === "" ? 0 : parseFloat(value);
     setFormData((prev) => ({
       ...prev,
       [id]: newValue,
@@ -118,7 +112,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
 
     try {
       setIsSubmitting(true);
-      // Preparar los datos a enviar (sin product_price)
       const formDataToSubmit: Product = {
         ...formData,
         monday_price: Number(formData.monday_price),
@@ -165,7 +158,13 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
               {/* Campo Nombre */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Nombre</Label>
-                <Input id="name" placeholder="Nombre" value={formData.name} onChange={handleChange} required />
+                <Input
+                  id="name"
+                  placeholder="Nombre"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {/* Campo Días de devolución */}
@@ -176,7 +175,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
                   type="number"
                   min="1"
                   placeholder="Cantidad de días"
-                  value={formData.returns_date || ""}
+                  value={formData.returns_date !== 0 ? formData.returns_date : ""}
                   onChange={handleChange}
                   required
                 />
@@ -192,21 +191,24 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
                   { id: "friday_price", label: "Precio Viernes" },
                   { id: "saturday_price", label: "Precio Sábado" },
                   { id: "sunday_price", label: "Precio Domingo" },
-                ].map((price) => (
-                  <div key={price.id} className="flex flex-col space-y-1.5">
-                    <Label htmlFor={price.id}>{price.label}</Label>
-                    <Input
-                      id={price.id}
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder={price.label}
-                      value={formData[price.id as keyof Product] || ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                ))}
+                ].map((price) => {
+                  const fieldValue = formData[price.id as keyof Product] as number;
+                  return (
+                    <div key={price.id} className="flex flex-col space-y-1.5">
+                      <Label htmlFor={price.id}>{price.label}</Label>
+                      <Input
+                        id={price.id}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder={price.label}
+                        value={fieldValue !== 0 ? fieldValue : ""}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Campo Estado */}
