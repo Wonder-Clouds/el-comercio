@@ -7,6 +7,7 @@ import Assignments from "@/pages/Assignments";
 import Login from "@/pages/Login";
 import MainLayout from "@/components/shared/MainLayout";
 import Devolutions from "@/pages/Devolution";
+import Reports from "@/pages/Reports";
 
 const routes = [
   { path: "/", element: <Login /> },
@@ -16,6 +17,7 @@ const routes = [
   { path: "/devoluciones", element: <Devolutions /> },
   { path: "/clientes", element: <Sellers /> },
   { path: "/nuevo-producto", element: <AddProduct /> },
+  { path: "/reportes", element:  <Reports /> },
 ];
 
 const AppRoutes = () => {
