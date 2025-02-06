@@ -8,7 +8,8 @@ import {
   RotateCcw,
   LogOut,
   Menu,
-  X
+  X,
+  TrendingUp
 } from 'lucide-react';
 
 const Header = () => {
@@ -20,6 +21,7 @@ const Header = () => {
     { to: "/devoluciones", text: "Devoluciones", icon: RotateCcw },
     { to: "/productos", text: "Productos", icon: Package },
     { to: "/clientes", text: "Clientes", icon: Users },
+    { to: "/reportes", text: "Reportes", icon: TrendingUp }
   ];
 
   const handleLogout = () => {

@@ -38,7 +38,15 @@ const Home = () => {
       icon:   RotateCcw,
       path: "/devoluciones",
       color: "text-red-600"
+    },
+    {
+      title: "Reportes",
+      description: "Ver graficos y reportes",
+      icon: TrendingUp,
+      path: "/reportes",
+      color: "text-yellow-600"
     }
+    
   ];
 
   return (
