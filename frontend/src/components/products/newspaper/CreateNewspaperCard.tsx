@@ -191,24 +191,22 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
                   { id: "friday_price", label: "Precio Viernes" },
                   { id: "saturday_price", label: "Precio Sábado" },
                   { id: "sunday_price", label: "Precio Domingo" },
-                ].map((price) => {
-                  const fieldValue = formData[price.id as keyof Product] as number;
-                  return (
-                    <div key={price.id} className="flex flex-col space-y-1.5">
-                      <Label htmlFor={price.id}>{price.label}</Label>
-                      <Input
-                        id={price.id}
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder={price.label}
-                        value={fieldValue !== 0 ? fieldValue : ""}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  );
-                })}
+                ].map((price) => (
+                  <div key={price.id} className="flex flex-col space-y-1.5">
+                    <Label htmlFor={price.id}>{price.label}</Label>
+                    <Input
+                      id={price.id}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder={price.label}
+                      value={String(formData[price.id as keyof Product] ?? "")}
+                      onChange={handleChange}
+                      required
+                    />
+
+                  </div>
+                ))}
               </div>
 
               {/* Campo Estado */}

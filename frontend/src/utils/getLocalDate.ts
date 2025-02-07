@@ -1,8 +1,9 @@
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 
-export function getLocalDate(timeZone: string = "America/Lima"): string {
+export function getLocalDate(daysToAdd: number = 0, timeZone: string = "America/Lima"): string {
   const now = new Date();
   const localDate = toZonedTime(now, timeZone);
-  return format(localDate, "yyyy-MM-dd");
+  const dateWithAddedDays = addDays(localDate, daysToAdd);
+  return format(dateWithAddedDays, "yyyy-MM-dd");
 }

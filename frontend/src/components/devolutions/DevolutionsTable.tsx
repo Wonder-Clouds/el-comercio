@@ -18,17 +18,17 @@ interface TableProps {
   pageSize: number;
   totalCount: number
   onPageChange: (page: number) => void;
+  refreshData: () => void; 
 }
 
-const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange }) => {
+const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData }) => {
   const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
-    const data: DevolutionQuantity = {
-      quantity: value
-    };
-
+    const data: DevolutionQuantity = { quantity: value };
+  
     try {
       await postDevolution(detailAssignmentId, data);
       console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
+      refreshData();
     } catch (error) {
       console.error('Error al actualizar:', error);
     }
@@ -68,7 +68,7 @@ const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize,
               {row.getVisibleCells().map(cell => (
                 <td
                   key={cell.id}
-                  className="px-6 py-4 whitespace-nowrap"
+                  className="px-2 py-4 whitespace-nowrap"
                 >
                   {flexRender(
                     cell.column.columnDef.cell,

@@ -11,7 +11,7 @@ import {
 } from "@/api/Reports.api";
 import { SalesBySellers } from "@/components/reports/SalesBySellers";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { BarChart2, CalendarIcon, Package, TrendingUp, Users } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -102,91 +102,150 @@ function Reports() {
   }, [date]);
 
   return (
-    <div className="container mx-auto mt-6 p-4 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Reportes</CardTitle>
-          <CardDescription>
-            Visualiza y analiza los datos de tu negocio
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-[300px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date.from && date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    <span>Seleccionar rango de fechas</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date.from}
-                  selected={date}
-                  onSelect={(newDate) => setDate(newDate || date)}
-                  numberOfMonths={2}
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="container mx-auto py-8 px-4">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Panel de Reportes</h1>
+          <p className="text-muted-foreground mt-2">
+            Monitorea y analiza el rendimiento de tu negocio
+          </p>
+        </div>
+
+        {/* Date Selector Card */}
+        <Card className="mb-8 bg-white shadow-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h2 className="text-lg font-medium">Rango de Fechas</h2>
+                <p className="text-sm text-muted-foreground">
+                  Selecciona el período para los reportes
+                </p>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[300px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date.from && date.to ? (
+                      <>
+                        {format(date.from, "LLL dd, y")} -{" "}
+                        {format(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      <span>Seleccionar rango de fechas</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={date.from}
+                    selected={date}
+                    onSelect={(newDate) => setDate(newDate || date)}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Financial Summary Section */}
+        <div className="grid gap-6 mb-8">
+          <Card className="bg-white shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Resumen Financiero</CardTitle>
+                <CardDescription>
+                  Vista general del rendimiento financiero
+                </CardDescription>
+              </div>
+              <TrendingUp className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-6 pt-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <Profits data={profitsData} dateRange={date} />
+              </div>
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <MonthlyEarnings data={monthlyEarningsData} dateRange={date} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Products Analysis Section */}
+        <div className="grid gap-6 mb-8">
+          <Card className="bg-white shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Análisis de Productos</CardTitle>
+                <CardDescription>
+                  Desempeño y tendencias de productos
+                </CardDescription>
+              </div>
+              <Package className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-6 pt-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <TopNewsPapers data={topNewsPapersData} dateRange={date} />
+              </div>
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <TopProducts data={topProductsData} dateRange={date} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sales Performance Section */}
+        <div className="grid gap-6 mb-8">
+          <Card className="bg-white shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Rendimiento de Ventas</CardTitle>
+                <CardDescription>
+                  Análisis detallado del equipo de ventas
+                </CardDescription>
+              </div>
+              <Users className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <SalesBySellers data={salesData} dateRange={date} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Operational Efficiency Section */}
+        <div className="grid gap-6">
+          <Card className="bg-white shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="space-y-1">
+                <CardTitle className="text-xl">Eficiencia Operativa</CardTitle>
+                <CardDescription>
+                  Métricas de eficiencia y retornos
+                </CardDescription>
+              </div>
+              <BarChart2 className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <ReturnsAndEfficiency
+                  data={returnsAndEfficiencyData}
+                  dateRange={date}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Resumen Financiero</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Profits data={profitsData} dateRange={date} />
-          <MonthlyEarnings data={monthlyEarningsData} dateRange={date} />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Análisis de Productos</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TopNewsPapers data={topNewsPapersData} dateRange={date} />
-          <TopProducts data={topProductsData} dateRange={date} />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Rendimiento de Ventas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SalesBySellers data={salesData} dateRange={date} />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Eficiencia Operativa</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ReturnsAndEfficiency
-            data={returnsAndEfficiencyData}
-            dateRange={date}
-          />
-        </CardContent>
-      </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

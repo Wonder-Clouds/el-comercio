@@ -24,15 +24,12 @@ function NewspaperManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  // Estados para los modales
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Función para obtener productos filtrando los periódicos
   const fetchNewspapers = useCallback(async () => {
     try {
-      // Se llama al endpoint getProducts con el filtro del tipo periódico.
       const response = await getProducts(page, pageSize, ProductType.NEWSPAPER, searchTerm);
       setNewspapers(response.results);
       setTotalCount(response.count);
@@ -50,7 +47,6 @@ function NewspaperManagement() {
     fetchNewspapers();
   }, [fetchNewspapers]);
 
-  // Búsqueda con debounce
   const debouncedSearch = useMemo(
     () =>
       debounce(async (term: string) => {
@@ -108,7 +104,6 @@ function NewspaperManagement() {
     setShowUpdateModal(true);
   };
 
-  // Función para eliminar un periódico
   const handleDelete = async (product: Product) => {
     if (confirm("¿Estás seguro de eliminar este periódico?")) {
       try {
@@ -132,7 +127,6 @@ function NewspaperManagement() {
 
   return (
     <>
-      {/* Cabecera */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-4xl font-bold">Periódicos</h1>
         <div className="flex flex-wrap gap-3">
@@ -151,7 +145,7 @@ function NewspaperManagement() {
         </div>
       </div>
 
-      {/* Barra de búsqueda */}
+      {/* Search */}
       <div className="relative">
         <div className="relative">
           <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
@@ -178,7 +172,6 @@ function NewspaperManagement() {
         )}
       </div>
 
-      {/* Tabla de periódicos */}
       <NewspaperTable
         data={newspapers}
         page={page}

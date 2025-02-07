@@ -47,7 +47,7 @@ function ProductManagement() {
     fetchProduct();
   }, [fetchProduct]);
 
-  // Búsqueda con debounce
+  // Debounce Search
   const debouncedSearch = useMemo(
     () =>
       debounce(async (productName: string) => {
@@ -145,7 +145,8 @@ function ProductManagement() {
           </Button>
         </div>
       </div>
-      {/* Barra de búsqueda */}
+
+      {/* Search */}
       <div className="relative">
         <div className="relative">
           <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
@@ -168,7 +169,7 @@ function ProductManagement() {
           </div>
         )}
       </div>
-      {/* Tabla de productos */}
+
       <ProductTable
         data={products}
         page={page}

@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Product, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
-import { Calendar, FileDown, Printer, UserPlus } from "lucide-react";
+import { Calendar, FileDown, Printer, RotateCcw } from "lucide-react";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -136,7 +136,7 @@ function Assignments() {
       {/* Pestaña de Periódicos */}
       <TabsContent value="periodicos">
         <div className="flex flex-col items-center space-y-3">
-          <div className="flex items-center space-x-5">
+          <div className="flex flex-col items-center space-y-5">
             <h1 className="text-4xl font-bold text-center">Asignar Periódicos</h1>
             <div className="flex flex-wrap gap-3">
               <Button
@@ -164,17 +164,18 @@ function Assignments() {
                   variant="outline"
                   className="flex items-center gap-2"
                 >
-                  <UserPlus className="w-4 h-4" />
-                  Asignar
+                  <RotateCcw className="w-4 h-4" />
+                  Refrescar
                 </Button>
               )}
+              <button
+                onClick={() => setActiveCalendar(!activeCalendar)}
+                className="flex items-center text-gray-700 rounded-xl hover:bg-gray-200"
+              >
+                <Calendar className="w-8 h-8 text-gray-700" />
+              </button>
             </div>
-            <button
-              onClick={() => setActiveCalendar(!activeCalendar)}
-              className="flex items-center p-2 text-gray-700 rounded-xl hover:bg-gray-200"
-            >
-              <Calendar className="w-8 h-8 text-gray-700" />
-            </button>
+
           </div>
           <span className="my-auto text-xl">
             {capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate as string))}
@@ -237,34 +238,67 @@ function Assignments() {
               <Printer className="w-4 h-4" />
               Imprimir
             </Button>
-            {/** En Productos siempre se muestra el botón "Asignar" en el encabezado */}
-            <Button
-              onClick={handleCreateAssignments}
-              variant="outline"
-              className="flex items-center gap-2"
+            {/** Si ya existen asignaciones o la fecha seleccionada no es la actual,
+               * se muestra el botón "Asignar" en el encabezado.
+               */}
+            {(data.length > 0 || selectedDate !== getLocalDate()) && (
+              <Button
+                onClick={handleCreateAssignments}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Refrescar
+              </Button>
+            )}
+            <button
+              onClick={() => setActiveCalendar(!activeCalendar)}
+              className="flex items-center text-gray-700 rounded-xl hover:bg-gray-200"
             >
-              <UserPlus className="w-4 h-4" />
-              Asignar
-            </Button>
+              <Calendar className="w-8 h-8 text-gray-700" />
+            </button>
           </div>
+
           {data.length > 0 && (
             <span className="my-auto text-xl">
               {capitalizeFirstLetter(formatDateToSpanishSafe(data[0].date_assignment.toString()))}
             </span>
           )}
         </div>
-        <div className="p-5 mx-auto">
-          <AssignmentTable
-            data={data}
-            products={products}
-            page={page}
-            pageSize={pageSize}
-            totalCount={totalCount}
-            onPageChange={handlePageChange}
-            tableRef={tableRefProducts}
-            tableType="product"
+        {/** Si no hay registros y la fecha es la actual, mostramos el botón grande "Asignar periódicos para hoy" */}
+        {data.length === 0 && selectedDate === getLocalDate() && (
+          <button
+            onClick={handleCreateAssignments}
+            className="flex py-4 px-8 mx-auto my-5 text-white bg-blue-900 hover:bg-blue-950 text-2xl font-bold rounded-xl shadow-lg transition-all duration-300"
+          >
+            Asignar productos para hoy
+          </button>
+        )}
+        {!activeCalendar ? (
+          data.length > 0 ? (
+            <div className="p-5 mx-auto">
+              <AssignmentTable
+                data={data}
+                products={products}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={handlePageChange}
+                tableRef={tableRefProducts}
+                tableType="product"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-5 text-xl text-gray-500">
+              <p>No hay entregas disponibles para esta fecha.</p>
+            </div>
+          )
+        ) : (
+          <CalendarPicker
+            onDateSelect={setSelectedDate}
+            changeStatusCalendar={() => setActiveCalendar(false)}
           />
-        </div>
+        )}
       </TabsContent>
     </Tabs>
   );
