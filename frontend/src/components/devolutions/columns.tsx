@@ -67,7 +67,7 @@ export const columns = (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-500">Precio unitario</p>
                         <p className="text-lg font-medium">
-                          ${detailAssignment?.product?.type === ProductType.NEWSPAPER ? detailAssignment?.unit_price : detailAssignment?.product?.product_price || 0}
+                          S/.{detailAssignment?.product?.type === ProductType.NEWSPAPER ? detailAssignment?.unit_price : detailAssignment?.product?.product_price || 0}
                         </p>
                       </div>
                     </div>
@@ -104,7 +104,7 @@ export const columns = (
                       <div className="flex justify-between items-center">
                         <p className="text-sm font-medium text-gray-600">Total a pagar</p>
                         <p className="text-xl font-bold text-gray-900">
-                          ${formatCurrency(totalToPay)}
+                          S/.{formatCurrency(totalToPay)}
                         </p>
                       </div>
                     </div>
