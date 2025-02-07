@@ -6,7 +6,7 @@ import Sellers from "@/pages/Sellers";
 import Assignments from "@/pages/Assignments";
 import Login from "@/pages/Login";
 import MainLayout from "@/components/shared/MainLayout";
-import Devolutions from "@/pages/Devolution";
+import Devolutions from "@/pages/Devolutions";
 import Reports from "@/pages/Reports";
 
 const routes = [

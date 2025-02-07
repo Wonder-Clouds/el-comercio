@@ -25,13 +25,8 @@ export function NewspaperTable({
   onEdit,
   onDelete,
 }: NewspaperTableProps) {
- 
-  const onValueChange = (productId: number, field: string, value: number | string | boolean) => {
-    console.log("Cambio en periódico:", productId, field, value);
-    // Aquí puedes implementar la lógica para actualizar el valor en el backend o en el estado global
-  };
-
-  const columns = columnsNewspaper(onValueChange, onEdit, onDelete);
+  // Se generan las columnas pasándole solo las funciones de edición y eliminación
+  const columns = columnsNewspaper(onEdit, onDelete);
 
   const table = useReactTable({
     data,

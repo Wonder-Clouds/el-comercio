@@ -17,9 +17,12 @@ function Sellers() {
   const { toast } = useToast()
 
   const [data, setData] = useState<Seller[]>([])
+
+  // Pagination
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
+
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null)

@@ -25,34 +25,8 @@ export function ProductTable({
   onEdit,
   onDelete,
 }: ProductTableProps) {
-  // Función para la edición inline de celdas
-  const handleValueChange = async (productId: number, value: string | number) => {
-    try {
-      const currentProduct = data.find((p) => p.id === productId);
-      if (!currentProduct) {
-        console.error("Producto no encontrado");
-        return;
-      }
-      const updatedProduct: Product = {
-        ...currentProduct,
-        ...(typeof value === "string" && { name: value }),
-        ...(typeof value === "number" && {
-          returns_date: value,
-          monday_price: value,
-          tuesday_price: value,
-          wednesday_price: value,
-          thursday_price: value,
-          friday_price: value,
-        }),
-      };
-      console.log("Actualizando producto:", updatedProduct);
-      // Aquí puedes llamar a updateProduct(updatedProduct) si deseas actualizar al vuelo.
-    } catch (error) {
-      console.error("Error al actualizar el producto:", error);
-    }
-  };
-
-  const columns = columnsProduct(handleValueChange, onEdit, onDelete);
+  // Se generan las columnas pasándole las funciones de edición y eliminación.
+  const columns = columnsProduct(onEdit, onDelete);
 
   const table = useReactTable({
     data,
@@ -126,7 +100,10 @@ export function ProductTable({
                     {pageNumber}
                   </button>
                 );
-              } else if ((pageNumber === page - 2 && pageNumber > 2) || (pageNumber === page + 2 && pageNumber < totalPages - 1)) {
+              } else if (
+                (pageNumber === page - 2 && pageNumber > 2) ||
+                (pageNumber === page + 2 && pageNumber < totalPages - 1)
+              ) {
                 return (
                   <span key={index} className="px-2 text-gray-400">
                     •••

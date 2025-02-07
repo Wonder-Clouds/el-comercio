@@ -20,28 +20,28 @@ const Home = () => {
     },
     {
       title: "Gestionar Vendedores",
-      description: "Maneja a tus distribuidores",
+      description: "Maneja a tus vendedores y asignales sus productos",
       icon: Users,
       path: "/clientes",
       color: "text-green-600"
     },
     {
       title: "Ver Entregas",
-      description: "Controla tus entregas",
+      description: "Controla tus entregas y asignaciones",
       icon: Truck,
       path: "/entregas",
       color: "text-purple-600"
     },
     {
       title: "Ver Devoluciones",
-      description: "Control de devoluciones",
+      description: "Control de devoluciones de productos",
       icon:   RotateCcw,
       path: "/devoluciones",
       color: "text-red-600"
     },
     {
       title: "Reportes",
-      description: "Ver graficos y reportes",
+      description: "Ver gráficos y reportes",
       icon: TrendingUp,
       path: "/reportes",
       color: "text-yellow-600"
@@ -121,7 +121,7 @@ const Home = () => {
 
       {/* Main Menu */}
       <Card className="bg-white">
-        <CardContent className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-6 p-4 sm:grid-cols-2 lg:grid-cols-5">
           {menuItems.map((item, index) => (
             <Link
               key={index}
