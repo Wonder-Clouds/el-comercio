@@ -1,4 +1,5 @@
 import { formatDateToSpanishSafe, formatDateToYYYYMMDD } from '@/utils/formatDate';
+import { ArrowLeftCircle, ArrowRightCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 interface CalendarProps {
@@ -9,6 +10,7 @@ interface CalendarProps {
 const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCalendar }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showYearSelector, setShowYearSelector] = useState(false);
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -29,12 +31,21 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
 
   const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+  // Generar array de años (10 años antes y después del año actual)
+  const currentYear = currentDate.getFullYear();
+  const years = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
   };
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+  };
+
+  const handleYearClick = (year: number) => {
+    setCurrentDate(new Date(year, currentDate.getMonth(), 1));
+    setShowYearSelector(false);
   };
 
   const handleDateClick = (day: number) => {
@@ -71,23 +82,50 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
   };
 
   return (
-    <div className=" bg-white p-8">
-      <div className=" mx-auto border border-gray-300 shadow-sm">
+    <div className="bg-white p-8">
+      <div className="mx-auto border border-gray-300 shadow-sm">
         <div className="flex justify-between items-center p-6 bg-gray-50 border-b border-gray-300">
           <button
             onClick={handlePrevMonth}
-            className="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50"
+            className="p-2 border rounded-full border-gray-300 bg-white hover:bg-gray-50"
           >
-            ←
+            <ArrowLeftCircle />
           </button>
-          <h2 className="text-2xl font-semibold text-gray-800">
-            {months[currentDate.getMonth()]} {currentDate.getFullYear()}
-          </h2>
+          <div className="flex flex-col items-center relative">
+            <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+              {months[currentDate.getMonth()]}
+              <button 
+                onClick={() => setShowYearSelector(!showYearSelector)}
+                className="inline-flex items-center hover:bg-gray-100 rounded px-2 py-1"
+              >
+                {currentDate.getFullYear()}
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </button>
+            </h2>
+            
+            {showYearSelector && (
+              <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                <div className="grid grid-cols-3 gap-1 p-2">
+                  {years.map(year => (
+                    <button
+                      key={year}
+                      onClick={() => handleYearClick(year)}
+                      className={`px-3 py-2 text-sm rounded hover:bg-gray-100 ${
+                        year === currentDate.getFullYear() ? 'bg-gray-200' : ''
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           <button
             onClick={handleNextMonth}
-            className="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50"
+            className="p-2 border border-gray-300 rounded-full bg-white hover:bg-gray-50"
           >
-            →
+            <ArrowRightCircle />
           </button>
         </div>
 
