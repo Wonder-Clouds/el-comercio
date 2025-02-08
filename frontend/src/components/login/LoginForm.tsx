@@ -43,7 +43,7 @@ export default function LoginForm() {
         const tokenPayload = JSON.parse(window.atob(access.split(".")[1]));
         localStorage.setItem("userId", tokenPayload.user_id);
 
-        navigate("/inicio");
+        navigate("/");
       } else {
         throw new Error("Token inválido");
       }
