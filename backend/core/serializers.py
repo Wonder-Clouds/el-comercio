@@ -1,6 +1,6 @@
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-class CustomTokenObtainSerializer(TokenObtainSerializer):
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
@@ -8,4 +8,6 @@ class CustomTokenObtainSerializer(TokenObtainSerializer):
 
         token['username'] = user.username
         token['email'] = user.email
+        token['groups'] = [group.name for group in user.groups.all()]
+
         return token
