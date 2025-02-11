@@ -16,7 +16,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { to: "/inicio", text: "Inicio", icon: Home },
+    { to: "/", text: "Inicio", icon: Home },
     { to: "/entregas", text: "Entregas", icon: Truck },
     { to: "/devoluciones", text: "Devoluciones", icon: RotateCcw },
     { to: "/productos", text: "Productos", icon: Package },

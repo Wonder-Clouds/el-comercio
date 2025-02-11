@@ -199,4 +199,5 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ALGORITHM": "HS256",
     "SIGNING_KEY": os.getenv('SIGNING_KEY'),
+    "TOKEN_OBTAIN_PAIR_SERIALIZER": "core.serializers.CustomTokenObtainPairSerializer",
 }
