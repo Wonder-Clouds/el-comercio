@@ -48,13 +48,17 @@ class SellerViewSet(viewsets.ModelViewSet):
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
 
-        if not start_date or not end_date:
-            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if start_date and end_date:
+            detail_assignments = DetailAssignment.objects.filter(
+                assignment__seller=seller,
+                status='PENDING',
+                assignment__date_assignment__range=[start_date, end_date]
+            )
+        else:
+            detail_assignments = DetailAssignment.objects.filter(
+                assignment__seller=seller,
+                status='PENDING'
+            )
 
-        detail_assignments = DetailAssignment.objects.filter(
-            assignment__seller=seller,
-            status='PENDING',
-            assignment__date_assignment__range=[start_date, end_date]
-        )
         serializer = DetailAssignmentSerializer(detail_assignments, many=True)
         return Response(serializer.data)
