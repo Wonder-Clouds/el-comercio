@@ -1,7 +1,7 @@
 services:
-  db:
-    image: postgres
-    container_name: backend_db
+  database:
+    image: postgres:16
+    container_name: comercio_database
     restart: always
     ports:
       - "5432:5432"

@@ -18,7 +18,7 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Assignment
-        fields = ['id', 'seller_id', 'seller', 'date_assignment', 'status', 'detail_assignments']
+        fields = ['id', 'seller_id', 'seller', 'date_assignment', 'detail_assignments']
 
     def create(self, validated_data):
         """
