@@ -25,7 +25,7 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         Meta class for DetailAssignmentSerializer.
         """
         model = DetailAssignment
-        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price']
+        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price', 'status']
 
     def get_assignment(self, obj):
         """

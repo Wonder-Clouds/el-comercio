@@ -6,6 +6,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 
 from core.pagination import CustomPagination
+from detail_assignment.models import DetailAssignment
+from detail_assignment.serializer import DetailAssignmentSerializer
 from seller.models import Seller
 from seller.serializer import SellerSerializer
 from assignment.models import Assignment
@@ -43,6 +45,16 @@ class SellerViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='unpaid-assignment')
     def unpaid_assignment(self, request, pk=None):
         seller = self.get_object()
-        assignments = Assignment.objects.filter(seller=seller, status='PENDING')
-        serializer = AssignmentSerializer(assignments, many=True)
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            return Response({"error": "start_date and end_date are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        detail_assignments = DetailAssignment.objects.filter(
+            assignment__seller=seller,
+            status='PENDING',
+            assignment__date_assignment__range=[start_date, end_date]
+        )
+        serializer = DetailAssignmentSerializer(detail_assignments, many=True)
         return Response(serializer.data)
