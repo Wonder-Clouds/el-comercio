@@ -6,6 +6,7 @@ from assignment.models import Assignment
 from .models import DetailAssignment
 import datetime
 
+
 class DetailAssignmentSerializer(serializers.ModelSerializer):
     """
     Serializer for DetailAssignment model.
@@ -19,13 +20,27 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         queryset=Product.objects.all(), source='product', write_only=True
     )
     returned_amount = serializers.IntegerField(required=False, read_only=True)
+    date_assignment = serializers.SerializerMethodField()
 
     class Meta:
         """
         Meta class for DetailAssignmentSerializer.
         """
         model = DetailAssignment
-        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price', 'status']
+        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price', 'status',
+                  'date_assignment']
+
+    def get_date_assignment(self, obj):
+        """
+        Get the date_assignment from the related Assignment.
+
+        Args:
+            obj: The object instance.
+
+        Returns:
+            date: The date_assignment of the related Assignment.
+        """
+        return obj.assignment.date_assignment
 
     def get_assignment(self, obj):
         """
