@@ -19,15 +19,17 @@ function ProductManagement() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
+
+  // Search terms
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  // Estados para los modales
+  // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Función para obtener productos filtrando por type PRODUCT
+  // Product filter by type PRODUCT
   const fetchProduct = useCallback(async () => {
     try {
       const response = await getProducts(page, pageSize, ProductType.PRODUCT, searchTerm);
