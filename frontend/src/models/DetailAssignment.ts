@@ -1,6 +1,11 @@
 import { Assignment, defaultAssignment } from "./Assignment";
 import { defaultProduct, Product } from "./Product";
 
+enum AssignmentStatus {
+  PENDING = "PENDING",
+  FINISHED = "FINISHED"
+}
+
 interface DetailAssignment {
   id: number;
   assignment: Assignment;

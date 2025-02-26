@@ -186,9 +186,9 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         for seller in active_sellers:
             assignment, created = Assignment.objects.get_or_create(
                 date_assignment=today,
-                seller=seller,
-                defaults={'status': 'PENDING'}
+                seller=seller
             )
+
             if created:
                 created_assignments.append(assignment)
             else:

@@ -2,13 +2,13 @@ import MainLayout from "@/components/shared/MainLayout";
 import { ProtectedRoutes, PublicRoute } from "@/routes/ProtectedRoutes";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
-import AddProduct from "@/pages/AddProduct";
 import Sellers from "@/pages/Sellers";
 import Assignments from "@/pages/Assignments";
 import Login from "@/pages/Login";
 import Devolutions from "@/pages/Devolutions";
 import Reports from "@/pages/Reports";
 import { Outlet, Route, Routes } from "react-router";
+import Debtors from "@/pages/Debtors";
 
 
 const protectedRoutes = [
@@ -17,7 +17,7 @@ const protectedRoutes = [
   { path: "/productos", element: <Products /> },
   { path: "/devoluciones", element: <Devolutions /> },
   { path: "/clientes", element: <Sellers /> },
-  { path: "/nuevo-producto", element: <AddProduct /> },
+  { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },
 ];
 
