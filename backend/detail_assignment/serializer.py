@@ -19,25 +19,66 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         queryset=Product.objects.all(), source='product', write_only=True
     )
     returned_amount = serializers.IntegerField(required=False, read_only=True)
+    date_assignment = serializers.SerializerMethodField()
+    seller_name = serializers.SerializerMethodField()
+    seller_last_name = serializers.SerializerMethodField()
+    seller_code = serializers.SerializerMethodField()
 
     class Meta:
         """
         Meta class for DetailAssignmentSerializer.
         """
         model = DetailAssignment
-        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price']
+        fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price', 'status',
+                  'date_assignment', 'seller_name', 'seller_last_name', 'seller_code']
 
-    def get_assignment(self, obj):
+    def get_date_assignment(self, obj):
         """
-        Get the assignment data for the given object.
+        Get the date_assignment from the related Assignment.
 
         Args:
             obj: The object instance.
 
         Returns:
-            dict: Serialized assignment data.
+            date: The date_assignment of the related Assignment.
         """
-        return AssignmentSerializer(obj.assignment).data
+        return obj.assignment.date_assignment
+
+    def get_seller_name(self, obj):
+        """
+        Get the seller's name from the related Assignment.
+
+        Args:
+            obj: The object instance.
+
+        Returns:
+            str: The seller's name.
+        """
+        return obj.assignment.seller.name
+
+    def get_seller_last_name(self, obj):
+        """
+        Get the seller's last name from the related Assignment.
+
+        Args:
+            obj: The object instance.
+
+        Returns:
+            str: The seller's last name.
+        """
+        return obj.assignment.seller.last_name
+
+    def get_seller_code(self, obj):
+        """
+        Get the seller's code from the related Assignment.
+
+        Args:
+            obj: The object instance.
+
+        Returns:
+            str: The seller's code.
+        """
+        return obj.assignment.seller.number_seller
 
     def create(self, validated_data):
         """

@@ -9,18 +9,20 @@ import {
   LogOut,
   Menu,
   X,
-  TrendingUp
+  TrendingUp,
+  OctagonAlert
 } from 'lucide-react';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { to: "/inicio", text: "Inicio", icon: Home },
+    { to: "/", text: "Inicio", icon: Home },
     { to: "/entregas", text: "Entregas", icon: Truck },
     { to: "/devoluciones", text: "Devoluciones", icon: RotateCcw },
     { to: "/productos", text: "Productos", icon: Package },
     { to: "/clientes", text: "Clientes", icon: Users },
+    { to: "/deudores", text: "Deudores", icon: OctagonAlert },
     { to: "/reportes", text: "Reportes", icon: TrendingUp }
   ];
 

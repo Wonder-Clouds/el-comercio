@@ -1,4 +1,4 @@
-import { Assignment, AssignmentStatus } from "@/models/Assignment";
+import { Assignment } from "@/models/Assignment";
 import { Seller } from "@/models/Seller";
 import { ColumnDef } from "@tanstack/react-table";
 import EditableCell from './editable-cell';
@@ -12,7 +12,7 @@ export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
 export const columns = (
   products: Product[],
   onValueChange: (assignmentId: number, productId: number, value: number) => void
-): EditableColumnDef<Assignment, Seller | Date | AssignmentStatus | number>[] => {
+): EditableColumnDef<Assignment, Seller | Date | number>[] => {
   return [
     {
       id: "number_seller",
