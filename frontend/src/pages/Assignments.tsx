@@ -26,7 +26,7 @@ function Assignments() {
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
 
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(50);
   const [totalCount, setTotalCount] = useState(0);
 
   const fetchAssignments = useCallback(async () => {

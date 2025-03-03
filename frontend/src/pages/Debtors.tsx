@@ -1,43 +1,56 @@
-import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getUnpaidSellers } from "@/api/Seller.api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Product } from "@/models/Product";
+
+interface DebtorsProps {
+  id: number;
+  product: Product;
+  quantity: number;
+  returned_amount: number;
+  unit_price: string;
+  status: string;
+  date_assignment: string;
+  seller_name: string;
+  seller_last_name: string;
+  seller_code: string;
+}
 
 function Debtors() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
+  const [debtors, setDebtors] = useState<DebtorsProps[]>([]);
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+  const fetchDebtors = useCallback(async () => {
+    try {
+      const debtors = await getUnpaidSellers();
+      setDebtors(debtors);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  }, []);
 
-  const clearSearch = () => {
-    setSearchTerm("");
-  };
+  useEffect(() => {
+    fetchDebtors();
+  }, [fetchDebtors]);
 
   return (
-    <div>
-      <div className="relative">
-        <div className="relative">
-          <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
-          <Input
-            type="text"
-            placeholder="Buscar producto por nombre"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="pl-10 pr-10"
-          />
-          {searchTerm && (
-            <button onClick={clearSearch} className="absolute text-gray-500 -translate-y-1/2 right-3 top-1/2 hover:text-gray-700">
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-        {isSearching && (
-          <div className="absolute -translate-y-1/2 right-14 top-1/2">
-            <div className="w-4 h-4 border-2 border-gray-300 rounded-full animate-spin border-t-gray-600" />
-          </div>
-        )}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      {debtors.map((debtor) => (
+        <Card key={debtor.id} className="shadow-lg border border-gray-200">
+          <CardHeader>
+            <CardTitle>{debtor.seller_name} {debtor.seller_last_name}</CardTitle>
+            <p className="text-sm text-gray-500">Código: {debtor.seller_code}</p>
+          </CardHeader>
+          <CardContent>
+              <div key={debtor.product.id} className="mb-2 p-2 border rounded-lg">
+                <p className="font-semibold">{debtor.product.name}</p>
+                <p className="text-sm text-gray-600">Cantidad: {debtor.quantity}</p>
+                <p className="text-sm text-gray-600">Estado: {debtor.status == "PENDING" ? "Pendiente" : "Completo"}</p>
+              </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
