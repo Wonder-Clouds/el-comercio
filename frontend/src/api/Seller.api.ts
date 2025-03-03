@@ -30,6 +30,11 @@ export const getSellers = async (
   return response.data;
 };
 
+export const getUnpaidSellers = async () => {
+  const response = await api.get('/sellers/unpaid-assignment');
+  return response.data;
+}
+
 export const createSeller = async (seller: Seller): Promise<Seller> => {
   try {
     const response = await api.post('/sellers/', seller);
