@@ -21,6 +21,14 @@ class DetailAssignment(TimeStampedModel):
     status = models.CharField(max_length=11, choices=ASSIGMENT_STATUS, default='PENDING', null=False, blank=False)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, null=False, blank=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False, blank=False)
+    return_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        """
+        Meta class to define constraints and other model-level options.
+        """
+        # Esta restricción debe agregarse, pero primero necesitas limpiar tus datos
+        # unique_together = ['assignment', 'product']
 
     def __str__(self):
         """
@@ -40,4 +48,7 @@ class DetailAssignment(TimeStampedModel):
                 self.unit_price = self.product.product_price
             elif self.product.type == 'NEWSPAPER':
                 self.unit_price = getattr(self.product, f'{current_day}_price')
+
+        if not self.return_date:
+            self.return_date = (datetime.datetime.now() + datetime.timedelta(days=self.product.returns_date)).date()
         super().save(*args, **kwargs)

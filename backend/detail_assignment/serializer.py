@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from assignment.serializer import AssignmentSerializer
 from product.models import Product
 from product.serializer import ProductSerializer
 from assignment.models import Assignment
@@ -30,7 +29,8 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         """
         model = DetailAssignment
         fields = ['id', 'assignment_id', 'product', 'product_id', 'quantity', 'returned_amount', 'unit_price', 'status',
-                  'date_assignment', 'seller_name', 'seller_last_name', 'seller_code']
+                  'date_assignment', 'seller_name', 'seller_last_name', 'seller_code', 'return_date']
+        read_only_fields = ['return_date']
 
     def get_date_assignment(self, obj):
         """
@@ -100,11 +100,17 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         elif product.type == 'NEWSPAPER':
             unit_price = getattr(product, f'{current_day}_price')
 
-        detail_assignment = DetailAssignment.objects.create(
+        detail_assignment, created = DetailAssignment.objects.get_or_create(
             assignment=assignment,
             product=product,
-            unit_price=unit_price,
-            **validated_data
+            defaults={
+                'unit_price': unit_price,
+                **validated_data
+            }
         )
+
+        if created and not detail_assignment.return_date:
+            detail_assignment.return_date = datetime.datetime.now().date() + datetime.timedelta(days=product.returns_date)
+            detail_assignment.save()
 
         return detail_assignment
