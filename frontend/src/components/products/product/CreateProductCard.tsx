@@ -95,6 +95,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
                 <Input
                   id="returns_date"
                   type="number"
+                  min="1"
                   placeholder="Cantidad de días"
                   value={formData.returns_date}
                   onChange={handleChange}
@@ -102,7 +103,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="product_price">Precio producto</Label>
-                <Input id="product_price" placeholder="Precio producto" value={formData.product_price} onChange={handleChange} />
+                <Input id="product_price" type="number" placeholder="Precio producto" min={1} step="0.01" value={formData.product_price} onChange={handleChange} />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="status_product">Estado del Producto</Label>
