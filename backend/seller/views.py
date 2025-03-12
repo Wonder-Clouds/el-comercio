@@ -48,7 +48,7 @@ class SellerViewSet(viewsets.ModelViewSet):
         if start_date and end_date:
             detail_assignments = DetailAssignment.objects.filter(
                 status='PENDING',
-                assignment__date_assignment__range=[start_date, end_date]
+                return_date__range=[start_date, end_date]
             )
         else:
             detail_assignments = DetailAssignment.objects.filter(
