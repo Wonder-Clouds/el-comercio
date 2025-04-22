@@ -9,13 +9,18 @@ import Devolutions from "@/pages/Devolutions";
 import Reports from "@/pages/Reports";
 import { Outlet, Route, Routes } from "react-router";
 import Debtors from "@/pages/Debtors";
-
+import Collections from "@/pages/Collections";
+import Newspapers from "@/pages/Newspapers";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
   { path: "/entregas", element: <Assignments /> },
   { path: "/productos", element: <Products /> },
+  { path: "/periodicos", element: <Newspapers /> },
+  { path: "/cobranzas", element: <Collections /> },
   { path: "/devoluciones", element: <Devolutions /> },
+  { path: "/devoluciones/productos", element: <Devolutions /> },
+  { path: "/devoluciones/periodicos", element: <Devolutions /> },
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },
