@@ -8,6 +8,7 @@ interface DebtorsProps {
   product: Product;
   quantity: number;
   returned_amount: number;
+  return_date: string;
   unit_price: string;
   status: string;
   date_assignment: string;
@@ -39,15 +40,18 @@ function Debtors() {
       {debtors.map((debtor) => (
         <Card key={debtor.id} className="shadow-lg border border-gray-200">
           <CardHeader>
-            <CardTitle>{debtor.seller_name} {debtor.seller_last_name}</CardTitle>
-            <p className="text-sm text-gray-500">Código: {debtor.seller_code}</p>
+            <div className="flex flex-row justify-between">
+              <CardTitle>{debtor.seller_name} {debtor.seller_last_name}</CardTitle>
+              <p className="text-sm text-gray-500">Código: {debtor.seller_code}</p>
+            </div>
+            <p className="text-sm text-gray-600">Fecha de retorno: {debtor.return_date}</p>
           </CardHeader>
           <CardContent>
-              <div key={debtor.product.id} className="mb-2 p-2 border rounded-lg">
-                <p className="font-semibold">{debtor.product.name}</p>
-                <p className="text-sm text-gray-600">Cantidad: {debtor.quantity}</p>
-                <p className="text-sm text-gray-600">Estado: {debtor.status == "PENDING" ? "Pendiente" : "Completo"}</p>
-              </div>
+            <div key={debtor.product.id} className="mb-2 p-2 border rounded-lg">
+              <p className="font-semibold">{debtor.product.name}</p>
+              <p className="text-sm text-gray-600">Cantidad: {debtor.quantity}</p>
+              <p className="text-sm text-gray-600">Estado: {debtor.status == "PENDING" ? "Pendiente" : "Completo"}</p>
+            </div>
           </CardContent>
         </Card>
       ))}

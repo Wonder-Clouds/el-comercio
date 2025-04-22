@@ -1,4 +1,4 @@
-import { Product, ProductType } from "@/models/Product";
+import { Product } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -23,18 +23,6 @@ export const columnsNewspaper = (
       cell: ({ row }) => {
         const product = row.original;
         return <span>{product.name}</span>;
-      },
-    },
-    {
-      accessorKey: "type",
-      header: "Tipo",
-      cell: ({ row }) => {
-        const product = row.original;
-        return (
-          <span>
-            {product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
-          </span>
-        );
       },
     },
     {

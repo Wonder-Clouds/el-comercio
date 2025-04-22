@@ -12,6 +12,7 @@ interface DetailAssignment {
   product: Product;
   quantity: number;
   returned_amount: number;
+  return_date: string;
   unit_price: number;
   status: AssignmentStatus;
 }
@@ -22,6 +23,7 @@ const defaultDetailAssignment: DetailAssignment = {
   product: defaultProduct,
   quantity: 0,
   returned_amount: 0,
+  return_date: "",
   unit_price: 0,
   status: AssignmentStatus.PENDING
 }
