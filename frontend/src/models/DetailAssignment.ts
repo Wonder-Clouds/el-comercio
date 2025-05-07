@@ -15,6 +15,7 @@ interface DetailAssignment {
   return_date: string;
   unit_price: number;
   status: AssignmentStatus;
+  date_assignment: string;
 }
 
 const defaultDetailAssignment: DetailAssignment = {
@@ -25,7 +26,8 @@ const defaultDetailAssignment: DetailAssignment = {
   returned_amount: 0,
   return_date: "",
   unit_price: 0,
-  status: AssignmentStatus.PENDING
+  status: AssignmentStatus.PENDING,
+  date_assignment: ""
 }
 
 interface PostDetailAssignment {

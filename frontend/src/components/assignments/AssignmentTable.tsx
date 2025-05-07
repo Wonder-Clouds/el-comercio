@@ -109,21 +109,46 @@ const AssignmentTable: React.FC<TableProps> = ({
   // Función para imprimir el reporte individual
   const handlePrintRow = (row: Assignment) => {
     if (!row.detail_assignments) return;
+  
     const filteredDetails = row.detail_assignments.filter(
       d => (d.product.type?.toLowerCase() || "") === tableType
     );
+  
+    const date = new Date().toLocaleString();
+  
     const element = document.createElement('div');
     element.innerHTML = `
-      <h2>Reporte Individual</h2>
-      <p><strong>Código:</strong> ${row.seller.number_seller}</p>
-      <p><strong>Nombre:</strong> ${row.seller.name} ${row.seller.last_name}</p>
-      <h3>Productos:</h3>
-      <ul>
-        ${filteredDetails.map(d => `<li>${d.product.name}: ${d.quantity}</li>`).join('')}
-      </ul>
+      <div style="font-family: 'Courier New', Courier, monospace; padding: 16px; width: 300px; border: 1px dashed #000;">
+        <h2 style="text-align: center; margin-bottom: 8px;">🧾 COMPROBANTE DE ENTREGA</h2>
+        <p style="margin: 0;"><strong>Fecha:</strong> ${date}</p>
+        <p style="margin: 0;"><strong>Código Vendedor:</strong> ${row.seller.number_seller}</p>
+        <p style="margin: 0;"><strong>Nombre:</strong> ${row.seller.name} ${row.seller.last_name}</p>
+        <hr style="margin: 8px 0;">
+        <h3 style="margin-bottom: 4px;">Detalle de Productos</h3>
+        <table style="width: 100%; font-size: 14px;">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Producto</th>
+              <th style="text-align: right;">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredDetails.map(d => `
+              <tr>
+                <td>${d.product.name}</td>
+                <td style="text-align: right;">${d.quantity}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <hr style="margin: 8px 0;">
+        <p style="text-align: center; margin-top: 12px;">Gracias por su preferencia</p>
+      </div>
     `;
-    printElement(element, `Reporte_${row.seller.number_seller}`);
+  
+    printElement(element, `Comprobante_${row.seller.number_seller}`);
   };
+  
 
   // Calcular los totales para cada columna de producto
   const productTotals = useMemo(() => {

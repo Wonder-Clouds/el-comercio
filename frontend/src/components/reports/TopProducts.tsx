@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TopProductsResponse } from "@/models/Report";
 import { DateRange } from "react-day-picker";
 
@@ -28,7 +28,7 @@ export function TopProducts({ data, dateRange }: TopProductsProps) {
     }).format(value);
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Productos Más Vendidos</CardTitle>
         <CardDescription>
@@ -74,6 +74,6 @@ export function TopProducts({ data, dateRange }: TopProductsProps) {
           )}
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

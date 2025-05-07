@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { createProduct } from "@/api/Product.api";
+import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +22,6 @@ interface CreateProductCardProps {
 }
 
 const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) => {
-  // Se fuerza el type a ProductType.PRODUCT
   const [formData, setFormData] = useState<Product>({
     ...defaultProduct,
     type: ProductType.PRODUCT,
@@ -56,7 +55,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
     }
     try {
       setIsSubmitting(true);
-      await createProduct(formData);
+      await createItem(formData);
       toast({
         title: "Éxito",
         description: "Producto creado exitosamente",

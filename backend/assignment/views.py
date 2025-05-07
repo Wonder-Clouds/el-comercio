@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
+import pytz
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
@@ -178,7 +179,16 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         Returns:
             Response: The created assignments.
         """
-        today = timezone.now().date()
+        peru_tz = pytz.timezone('America/Lima')
+        
+        now_in_peru = timezone.now().astimezone(peru_tz)
+        
+        # Si la hora actual es antes de las 00:00, usamos el día anterior (26)
+        if now_in_peru.hour < 1:
+            today = now_in_peru - timedelta(days=1)
+        else:
+            today = now_in_peru.date()  # Si ya pasaron las 00:00, usamos el día actual
+
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []
         existing_assignments = []

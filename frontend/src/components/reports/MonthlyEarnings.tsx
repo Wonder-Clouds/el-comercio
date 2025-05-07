@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { DateRange } from "react-day-picker";
 import type { MonthlyEarnings } from "@/models/Report";
@@ -45,7 +45,7 @@ export function MonthlyEarnings({ data, dateRange }: MonthlyEarningsProps) {
   : "Seleccione un rango de fechas";
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Ganancias Mensuales</CardTitle>
                 <CardDescription>{formattedDateRange}</CardDescription>
@@ -91,6 +91,6 @@ export function MonthlyEarnings({ data, dateRange }: MonthlyEarningsProps) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-    </Card>
+    </div>
   );
 }

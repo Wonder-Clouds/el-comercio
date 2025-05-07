@@ -10,11 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { createProduct } from "@/api/Product.api";
+import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { Product, defaultProduct, ProductType } from "@/models/Product";
+import { defaultProduct, ProductType, Newspaper } from "@/models/Product";
 
 interface CreateNewspaperCardProps {
   closeModal: () => void;
@@ -22,7 +22,7 @@ interface CreateNewspaperCardProps {
 }
 
 const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProps) => {
-  const initialFormData: Product = {
+  const initialFormData: Newspaper = {
     ...defaultProduct,
     id: 0,
     name: "",
@@ -38,7 +38,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
     status_product: true,
   };
 
-  const [formData, setFormData] = useState<Product>(initialFormData);
+  const [formData, setFormData] = useState<Newspaper>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -80,7 +80,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
     ];
 
     for (const price of prices) {
-      const value = formData[price.field as keyof Product];
+      const value = formData[price.field as keyof Newspaper];
       if (typeof value !== "number" || isNaN(value)) {
         toast({
           title: "Error",
@@ -112,8 +112,9 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
 
     try {
       setIsSubmitting(true);
-      const formDataToSubmit: Product = {
+      const formDataToSubmit: Newspaper = {
         ...formData,
+        returns_date: Number(formData.returns_date),
         monday_price: Number(formData.monday_price),
         tuesday_price: Number(formData.tuesday_price),
         wednesday_price: Number(formData.wednesday_price),
@@ -121,11 +122,12 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
         friday_price: Number(formData.friday_price),
         saturday_price: Number(formData.saturday_price),
         sunday_price: Number(formData.sunday_price),
-        returns_date: Number(formData.returns_date),
         type: ProductType.NEWSPAPER,
       };
+      
 
-      await createProduct(formDataToSubmit);
+      await createItem(formDataToSubmit);
+      
       toast({
         title: "Éxito",
         description: "Periódico creado exitosamente",
@@ -200,7 +202,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
                       min="0"
                       step="0.01"
                       placeholder={price.label}
-                      value={String(formData[price.id as keyof Product] ?? "")}
+                      value={String(formData[price.id as keyof Newspaper] ?? "")}
                       onChange={handleChange}
                       required
                     />
