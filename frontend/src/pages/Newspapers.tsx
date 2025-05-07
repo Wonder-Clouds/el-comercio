@@ -1,4 +1,4 @@
-import NewspaperManagement from "@/components/products/NewspaperManagement";
+import NewspaperManagement from "@/components/items/NewspaperManagement";
 
 const Newspapers = () => {
   return (

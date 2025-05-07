@@ -66,6 +66,10 @@ class SellerViewSet(viewsets.ModelViewSet):
             result.append({
                 'seller_id': seller.id,
                 'seller_name': f"{seller.name} {seller.last_name}",
+                'seller_code': seller.number_seller,
+                'seller_dni': seller.dni,
+                'seller_phone': seller.phone,
+                'seller_status': seller.status,
                 'assignments': DetailAssignmentSerializer(seller_assignments, many=True).data
             })
 

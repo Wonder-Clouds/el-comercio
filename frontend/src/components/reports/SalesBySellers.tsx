@@ -2,7 +2,7 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import type { DateRange } from "react-day-picker"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SalesBySellers } from "@/models/Report"
 
 interface SalesBySellersProps {
@@ -19,7 +19,7 @@ export function SalesBySellers({ data, dateRange }: SalesBySellersProps) {
     }).format(value)
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Ventas por Vendedor</CardTitle>
         <CardDescription>
@@ -68,7 +68,7 @@ export function SalesBySellers({ data, dateRange }: SalesBySellersProps) {
           )}
         </div>
       </CardContent>
-    </Card>
+    </div>
   )
 }
 

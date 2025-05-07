@@ -27,8 +27,8 @@ const Header = () => {
       text: "Entregas",
       icon: Truck,
       children: [
-        { to: "/entregas", text: "Productos" },
-        { to: "/entregas", text: "Periódicos" },
+        { to: "/entregas/productos", text: "Productos" },
+        { to: "/entregas/periodicos", text: "Periódicos" },
       ]
     },
     { 
@@ -76,7 +76,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="py-4 text-white bg-gray-950">
+    <header className="text-white bg-gray-950">
       <nav className="container px-4 mx-auto">
         <div className="flex justify-end lg:hidden">
           <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none">
@@ -89,7 +89,6 @@ const Header = () => {
           ${isOpen ? 'block' : 'hidden'} lg:flex
           mt-4 md:mt-0
         `}>
-          <div className="flex-1" />
           <ul className="flex flex-col items-center space-y-4 lg:flex-row lg:space-y-0 lg:space-x-8">
             {menuItems.map((item) => (
               <li key={item.text} className="relative">
@@ -134,7 +133,7 @@ const Header = () => {
           <div className="flex justify-end flex-1">
             <button
               onClick={handleLogout}
-              className="flex items-center mt-4 space-x-2 transition-colors hover:text-gray-300 lg:mt-0"
+              className="flex items-center mt-4 space-x-2 bg-gray-800 p-4 transition-colors hover:text-gray-300 hover:bg-slate-500 lg:mt-0"
             >
               <LogOut size={20} />
               <span>Cerrar sesión</span>

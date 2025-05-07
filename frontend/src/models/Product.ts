@@ -3,7 +3,7 @@ export enum ProductType {
   PRODUCT = "PRODUCT",
 }
 
-export interface Product {
+export interface Item {
   id: number;
   name: string;
   type: ProductType | null;
@@ -17,9 +17,14 @@ export interface Product {
   sunday_price: number;
   product_price: number;
   status_product: boolean;
+  total_quantity: number;
 }
 
-export const defaultProduct: Product = {
+export type Product = Omit<Item, 'monday_price' | 'tuesday_price' | 'wednesday_price' | 'thursday_price' | 'friday_price' | 'saturday_price' | 'sunday_price'>;
+
+export type Newspaper = Omit<Item, 'product_price'>;
+
+export const defaultProduct: Item = {
   id: 0,
   name: "",
   type: null,
@@ -33,4 +38,5 @@ export const defaultProduct: Product = {
   sunday_price: 0,
   product_price: 0,
   status_product: false,
+  total_quantity: 0,
 };

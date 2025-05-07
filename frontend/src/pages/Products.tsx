@@ -1,4 +1,4 @@
-import ProductManagement from "@/components/products/ProductManagement";
+import ProductManagement from "@/components/items/ProductManagement";
 
 const Products = () => {
   return (

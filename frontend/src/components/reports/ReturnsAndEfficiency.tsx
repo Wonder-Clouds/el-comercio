@@ -65,7 +65,7 @@ function SellerCard({ vendedorData }: { vendedorData: ReturnsAndEfficiencyType }
   }, [vendedorData])
 
   return (
-    <Card className="flex flex-col h-full">
+    <div className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-lg">{vendedorData.assignment__seller__name}</CardTitle>
         <CardDescription className="flex items-center gap-2">
@@ -130,7 +130,7 @@ function SellerCard({ vendedorData }: { vendedorData: ReturnsAndEfficiencyType }
           </div>
         </div>
       </CardFooter>
-    </Card>
+    </div>
   )
 }
 

@@ -3,7 +3,6 @@ import { ProtectedRoutes, PublicRoute } from "@/routes/ProtectedRoutes";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import Sellers from "@/pages/Sellers";
-import Assignments from "@/pages/Assignments";
 import Login from "@/pages/Login";
 import Devolutions from "@/pages/Devolutions";
 import Reports from "@/pages/Reports";
@@ -11,10 +10,13 @@ import { Outlet, Route, Routes } from "react-router";
 import Debtors from "@/pages/Debtors";
 import Collections from "@/pages/Collections";
 import Newspapers from "@/pages/Newspapers";
+import AssignmentProduct from "@/pages/AssignmentProduct";
+import AssignmentNewspaper from "@/pages/AssignmentNewspaper";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
-  { path: "/entregas", element: <Assignments /> },
+  { path: "/entregas/productos", element: <AssignmentProduct /> },
+  { path: "/entregas/periodicos", element: <AssignmentNewspaper /> },
   { path: "/productos", element: <Products /> },
   { path: "/periodicos", element: <Newspapers /> },
   { path: "/cobranzas", element: <Collections /> },
