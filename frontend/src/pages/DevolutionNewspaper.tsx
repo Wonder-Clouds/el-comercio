@@ -1,37 +1,37 @@
-import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
-import { getProducts } from "@/api/Product.api";
-import AssignmentTable from "@/components/assignments/AssignmentTable";
+import { useCallback, useEffect, useRef, useState } from "react";
+import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Assignment } from "@/models/Assignment";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList } from "@radix-ui/react-tabs";
+import { AlertCircle, Calendar, FileDown, Printer, RefreshCw } from "lucide-react";
 import { Product, ProductType } from "@/models/Product";
+import { getProducts } from "@/api/Product.api";
+import { getAssignments } from "@/api/Assignment.api";
+import { Assignment } from "@/models/Assignment";
+import { getLocalDate } from "@/utils/getLocalDate";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
-import { getLocalDate } from "@/utils/getLocalDate";
 import printElement from "@/utils/printElement";
-import { Calendar, FileDown, Printer, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react"
-import { Skeleton } from "@/components/ui/skeleton";
 
-function AssignmentNewspaper() {
+const DevolutionNewspaper = () => {
   const tableRefNewspapers = useRef<HTMLDivElement>(null);
-
+  
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [newspapers, setNewspapers] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
 
-  const [activeCalendar, setActiveCalendar] = useState(false);
+  const [activeCalendar, setActiveCalendar] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
 
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(50);
+  const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
-  
+
   const fetchAssignments = useCallback(async () => {
     if (selectedDate) {
       setLoading(true);
@@ -39,34 +39,24 @@ function AssignmentNewspaper() {
         const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
+        setLoading(false);
       } catch (error) {
         if (error instanceof Error) {
-          // toast({
-          //   title: "Error al cargar asignaciones",
-          //   description: error.message,
-          //   variant: "destructive"
-          // });
+          console.error(error.message);
         }
       } finally {
         setLoading(false);
       }
     } else {
-      const today = getLocalDate();
-      setLoading(true);
+      const yesterday = getLocalDate(-1);
       try {
-        const assignments = await getAssignments(page, pageSize, today);
+        const assignments = await getAssignments(page, pageSize, yesterday);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
       } catch (error) {
         if (error instanceof Error) {
-          // toast({
-          //   title: "Error al cargar asignaciones",
-          //   description: error.message,
-          //   variant: "destructive"
-          // });
+          console.error(error.message);
         }
-      } finally {
-        setLoading(false);
       }
     }
   }, [page, pageSize, selectedDate]);
@@ -74,15 +64,11 @@ function AssignmentNewspaper() {
   const fetchNewspapers = useCallback(async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
-      setNewspapers(newspapers.results.filter((item): item is Product => 'product_price' in item));
+      setNewspapers(newspapers.results);
       setTotalCount(newspapers.count);
     } catch (error) {
       if (error instanceof Error) {
-        // toast({
-        //   title: "Error al cargar productos",
-        //   description: error.message,
-        //   variant: "destructive"
-        // });
+        console.error(error.message);
       }
     }
   }, [page, pageSize]);
@@ -92,30 +78,6 @@ function AssignmentNewspaper() {
     fetchNewspapers();
   }, [fetchAssignments, fetchNewspapers]);
 
-  const handleCreateAssignments = async () => {
-    setCreating(true);
-    try {
-      await postAllAssignments();
-      await fetchAssignments();
-      // toast({
-      //   title: "Asignación exitosa",
-      //   description: "Los productos han sido asignados correctamente",
-      //   variant: "default",
-      // });
-    } catch (error) {
-      if (error instanceof Error) {
-        // toast({
-        //   title: "Error al crear asignaciones",
-        //   description: error.message,
-        //   variant: "destructive"
-        // });
-      }
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  // Funciones de impresión para cada tabla:
   const handlePrintNewspapers = () => {
     if (tableRefNewspapers.current) {
       const clone = tableRefNewspapers.current.cloneNode(true) as HTMLElement;
@@ -127,7 +89,7 @@ function AssignmentNewspaper() {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-
+  
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
     setActiveCalendar(false);
@@ -135,10 +97,10 @@ function AssignmentNewspaper() {
 
   const isToday = selectedDate === getLocalDate();
   const formattedDate = assignments.length > 0
-    ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
-    : selectedDate
-      ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
-      : "Fecha seleccionada";
+  ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
+  : selectedDate
+    ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
+    : "Fecha seleccionada";
 
   return (
     <div className="container mx-auto p-4">
@@ -196,33 +158,6 @@ function AssignmentNewspaper() {
                 </Button>
               )}
             </div>
-
-            {assignments.length === 0 && isToday && (
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Button
-                  onClick={handleCreateAssignments}
-                  size="lg"
-                  className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
-                  disabled={creating}
-                >
-                  {creating ? (
-                    <>
-                      <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                      Asignando...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="mr-2 h-5 w-5" />
-                      Asignar periódicos para hoy
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-            )}
           </div>
 
           {activeCalendar ? (
@@ -263,15 +198,14 @@ function AssignmentNewspaper() {
                   </div>
                 ) : assignments.length > 0 ? (
                   <div className="p-2">
-                    <AssignmentTable
+                    <DevolutionTable
                       data={assignments}
                       products={newspapers}
                       page={page}
                       pageSize={pageSize}
                       totalCount={totalCount}
                       onPageChange={handlePageChange}
-                      tableRef={tableRefNewspapers}
-                      tableType="product"
+                      refreshData={fetchAssignments}
                     />
                   </div>
                 ) : (
@@ -337,4 +271,4 @@ function AssignmentNewspaper() {
   );
 }
 
-export default AssignmentNewspaper;
+export default DevolutionNewspaper;

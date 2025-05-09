@@ -12,6 +12,8 @@ import Collections from "@/pages/Collections";
 import Newspapers from "@/pages/Newspapers";
 import AssignmentProduct from "@/pages/AssignmentProduct";
 import AssignmentNewspaper from "@/pages/AssignmentNewspaper";
+import DevolutionNewspaper from "@/pages/DevolutionNewspaper";
+import DevolutionProduct from "@/pages/DevolutionProduct";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
@@ -21,8 +23,8 @@ const protectedRoutes = [
   { path: "/periodicos", element: <Newspapers /> },
   { path: "/cobranzas", element: <Collections /> },
   { path: "/devoluciones", element: <Devolutions /> },
-  { path: "/devoluciones/productos", element: <Devolutions /> },
-  { path: "/devoluciones/periodicos", element: <Devolutions /> },
+  { path: "/devoluciones/productos", element: <DevolutionProduct /> },
+  { path: "/devoluciones/periodicos", element: <DevolutionNewspaper /> },
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },

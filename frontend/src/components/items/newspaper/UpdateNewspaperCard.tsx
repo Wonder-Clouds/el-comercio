@@ -10,17 +10,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { updateProduct } from "@/api/Product.api";
+import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { Product, ProductType } from "@/models/Product"; // Importa sin 'type'
+import { Newspaper, ProductType } from "@/models/Product";
 
 /**
  * Se define un tipo auxiliar para el formulario en el que los campos numéricos se manejan como string.
  */
-type ProductForm = Omit<
-  Product,
+type NewspaperForm = Omit<
+  Newspaper,
   "returns_date" |
     "monday_price" |
     "tuesday_price" |
@@ -45,7 +45,7 @@ type ProductForm = Omit<
 interface UpdateNewspaperCardProps {
   closeModal: () => void;
   updateData: () => void;
-  productData: Product;
+  productData: Newspaper; 
 }
 
 const UpdateNewspaperCard = ({
@@ -57,7 +57,7 @@ const UpdateNewspaperCard = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Inicializa el estado del formulario convirtiendo los campos numéricos a string
-  const [formData, setFormData] = useState<ProductForm>({
+  const [formData, setFormData] = useState<NewspaperForm>({
     ...productData,
     returns_date: productData.returns_date.toString(),
     monday_price: productData.monday_price.toString(),
@@ -127,7 +127,7 @@ const UpdateNewspaperCard = ({
       setIsSubmitting(true);
 
       // Construye el objeto Product convirtiendo los campos numéricos a number.
-      const updatedProduct: Product = {
+      const updatedNewspaper: Newspaper = {
         ...productData,
         name: formData.name,
         returns_date: Number(formData.returns_date),
@@ -139,10 +139,10 @@ const UpdateNewspaperCard = ({
         saturday_price: Number(formData.saturday_price),
         sunday_price: Number(formData.sunday_price),
         status_product: formData.status_product,
-        type: ProductType.NEWSPAPER, // Usa ProductType como valor
+        type: ProductType.NEWSPAPER,
       };
 
-      await updateProduct(updatedProduct);
+      await updateItem(updatedNewspaper);
       toast({
         title: "Éxito",
         description: "Periódico actualizado exitosamente",

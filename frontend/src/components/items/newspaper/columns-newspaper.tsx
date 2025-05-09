@@ -1,4 +1,4 @@
-import { Product } from "@/models/Product";
+import { Newspaper } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -13,9 +13,9 @@ import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
 export const columnsNewspaper = (
-  onEdit: (product: Product) => void,
-  onDelete: (product: Product) => void
-): ColumnDef<Product>[] => {
+  onEdit: (product: Newspaper) => void,
+  onDelete: (product: Newspaper) => void
+): ColumnDef<Newspaper>[] => {
   return [
     {
       accessorKey: "name",

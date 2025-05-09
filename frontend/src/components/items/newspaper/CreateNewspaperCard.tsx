@@ -14,7 +14,7 @@ import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { defaultProduct, ProductType, Newspaper } from "@/models/Product";
+import { ProductType, Newspaper, defaultNewspaper } from "@/models/Product";
 
 interface CreateNewspaperCardProps {
   closeModal: () => void;
@@ -23,7 +23,7 @@ interface CreateNewspaperCardProps {
 
 const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProps) => {
   const initialFormData: Newspaper = {
-    ...defaultProduct,
+    ...defaultNewspaper,
     id: 0,
     name: "",
     type: ProductType.NEWSPAPER,

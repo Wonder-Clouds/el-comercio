@@ -40,3 +40,19 @@ export const defaultProduct: Item = {
   status_product: false,
   total_quantity: 0,
 };
+
+export const defaultNewspaper: Newspaper = {
+  id: 0,
+  name: "",
+  type: ProductType.NEWSPAPER,
+  returns_date: 0,
+  monday_price: 0,
+  tuesday_price: 0,
+  wednesday_price: 0,
+  thursday_price: 0,
+  friday_price: 0,
+  saturday_price: 0,
+  sunday_price: 0,
+  status_product: true,
+  total_quantity: 0,
+};
