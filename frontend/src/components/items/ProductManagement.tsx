@@ -32,7 +32,7 @@ function ProductManagement() {
   // Product filter by type PRODUCT
   const fetchProduct = useCallback(async () => {
     try {
-      const response = await getProducts(page, pageSize, ProductType.PRODUCT, searchTerm);
+      const response = await getProducts(page, pageSize, ProductType.PRODUCT);
       setProducts(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -56,7 +56,7 @@ function ProductManagement() {
         if (productName) {
           setIsSearching(true);
           try {
-            const response = await getProducts(1, pageSize, ProductType.PRODUCT, productName);
+            const response = await getProducts(1, pageSize, ProductType.PRODUCT);
             setProducts(response.results);
             setTotalCount(response.count);
             setPage(1);

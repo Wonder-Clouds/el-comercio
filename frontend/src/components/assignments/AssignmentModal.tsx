@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Ban, Save, Plus, Trash2, Package, Search, Tag, DollarSign, Calendar, CheckCircle, Hash } from "lucide-react";
+import { Ban, Save, Plus, Trash2, Package, Search, Tag, Calendar, CheckCircle, Hash } from "lucide-react";
 import { Toaster } from "../ui/toaster";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -37,7 +37,7 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
         type: ProductType.PRODUCT,
         status_product: true,
       };
-      
+
       setProducts([...products, newProduct]);
       setName("");
       setReturnDays("");
@@ -49,19 +49,19 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
   const handleAddProducts = async () => {
     if (products.length > 0) {
       setIsSubmitting(true);
-  
+
       await Promise.all(products.map(element => createItem(element)));
-  
+
       updateData();
       closeModal();
     }
   };
-  
+
   const handleRemoveProduct = (id: number) => {
     setProducts(products.filter(product => product.id !== id));
   };
 
-  const filteredProducts = products.filter(product => 
+  const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -139,8 +139,8 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
                 />
               </div>
               <div className="self-end pb-0.5">
-                <Button 
-                  onClick={handleAddSingleProduct} 
+                <Button
+                  onClick={handleAddSingleProduct}
                   className="bg-blue-800 hover:bg-blue-900"
                   disabled={!name || !returnDays || !price || !totalQuantity}
                 >
@@ -165,7 +165,7 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
               <div className="border rounded-xl border-gray-200 shadow-sm bg-white overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                   <h3 className="font-medium text-gray-700 flex items-center gap-2">
-                    <Tag className="h-4 w-4" /> 
+                    <Tag className="h-4 w-4" />
                     Productos seleccionados
                   </h3>
                   <div className="flex gap-2">
@@ -210,7 +210,7 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
                             </TableCell>
                             <TableCell className="text-right font-medium">
                               <span className="flex items-center justify-end">
-                                S/. 
+                                S/.
                                 {product.product_price.toFixed(2)}
                               </span>
                             </TableCell>
@@ -221,9 +221,9 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
                               </span>
                             </TableCell>
                             <TableCell>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                                 onClick={() => handleRemoveProduct(product.id)}
                               >
@@ -258,20 +258,20 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end gap-4 bg-gray-50 border-t py-5">
-            <Button 
-              variant="outline" 
-              onClick={closeModal} 
+            <Button
+              variant="outline"
+              onClick={closeModal}
               disabled={isSubmitting}
               className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
             >
               <Ban className="mr-2 h-4 w-4" /> Cancelar
             </Button>
-            <Button 
+            <Button
               disabled={isSubmitting || products.length === 0}
               className="bg-blue-800 hover:bg-blue-900"
               onClick={handleAddProducts}
             >
-              <Save className="mr-2 h-4 w-4" /> 
+              <Save className="mr-2 h-4 w-4" />
               {isSubmitting ? "Guardando..." : "Guardar asignaciones"}
             </Button>
           </CardFooter>

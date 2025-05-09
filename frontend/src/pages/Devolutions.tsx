@@ -50,7 +50,7 @@ function Devolutions() {
   const fetchNewspapers = useCallback(async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
-      setNewspapers(newspapers.results);
+      setNewspapers(newspapers.results.filter((item): item is Product => 'product_price' in item));
       setTotalCount(newspapers.count);
     } catch (error) {
       if (error instanceof Error) {
@@ -62,7 +62,7 @@ function Devolutions() {
   const fetchProducts = useCallback(async () => {
     try {
       const products = await getProducts(page, pageSize, ProductType.PRODUCT);
-      setProducts(products.results);
+      setProducts(products.results.filter((item): item is Product => 'product_price' in item));
       setTotalCount(products.count);
     } catch (error) {
       if (error instanceof Error) {

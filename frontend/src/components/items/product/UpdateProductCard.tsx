@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { updateProduct } from "@/api/Product.api";
+import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
@@ -58,7 +58,7 @@ const UpdateProductCard = ({ closeModal, updateData, productData }: UpdateProduc
     }
     try {
       setIsSubmitting(true);
-      await updateProduct(formData);
+      await updateItem(formData);
       toast({
         title: "Éxito",
         description: "Producto actualizado exitosamente",

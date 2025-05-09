@@ -1,18 +1,18 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Product } from "@/models/Product";
+import { Newspaper } from "@/models/Product";
 import { columnsNewspaper } from "./columns-newspaper";
 
 interface NewspaperTableProps {
-  data: Product[];
+  data: Newspaper[];
   page: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef: RefObject<HTMLDivElement>;
-  onEdit: (product: Product) => void;
-  onDelete: (product: Product) => void;
+  onEdit: (product:  Newspaper) => void;
+  onDelete: (product: Newspaper) => void;
 }
 
 export function NewspaperTable({

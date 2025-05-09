@@ -5,19 +5,35 @@ import { Newspaper, Product, ProductType } from "@/models/Product";
 export const getProducts = async (
   page: number,
   pageSize: number,
-  productType?: string,
   productName?: string
 ): Promise<PaginatedResponse<Product>> => {
   const response = await api.get('/products/', {
     params: {
       page,
       page_size: pageSize,
-      ...(productType && { product_type: productType }),
+      product_type: 'PRODUCT',
       ...(productName && { product_name: productName }),
     },
   });
   return response.data;
 };
+
+export const getNewspapers = async (
+  page: number,
+  pageSize: number,
+  productName?: string
+): Promise<PaginatedResponse<Newspaper>> => {
+  const response = await api.get('/products/', {
+    params: {
+      page,
+      page_size: pageSize,
+      product_type: 'NEWSPAPER',
+      ...(productName && { product_name: productName }),
+    },
+  });
+  return response.data;
+};
+
 
 export const getProductsByDate = async (date: string, type: ProductType) => {
   const response = await api.get(`/products/by-date/`, {
@@ -31,10 +47,13 @@ export const createItem = async (item: Product | Newspaper): Promise<Product> =>
   return response.data;
 };
 
-export const updateProduct = async (product: Product): Promise<Product> => {
+export const updateItem = async (
+  product: Product | Newspaper
+): Promise<Product | Newspaper> => {
   const response = await api.patch(`/products/${product.id}/`, product);
   return response.data;
 };
+
 
 export const deleteProduct = async (productId: number): Promise<void> => {
   await api.delete(`/products/${productId}/`);

@@ -73,13 +73,15 @@ const AssignmentTable: React.FC<TableProps> = ({
             const product = products.find(p => p.id === productId);
             if (product) {
               updatedAssignment.detail_assignments.push({
-                id: 0, // or generate a unique id
+                id: 0,
                 product,
                 quantity: value,
                 assignment: updatedAssignment,
                 returned_amount: 0,
                 unit_price: 0,
-                status: AssignmentStatus.PENDING
+                status: AssignmentStatus.PENDING,
+                return_date: new Date().toString(),
+                date_assignment: new Date().toString(),
               });
             }
           }
