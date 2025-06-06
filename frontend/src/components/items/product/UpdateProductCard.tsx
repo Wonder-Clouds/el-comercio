@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
 import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/models/Product";
 
@@ -130,7 +129,6 @@ const UpdateProductCard = ({ closeModal, updateData, productData }: UpdateProduc
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };

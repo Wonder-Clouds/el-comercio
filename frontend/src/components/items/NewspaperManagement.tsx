@@ -49,11 +49,11 @@ function NewspaperManagement() {
 
   const debouncedSearch = useMemo(
     () =>
-      debounce(async (term: string) => {
-        if (term) {
+      debounce(async (newspaperName: string) => {
+        if (newspaperName) {
           setIsSearching(true);
           try {
-            const response = await getNewspapers(1, pageSize, ProductType.NEWSPAPER);
+            const response = await getNewspapers(1, pageSize, ProductType.NEWSPAPER, newspaperName);
             setNewspapers(response.results);
             setTotalCount(response.count);
             setPage(1);

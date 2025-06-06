@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
 import { updateSeller } from "@/api/Seller.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { Seller } from '@/models/Seller';
 
@@ -129,7 +128,6 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };

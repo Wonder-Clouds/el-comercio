@@ -5,13 +5,14 @@ import { Newspaper, Product, ProductType } from "@/models/Product";
 export const getProducts = async (
   page: number,
   pageSize: number,
+  productType: ProductType = ProductType.PRODUCT,
   productName?: string
 ): Promise<PaginatedResponse<Product>> => {
   const response = await api.get('/products/', {
     params: {
       page,
       page_size: pageSize,
-      product_type: 'PRODUCT',
+      product_type: productType,
       ...(productName && { product_name: productName }),
     },
   });
@@ -21,13 +22,14 @@ export const getProducts = async (
 export const getNewspapers = async (
   page: number,
   pageSize: number,
+  productType: ProductType = ProductType.NEWSPAPER,
   productName?: string
 ): Promise<PaginatedResponse<Newspaper>> => {
   const response = await api.get('/products/', {
     params: {
       page,
       page_size: pageSize,
-      product_type: 'NEWSPAPER',
+      product_type: productType,
       ...(productName && { product_name: productName }),
     },
   });
