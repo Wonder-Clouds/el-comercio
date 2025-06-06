@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Ban, Save, Plus, Trash2, Package, Search, Tag, Calendar, CheckCircle, Hash } from "lucide-react";
-import { Toaster } from "../ui/toaster";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -277,7 +276,6 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
           </CardFooter>
         </Card>
       </motion.div>
-      <Toaster />
     </div>
   );
 }

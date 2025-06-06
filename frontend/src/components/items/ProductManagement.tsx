@@ -56,7 +56,7 @@ function ProductManagement() {
         if (productName) {
           setIsSearching(true);
           try {
-            const response = await getProducts(1, pageSize, ProductType.PRODUCT);
+            const response = await getProducts(1, pageSize, ProductType.PRODUCT, productName);
             setProducts(response.results);
             setTotalCount(response.count);
             setPage(1);

@@ -1,3 +1,4 @@
+import { Toaster } from "../ui/toaster";
 import Header from "./Header";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
@@ -5,6 +6,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     <div>
       <Header />
       <main>{children}</main>
+      <Toaster />
     </div>
   )
 }

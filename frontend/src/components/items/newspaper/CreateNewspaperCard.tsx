@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
 import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { ProductType, Newspaper, defaultNewspaper } from "@/models/Product";
 
@@ -236,7 +235,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };
