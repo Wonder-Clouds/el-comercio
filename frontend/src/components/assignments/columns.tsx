@@ -11,7 +11,9 @@ export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
 
 export const columns = (
   products: Product[],
-  onValueChange: (assignmentId: number, productId: number, value: number) => void
+  onValueChange: (assignmentId: number, productId: number, value: number) => void,
+  // Nueva función para calcular el stock disponible
+  getAvailableStock?: (productId: number) => number
 ): EditableColumnDef<Assignment, Seller | Date | number>[] => {
   return [
     {
@@ -35,7 +37,7 @@ export const columns = (
     ...products.map((product) => ({
       id: `quantity_${product.id}`,
       accessorKey: `detail_assignments.${product.id}.quantity`,
-      header: product.name,
+      header: `${product.name} (${product.total_quantity})`,
       editable: true,
       cell: ({ row }: { row: { original: Assignment } }) => {
         const assignment = row.original;
@@ -43,16 +45,21 @@ export const columns = (
           (d) => d.product.id === product.id
         );
         const value = detailAssignment?.quantity || 0;
+        const availableStock = getAvailableStock ? getAvailableStock(product.id) : product.total_quantity;
 
         return (
-          <EditableCell
-            value={value}
-            row={row}
-            column={{ id: `quantity_${product.id}` }}
-            onValueChange={(newValue) => {
-              onValueChange(assignment.id, product.id, newValue as number);
-            }}
-          />
+          <div className="text-center">
+            <EditableCell
+              value={value}
+              row={row}
+              column={{ id: `quantity_${product.id}` }}
+              onValueChange={(newValue) => {
+                onValueChange(assignment.id, product.id, newValue as number);
+              }}
+              maxQuantity={availableStock}
+              productName={product.name}
+            />
+          </div>
         );
       },
     })),

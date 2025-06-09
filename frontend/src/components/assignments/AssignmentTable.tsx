@@ -41,7 +41,39 @@ const AssignmentTable: React.FC<TableProps> = ({
     setData(initialData);
   }, [initialData]);
 
+  // Función para calcular el stock disponible de cada producto
+  const getAvailableStock = (productId: number): number => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return 0;
+
+    // Calcular el total usado de este producto en todas las asignaciones
+    const totalUsed = data.reduce((total, assignment) => {
+      const detail = assignment.detail_assignments?.find(d => d.product.id === productId);
+      return total + (detail?.quantity || 0);
+    }, 0);
+
+    // Retornar el stock disponible
+    return Math.max(0, product.total_quantity - totalUsed);
+  };
+
   const handleValueChange = async (assignmentId: number, productId: number, value: number) => {
+    // Calcular el stock disponible considerando el cambio
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const totalUsedByOthers = data.reduce((total, assignment) => {
+      if (assignment.id === assignmentId) return total; // Excluir la asignación actual
+      const detail = assignment.detail_assignments?.find(d => d.product.id === productId);
+      return total + (detail?.quantity || 0);
+    }, 0);
+
+    const availableStock = product.total_quantity - totalUsedByOthers;
+    
+    if (value > availableStock) {
+      alert(`No hay suficiente stock. Disponible: ${availableStock}, Solicitado: ${value}`);
+      return;
+    }
+
     // Actualizar el estado local inmediatamente
     setData(prevData => {
       return prevData.map(assignment => {
@@ -103,8 +135,9 @@ const AssignmentTable: React.FC<TableProps> = ({
       await postDetailAssignments(postData);
     } catch (error) {
       console.error('Error al actualizar:', error);
-      // Si hay error, podrías revertir el cambio
-      // setData(initialData);
+      // Si hay error, revertir el cambio
+      setData(initialData);
+      alert('Error al guardar los cambios. Se han revertido las modificaciones.');
     }
   };
 
@@ -150,7 +183,6 @@ const AssignmentTable: React.FC<TableProps> = ({
   
     printElement(element, `Comprobante_${row.seller.number_seller}`);
   };
-  
 
   // Calcular los totales para cada columna de producto
   const productTotals = useMemo(() => {
@@ -173,12 +205,24 @@ const AssignmentTable: React.FC<TableProps> = ({
     });
     
     return totals;
-  }, [data, products]); // Ahora depende del estado local 'data'
+  }, [data, products]);
+
+  // Calcular stock restante para mostrar en los totales
+  const remainingStock = useMemo(() => {
+    const remaining: { [key: number]: number } = {};
+    
+    products.forEach(product => {
+      const totalUsed = productTotals[product.id] || 0;
+      remaining[product.id] = Math.max(0, product.total_quantity - totalUsed);
+    });
+    
+    return remaining;
+  }, [products, productTotals]);
 
   const table = useReactTable({
     data,
     columns: [
-      ...columns(products, handleValueChange),
+      ...columns(products, handleValueChange, getAvailableStock),
       {
         id: "actions",
         header: () => <span className="action-column">Acciones</span>,
@@ -231,13 +275,16 @@ const AssignmentTable: React.FC<TableProps> = ({
           ))}
           {/* Fila de totales */}
           <tr className="bg-gray-50 font-medium border-t-2 border-gray-300">
-            <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL</td>
+            <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL USADO</td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             {/* Celdas para cada producto */}
             {products.map(product => (
-              <td key={`total-${product.id}`} className="px-6 py-4 whitespace-nowrap text-center font-bold">
-                {productTotals[product.id] || 0}
+              <td key={`total-${product.id}`} className="px-6 py-4 whitespace-nowrap text-center">
+                <div className="font-bold">{productTotals[product.id] || 0}</div>
+                <div className="text-xs text-gray-500">
+                  Restante: {remainingStock[product.id]}
+                </div>
               </td>
             ))}
             {/* Celda vacía para la columna de acciones */}

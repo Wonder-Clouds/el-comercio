@@ -28,7 +28,10 @@ function Debtors() {
     setIsLoading(true);
     try {
       const debtorsData = await getUnpaidSellers();
-      setDebtors(debtorsData);
+      const filteredDebtors = debtorsData.filter((debtor: DebtorsProps) =>
+        Array.isArray(debtor.assignments) && debtor.assignments.length > 0
+      );
+      setDebtors(filteredDebtors);
       setFilteredDebtors(debtorsData);
     } catch (error) {
       if (error instanceof Error) {
@@ -106,7 +109,7 @@ function Debtors() {
   return (
     <div className="container mx-auto p-4 space-y-4">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-2xl font-bold">Gestión de Deudores</h1>
+        <h1 className="text-2xl font-bold">Deudores</h1>
 
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <div className="relative w-full md:w-64">
