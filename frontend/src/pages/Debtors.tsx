@@ -48,7 +48,7 @@ function Debtors() {
 
   useEffect(() => {
     let result = debtors;
-  
+
     // Filter by search term
     if (searchTerm) {
       result = result.filter(
@@ -57,31 +57,31 @@ function Debtors() {
           (debtor.seller_code || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-  
+
     // Filter by status
     if (filterStatus !== "all") {
       const statusBool = filterStatus === "ACTIVO";
       result = result.filter(debtor => debtor.seller_status === statusBool);
     }
-  
+
     setFilteredDebtors(result);
-  }, [searchTerm, filterStatus, debtors]);  
+  }, [searchTerm, filterStatus, debtors]);
 
   const calculateTotalDebt = (debtor: DebtorsProps): string => {
     if (!debtor || !debtor.assignments || debtor.assignments.length === 0) return "0.00";
-  
+
     const totalDebt = debtor.assignments.reduce((total, assignment) => {
       const quantity = parseFloat(assignment.quantity?.toString() || "0");
       const unitPrice = parseFloat(assignment.unit_price?.toString() || "0");
       const returnedAmount = parseFloat(assignment.returned_amount?.toString() || "0");
       const debt = (quantity - returnedAmount) * unitPrice;
-  
+
       return total + (debt > 0 ? debt : 0); // Asegura que no se reste de más
     }, 0);
-  
+
     return totalDebt.toFixed(2);
   };
-  
+
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "No disponible";
@@ -113,31 +113,29 @@ function Debtors() {
 
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <div className="relative w-full md:w-64">
-            <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Buscar deudor..."
-              className="pl-8"
+              className="pl-8 h-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div className="flex gap-2">
-            <select
-              className="px-3 py-2 border rounded-md"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">Todos</option>
-              <option value="INACTIVO">Inactivo</option>
-              <option value="ACTIVO">Activo</option>
-            </select>
+          <select
+            className="h-10 p-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-32"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">Todos</option>
+            <option value="INACTIVO">Inactivo</option>
+            <option value="ACTIVO">Activo</option>
+          </select>
 
-            <Button className="gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden md:inline">Exportar</span>
-            </Button>
-          </div>
+          <Button className="h-10 gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4">
+            <FileText className="h-4 w-4" />
+            <span className="hidden md:inline">Exportar</span>
+          </Button>
         </div>
       </div>
 
