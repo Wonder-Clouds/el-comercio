@@ -218,10 +218,6 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'], url_path='test-cd-ci')
-    def test(self):
-        pass
-
 class ReportViewSet(viewsets.ViewSet):
     """
     A viewset for viewing and generating reports.
