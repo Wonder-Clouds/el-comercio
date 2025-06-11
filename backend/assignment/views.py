@@ -218,6 +218,10 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['get'], url_path='test-cd-ci')
+    def test(self):
+        pass
+
 class ReportViewSet(viewsets.ViewSet):
     """
     A viewset for viewing and generating reports.
@@ -336,8 +340,6 @@ class ReportViewSet(viewsets.ViewSet):
         ).order_by('-total_profit')
 
         return Response(report, status=status.HTTP_200_OK)
-
-    import calendar
 
     @action(detail=False, methods=['get'], url_path='monthly-earnings')
     def monthly_earnings(self, request):
