@@ -3,6 +3,7 @@ from django.db.models.functions import TruncMonth
 from rest_framework import viewsets, status
 from django.utils import timezone
 import calendar
+from datetime import timedelta
 from seller.models import Seller
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -183,11 +184,10 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         
         now_in_peru = timezone.now().astimezone(peru_tz)
         
-        # Si la hora actual es antes de las 00:00, usamos el día anterior (26)
         if now_in_peru.hour < 1:
             today = now_in_peru - timedelta(days=1)
         else:
-            today = now_in_peru.date()  # Si ya pasaron las 00:00, usamos el día actual
+            today = now_in_peru.date()  
 
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []
@@ -207,6 +207,16 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=False, methods=['delete'], url_path='delete-assignments')
+    def delete_assignments(self, request):
+        peru_tz = pytz.timezone('America/Lima')
+        today = timezone.now().astimezone(peru_tz).date()
+        all_assignments = Assignment.objects.filter(date_assignment=today)
+
+        for assignment in all_assignments:
+            assignment.soft_delete()
+
+        return Response(status=status.HTTP_200_OK)
 
 class ReportViewSet(viewsets.ViewSet):
     """
