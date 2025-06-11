@@ -15,3 +15,4 @@ class Assignment(TimeStampedModel):
         Returns a string representation of the assignment.
         """
         return self.seller.name + ' ' + f'{ self.date_assignment }'
+    
