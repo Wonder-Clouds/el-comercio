@@ -93,12 +93,7 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         assignment = validated_data.pop('assignment')
         product = validated_data.pop('product')
 
-        current_day = datetime.datetime.now().strftime('%A').lower()
-
-        if product.type == 'PRODUCT':
-            unit_price = product.product_price
-        elif product.type == 'NEWSPAPER':
-            unit_price = getattr(product, f'{current_day}_price')
+        unit_price = product.product_price
 
         detail_assignment, created = DetailAssignment.objects.get_or_create(
             assignment=assignment,
@@ -110,7 +105,9 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
         )
 
         if created and not detail_assignment.return_date:
-            detail_assignment.return_date = datetime.datetime.now().date() + datetime.timedelta(days=product.returns_date)
+            detail_assignment.return_date = (
+                datetime.datetime.now().date() + datetime.timedelta(days=product.returns_date)
+            )
             detail_assignment.save()
 
         return detail_assignment

@@ -179,7 +179,7 @@ function Debtors() {
                         <div className="grid grid-cols-2 gap-1 mt-1 text-sm">
                           <p>Cantidad: <span className="font-medium">{assignment.quantity || 0}</span></p>
                           <p>Devuelto: <span className="font-medium">{assignment.returned_amount || 0}</span></p>
-                          <p>Precio/u: <span className="font-medium">${assignment.unit_price || 0}</span></p>
+                          <p>Precio/u: <span className="font-medium">S/.{assignment.unit_price || 0}</span></p>
                           <p>Pendiente: <span className="font-medium">{(assignment.quantity || 0) - (assignment.returned_amount || 0)}</span></p>
                           <p>Fecha asignación: <span className="font-medium">{formatDate(assignment.date_assignment)} </span></p>
                           <p>Fecha devolución: <span className="font-medium">{formatDate(assignment.return_date)} </span></p>

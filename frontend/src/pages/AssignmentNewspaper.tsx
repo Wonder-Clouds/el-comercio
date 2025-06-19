@@ -1,5 +1,5 @@
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
-import { getProducts } from "@/api/Product.api";
+import { getProductsByDate } from "@/api/Product.api";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Assignment } from "@/models/Assignment";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -16,12 +16,13 @@ import { Calendar, FileDown, Printer, CheckCircle, AlertCircle, RefreshCw } from
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react"
 import { Skeleton } from "@/components/ui/skeleton";
+import AssignmentModal from "@/components/assignments/AssignmentModal";
 
 function AssignmentNewspaper() {
   const tableRefNewspapers = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [newspapers, setNewspapers] = useState<Product[]>([]);
+  const [newspapers, setNewspapers] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
@@ -31,7 +32,9 @@ function AssignmentNewspaper() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(50);
   const [totalCount, setTotalCount] = useState(0);
-  
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   const fetchAssignments = useCallback(async () => {
     if (selectedDate) {
       setLoading(true);
@@ -72,9 +75,11 @@ function AssignmentNewspaper() {
   }, [page, pageSize, selectedDate]);
 
   const fetchNewspapers = useCallback(async () => {
+    const today = getLocalDate();
+    const date = selectedDate || today;
     try {
-      const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
-      setNewspapers(newspapers.results.filter((item): item is Product => 'product_price' in item));
+      const newspapers = await getProductsByDate(date, ProductType.NEWSPAPER);
+      setNewspapers(newspapers.results);
       setTotalCount(newspapers.count);
     } catch (error) {
       if (error instanceof Error) {
@@ -85,7 +90,7 @@ function AssignmentNewspaper() {
         // });
       }
     }
-  }, [page, pageSize]);
+  }, []);
 
   useEffect(() => {
     fetchAssignments();
@@ -93,6 +98,7 @@ function AssignmentNewspaper() {
   }, [fetchAssignments, fetchNewspapers]);
 
   const handleCreateAssignments = async () => {
+    await fetchNewspapers();
     setCreating(true);
     try {
       await postAllAssignments();
@@ -197,31 +203,38 @@ function AssignmentNewspaper() {
               )}
             </div>
 
-            {assignments.length === 0 && isToday && (
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Button
-                  onClick={handleCreateAssignments}
-                  size="lg"
-                  className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
-                  disabled={creating}
-                >
-                  {creating ? (
-                    <>
-                      <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                      Asignando...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="mr-2 h-5 w-5" />
-                      Asignar periódicos para hoy
-                    </>
-                  )}
-                </Button>
-              </motion.div>
+            {isToday && (
+              <div>
+                {newspapers.length === 0 ? (
+                  <Button
+                    onClick={() => setShowCreateModal(true)}
+                    size="lg"
+                    className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
+                    disabled={creating}
+                  >
+                    {creating ? (
+                      <>
+                        <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                        Asignando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="mr-2 h-5 w-5" />
+                        Asignar periódicos para hoy
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => setShowCreateModal(true)} // <- nuevo handler para editar
+                    size="lg"
+                    className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Editar periodicos asignados
+                  </Button>
+                )}
+              </div>
             )}
           </div>
 
@@ -333,6 +346,12 @@ function AssignmentNewspaper() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Assignment creation modal */}
+      {showCreateModal && (
+        <AssignmentModal type={ProductType.NEWSPAPER} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={newspapers} />
+      )}
+
     </div>
   );
 }

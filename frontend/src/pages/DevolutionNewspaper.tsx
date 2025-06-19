@@ -8,8 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import { AlertCircle, Calendar, FileDown, Printer, RefreshCw } from "lucide-react";
-import { Product, ProductType } from "@/models/Product";
-import { getProducts } from "@/api/Product.api";
+import { Item, ProductType } from "@/models/Product";
+import { getProductsByDate } from "@/api/Product.api";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -20,9 +20,9 @@ import { motion } from "motion/react"
 
 const DevolutionNewspaper = () => {
   const tableRefNewspapers = useRef<HTMLDivElement>(null);
-  
+
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [newspapers, setNewspapers] = useState<Product[]>([]);
+  const [newspapers, setNewspapers] = useState<Item[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -62,8 +62,10 @@ const DevolutionNewspaper = () => {
   }, [page, pageSize, selectedDate]);
 
   const fetchNewspapers = useCallback(async () => {
+    const today = getLocalDate();
+    const date = selectedDate || today;
     try {
-      const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
+      const newspapers = await getProductsByDate(date, ProductType.NEWSPAPER);
       setNewspapers(newspapers.results);
       setTotalCount(newspapers.count);
     } catch (error) {
@@ -71,7 +73,7 @@ const DevolutionNewspaper = () => {
         console.error(error.message);
       }
     }
-  }, [page, pageSize]);
+  }, []);
 
   useEffect(() => {
     fetchAssignments();
@@ -89,7 +91,7 @@ const DevolutionNewspaper = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-  
+
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
     setActiveCalendar(false);
@@ -97,10 +99,10 @@ const DevolutionNewspaper = () => {
 
   const isToday = selectedDate === getLocalDate();
   const formattedDate = assignments.length > 0
-  ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
-  : selectedDate
-    ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
-    : "Fecha seleccionada";
+    ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
+    : selectedDate
+      ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
+      : "Fecha seleccionada";
 
   return (
     <div className="container mx-auto p-4">
@@ -108,7 +110,7 @@ const DevolutionNewspaper = () => {
         <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
-              Asignación de Periódicos
+              Devolución de Periódicos
             </CardTitle>
             <Badge variant="outline" className="text-lg font-semibold bg-white/20 text-white backdrop-blur-sm px-4 py-2">
               {formattedDate}

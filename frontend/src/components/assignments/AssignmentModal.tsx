@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Ban, Save, Plus, Trash2, Package, Search, Tag, Calendar, CheckCircle, Hash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -8,21 +8,23 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import { createItem } from "@/api/Product.api";
 
 interface AssignmentModalProps {
+  type: ProductType;
   closeModal: () => void;
   updateData: () => void;
+  initialProducts?: Item[];
 }
 
-const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
+const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: AssignmentModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [returnDays, setReturnDays] = useState("");
   const [price, setPrice] = useState("");
   const [totalQuantity, setTotalQuantity] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleAddSingleProduct = () => {
@@ -33,7 +35,7 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
         product_price: parseFloat(price),
         returns_date: parseInt(returnDays),
         total_quantity: parseInt(totalQuantity),
-        type: ProductType.PRODUCT,
+        type: type,
         status_product: true,
       };
 
@@ -67,6 +69,11 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
   const totalPrice = products.reduce((sum, product) => sum + (product.product_price * product.total_quantity), 0).toFixed(2);
   const totalItems = products.reduce((sum, product) => sum + product.total_quantity, 0);
 
+  useEffect(() => {
+    if (initialProducts) {
+      setProducts(initialProducts);
+    }
+  }, [initialProducts]);
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <motion.div
@@ -78,10 +85,10 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
           <CardHeader className="bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-t-lg">
             <CardTitle className="text-2xl flex items-center gap-2">
               <Package className="h-6 w-6" />
-              Asignar productos para hoy
+              Asignar para hoy
             </CardTitle>
             <CardDescription className="text-blue-100">
-              Añade los productos que deseas asignar para la fecha actual
+              Añade los artículos que deseas asignar
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -210,13 +217,13 @@ const AssignmentModal = ({ closeModal, updateData }: AssignmentModalProps) => {
                             <TableCell className="text-right font-medium">
                               <span className="flex items-center justify-end">
                                 S/.
-                                {product.product_price.toFixed(2)}
+                                {Number(product.product_price).toFixed(2)}
                               </span>
                             </TableCell>
                             <TableCell className="text-right font-bold text-blue-800">
                               <span className="flex items-center justify-end">
                                 S/.
-                                {(product.product_price * product.total_quantity).toFixed(2)}
+                                {(Number(product.product_price) * Number(product.total_quantity)).toFixed(2)}
                               </span>
                             </TableCell>
                             <TableCell>

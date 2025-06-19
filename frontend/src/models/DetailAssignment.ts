@@ -1,5 +1,5 @@
 import { Assignment, defaultAssignment } from "./Assignment";
-import { defaultProduct, Product } from "./Product";
+import { defaultItem, Item } from "./Product";
 
 enum AssignmentStatus {
   PENDING = "PENDING",
@@ -9,7 +9,7 @@ enum AssignmentStatus {
 interface DetailAssignment {
   id: number;
   assignment: Assignment;
-  product: Product;
+  product: Item;
   quantity: number;
   returned_amount: number;
   return_date: string;
@@ -21,7 +21,7 @@ interface DetailAssignment {
 const defaultDetailAssignment: DetailAssignment = {
   id: 0,
   assignment: defaultAssignment,
-  product: defaultProduct,
+  product: defaultItem,
   quantity: 0,
   returned_amount: 0,
   return_date: "",

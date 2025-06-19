@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import EditableCell from "./editable-cell";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import api from "@/config/axios";
 import { Assignment } from "@/models/Assignment";
 import { DetailAssignment } from "@/models/DetailAssignment";
@@ -29,7 +29,7 @@ const toggleStatus = async (detailAssignmentId: number, isFinalized: boolean) =>
 interface StatusCellProps {
   assignment: Assignment;
   detailAssignment: DetailAssignment;
-  product: Product;
+  product: Item;
   onValueChange: (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => void;
 }
 
@@ -131,7 +131,7 @@ const StatusCell: React.FC<StatusCellProps> = ({ assignment, detailAssignment, p
 
 // 📌 Sección de columnas
 export const columns = (
-  products: Product[],
+  products: Item[],
   onValueChange: (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => void
 ) => {
   return [

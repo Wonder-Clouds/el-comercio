@@ -55,28 +55,21 @@ class DetailAssignmentViewSet(viewsets.ModelViewSet):
 
         try:
             product = Product.objects.get(id=product_id)
-            current_day = datetime.datetime.now().strftime('%A').lower()
-
-            if product.type == 'PRODUCT':
-                data['unit_price'] = product.product_price
-            elif product.type == 'NEWSPAPER':
-                data['unit_price'] = getattr(product, f'{current_day}_price')
+            data['unit_price'] = product.product_price
         except Product.DoesNotExist:
             return Response({'error': 'Product matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Usar filter().first() en lugar de get_or_create para manejar registros duplicados
         detail_assignments = DetailAssignment.objects.filter(
             assignment_id=assignment_id,
             product_id=product_id
         )
 
         if detail_assignments.exists():
-            # Usar el primer registro encontrado
             detail_assignment = detail_assignments.first()
             detail_assignment.quantity = int(data.get('quantity', 0))
+            detail_assignment.unit_price = data['unit_price']
             detail_assignment.save()
         else:
-            # Crear un nuevo registro
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             detail_assignment = serializer.save()

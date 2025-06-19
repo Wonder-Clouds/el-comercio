@@ -6,25 +6,25 @@ import {
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { Assignment } from '@/models/Assignment';
-import { Product } from '@/models/Product';
+import { Item } from '@/models/Product';
 import { DevolutionQuantity } from '@/models/Devolution';
 import { postDevolution } from '@/api/Devolution.api';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TableProps {
   data: Assignment[];
-  products: Product[];
+  products: Item[];
   page: number;
   pageSize: number;
   totalCount: number
   onPageChange: (page: number) => void;
-  refreshData: () => void; 
+  refreshData: () => void;
 }
 
 const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData }) => {
   const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
     const data: DevolutionQuantity = { quantity: value };
-  
+
     try {
       await postDevolution(detailAssignmentId, data);
       console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });

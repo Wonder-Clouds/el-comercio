@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Assignment } from "@/models/Assignment";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -23,7 +23,7 @@ const AssignmentProduct = () => {
   const tableRefProducts = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
@@ -115,13 +115,11 @@ const AssignmentProduct = () => {
     XLSX.writeFile(wb, 'assignment_details.xlsx');
   };
 
-
   const fetchProducts = useCallback(async () => {
     const today = getLocalDate();
     const date = selectedDate || today;
     try {
       const products = await getProductsByDate(date, ProductType.PRODUCT);
-      console.log("Products", products);
       setProducts(products.results);
       setTotalCount(products.count);
     } catch (error) {
@@ -247,7 +245,7 @@ const AssignmentProduct = () => {
 
             {isToday && (
               <div>
-                {assignments.length === 0 ? (
+                {products.length === 0 ? (
                   <Button
                     onClick={() => setShowCreateModal(true)}
                     size="lg"
@@ -392,7 +390,7 @@ const AssignmentProduct = () => {
 
       {/* Assignment creation modal */}
       {showCreateModal && (
-        <AssignmentModal closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} />
+        <AssignmentModal type={ProductType.PRODUCT} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
       )}
 
     </div>

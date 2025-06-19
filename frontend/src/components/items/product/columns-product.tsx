@@ -1,4 +1,4 @@
-import { Product } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -14,9 +14,9 @@ import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
 export const columnsProduct = (
-  onEdit: (product: Product) => void,
-  onDelete: (product: Product) => void
-): ColumnDef<Product>[] => {
+  onEdit: (product: Item) => void,
+  onDelete: (product: Item) => void
+): ColumnDef<Item>[] => {
   return [
     {
       accessorKey: "name",
@@ -50,9 +50,8 @@ export const columnsProduct = (
         return (
           <div className="flex items-center gap-2">
             <span
-              className={`text-sm font-semibold ${
-                product.status_product ? "text-green-500" : "text-red-500"
-              }`}
+              className={`text-sm font-semibold ${product.status_product ? "text-green-500" : "text-red-500"
+                }`}
             >
               {product.status_product ? "Activo" : "Inactivo"}
             </span>
