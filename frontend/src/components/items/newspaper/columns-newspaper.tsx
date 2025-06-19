@@ -1,4 +1,4 @@
-import { Newspaper } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -13,9 +13,9 @@ import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
 export const columnsNewspaper = (
-  onEdit: (product: Newspaper) => void,
-  onDelete: (product: Newspaper) => void
-): ColumnDef<Newspaper>[] => {
+  onEdit: (product: Item) => void,
+  onDelete: (product: Item) => void
+): ColumnDef<Item>[] => {
   return [
     {
       accessorKey: "name",
@@ -34,62 +34,6 @@ export const columnsNewspaper = (
       },
     },
     {
-      accessorKey: "monday_price",
-      header: "Lunes",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.monday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "tuesday_price",
-      header: "Martes",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.tuesday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "wednesday_price",
-      header: "Miércoles",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.wednesday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "thursday_price",
-      header: "Jueves",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.thursday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "friday_price",
-      header: "Viernes",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.friday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "saturday_price",
-      header: "Sábado",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.saturday_price}</span>;
-      },
-    },
-    {
-      accessorKey: "sunday_price",
-      header: "Domingo",
-      cell: ({ row }) => {
-        const product = row.original;
-        return <span>{product.sunday_price}</span>;
-      },
-    },
-    {
       id: "status_product",
       header: "Estado",
       cell: ({ row }) => {
@@ -97,9 +41,8 @@ export const columnsNewspaper = (
         return (
           <div className="flex items-center gap-2">
             <span
-              className={`text-sm font-semibold ${
-                product.status_product ? "text-green-500" : "text-red-500"
-              }`}
+              className={`text-sm font-semibold ${product.status_product ? "text-green-500" : "text-red-500"
+                }`}
             >
               {product.status_product ? "Activo" : "Inactivo"}
             </span>

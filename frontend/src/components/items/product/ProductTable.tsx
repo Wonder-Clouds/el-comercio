@@ -1,18 +1,18 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Product } from "@/models/Product";
+import type { Item } from "@/models/Product";
 import { columnsProduct } from "./columns-product";
 
 interface ProductTableProps {
-  data: Product[];
+  data: Item[];
   page: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef: RefObject<HTMLDivElement>;
-  onEdit: (product: Product) => void;
-  onDelete: (product: Product) => void;
+  onEdit: (product: Item) => void;
+  onDelete: (product: Item) => void;
 }
 
 export function ProductTable({
@@ -93,9 +93,8 @@ export function ProductTable({
                   <button
                     key={index}
                     onClick={() => onPageChange(pageNumber)}
-                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${
-                      isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     {pageNumber}
                   </button>

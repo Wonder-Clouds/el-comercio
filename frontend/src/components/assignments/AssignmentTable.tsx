@@ -4,17 +4,18 @@ import {
   getCoreRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { columns } from './columns'; 
+import { columns } from './columns';
 import { Assignment } from '@/models/Assignment';
 import { postDetailAssignments } from '@/api/DetailAssignment.api';
 import { AssignmentStatus, PostDetailAssignment } from '@/models/DetailAssignment';
-import { Product } from '@/models/Product';
+import { Item } from '@/models/Product';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
 import printElement from '@/utils/printElement';
+import { toast } from '@/hooks/use-toast';
 
 interface TableProps {
   data: Assignment[];
-  products: Product[];
+  products: Item[];
   page: number;
   pageSize: number;
   totalCount: number;
@@ -23,19 +24,19 @@ interface TableProps {
   tableType: 'newspaper' | 'product';
 }
 
-const AssignmentTable: React.FC<TableProps> = ({ 
-  data: initialData, 
-  products, 
-  page, 
-  pageSize, 
-  totalCount, 
-  onPageChange, 
+const AssignmentTable: React.FC<TableProps> = ({
+  data: initialData,
+  products,
+  page,
+  pageSize,
+  totalCount,
+  onPageChange,
   tableRef,
   tableType
 }) => {
   // Estado local para mantener los datos actualizados
   const [data, setData] = useState<Assignment[]>(initialData);
-  
+
   // Actualizar datos cuando cambian las props
   useEffect(() => {
     setData(initialData);
@@ -68,7 +69,7 @@ const AssignmentTable: React.FC<TableProps> = ({
     }, 0);
 
     const availableStock = product.total_quantity - totalUsedByOthers;
-    
+
     if (value > availableStock) {
       alert(`No hay suficiente stock. Disponible: ${availableStock}, Solicitado: ${value}`);
       return;
@@ -80,17 +81,17 @@ const AssignmentTable: React.FC<TableProps> = ({
         if (assignment.id === assignmentId) {
           // Crear una copia profunda para evitar mutar el estado directamente
           const updatedAssignment = { ...assignment };
-          
+
           // Si detail_assignments no existe, inicializarlo como array vacío
           if (!updatedAssignment.detail_assignments) {
             updatedAssignment.detail_assignments = [];
           }
-          
+
           // Buscar si ya existe un detalle para este producto
           const existingDetailIndex = updatedAssignment.detail_assignments.findIndex(
             d => d.product.id === productId
           );
-          
+
           if (existingDetailIndex >= 0) {
             // Actualizar el detalle existente
             const updatedDetails = [...updatedAssignment.detail_assignments];
@@ -117,40 +118,42 @@ const AssignmentTable: React.FC<TableProps> = ({
               });
             }
           }
-          
+
           return updatedAssignment;
         }
         return assignment;
       });
     });
-    
+
     // Enviar al servidor
     const postData: PostDetailAssignment = {
       product_id: productId,
       assignment_id: assignmentId,
       quantity: value
     };
-    
+
     try {
       await postDetailAssignments(postData);
-    } catch (error) {
-      console.error('Error al actualizar:', error);
-      // Si hay error, revertir el cambio
+    } catch {
       setData(initialData);
-      alert('Error al guardar los cambios. Se han revertido las modificaciones.');
+      toast({
+        title: "Error",
+        description: "Error al guardar los cambios. Se han revertido las modificaciones.",
+        variant: "destructive",
+      });
     }
   };
 
   // Función para imprimir el reporte individual
   const handlePrintRow = (row: Assignment) => {
     if (!row.detail_assignments) return;
-  
+
     const filteredDetails = row.detail_assignments.filter(
       d => (d.product.type?.toLowerCase() || "") === tableType
     );
-  
+
     const date = new Date().toLocaleString();
-  
+
     const element = document.createElement('div');
     element.innerHTML = `
       <div style="font-family: 'Courier New', Courier, monospace; padding: 16px; width: 300px; border: 1px dashed #000;">
@@ -180,19 +183,19 @@ const AssignmentTable: React.FC<TableProps> = ({
         <p style="text-align: center; margin-top: 12px;">Gracias por su preferencia</p>
       </div>
     `;
-  
+
     printElement(element, `Comprobante_${row.seller.number_seller}`);
   };
 
   // Calcular los totales para cada columna de producto
   const productTotals = useMemo(() => {
     const totals: { [key: number]: number } = {};
-    
+
     // Inicializar totales para cada producto
     products.forEach(product => {
       totals[product.id] = 0;
     });
-    
+
     // Sumar las cantidades de cada producto
     data.forEach(assignment => {
       if (assignment.detail_assignments) {
@@ -203,19 +206,19 @@ const AssignmentTable: React.FC<TableProps> = ({
         });
       }
     });
-    
+
     return totals;
   }, [data, products]);
 
   // Calcular stock restante para mostrar en los totales
   const remainingStock = useMemo(() => {
     const remaining: { [key: number]: number } = {};
-    
+
     products.forEach(product => {
       const totalUsed = productTotals[product.id] || 0;
       remaining[product.id] = Math.max(0, product.total_quantity - totalUsed);
     });
-    
+
     return remaining;
   }, [products, productTotals]);
 
@@ -270,7 +273,7 @@ const AssignmentTable: React.FC<TableProps> = ({
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
-              ))}  
+              ))}
             </tr>
           ))}
           {/* Fila de totales */}

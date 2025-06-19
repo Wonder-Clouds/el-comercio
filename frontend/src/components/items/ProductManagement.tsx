@@ -1,4 +1,4 @@
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import { Button } from "@/components/ui/button";
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ function ProductManagement() {
   const tableRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
@@ -27,7 +27,7 @@ function ProductManagement() {
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
   // Product filter by type PRODUCT
   const fetchProduct = useCallback(async () => {
@@ -102,12 +102,12 @@ function ProductManagement() {
   };
 
   // Funciones para editar y eliminar productos
-  const handleEdit = (product: Product) => {
+  const handleEdit = (product: Item) => {
     setSelectedProduct(product);
     setShowUpdateModal(true);
   };
 
-  const handleDelete = async (product: Product) => {
+  const handleDelete = async (product: Item) => {
     if (confirm("¿Estás seguro de eliminar este producto?")) {
       try {
         await deleteProduct(product.id);

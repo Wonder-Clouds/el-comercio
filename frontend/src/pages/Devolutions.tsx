@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import { getProducts } from "@/api/Product.api";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
@@ -13,8 +13,8 @@ import { Calendar } from "lucide-react";
 
 function Devolutions() {
   const [data, setData] = useState<Assignment[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [newspapers, setNewspapers] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Item[]>([]);
+  const [newspapers, setNewspapers] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
@@ -50,7 +50,7 @@ function Devolutions() {
   const fetchNewspapers = useCallback(async () => {
     try {
       const newspapers = await getProducts(page, pageSize, ProductType.NEWSPAPER);
-      setNewspapers(newspapers.results.filter((item): item is Product => 'product_price' in item));
+      setNewspapers(newspapers.results.filter((item): item is Item => 'product_price' in item));
       setTotalCount(newspapers.count);
     } catch (error) {
       if (error instanceof Error) {
@@ -62,7 +62,7 @@ function Devolutions() {
   const fetchProducts = useCallback(async () => {
     try {
       const products = await getProducts(page, pageSize, ProductType.PRODUCT);
-      setProducts(products.results.filter((item): item is Product => 'product_price' in item));
+      setProducts(products.results.filter((item): item is Item => 'product_price' in item));
       setTotalCount(products.count);
     } catch (error) {
       if (error instanceof Error) {

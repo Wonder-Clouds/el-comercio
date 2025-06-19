@@ -2,7 +2,7 @@ import { Assignment } from "@/models/Assignment";
 import { Seller } from "@/models/Seller";
 import { ColumnDef } from "@tanstack/react-table";
 import EditableCell from './editable-cell';
-import { Product } from "@/models/Product";
+import { Item } from "@/models/Product";
 
 // Definición correcta del tipo para columnas editables
 export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
@@ -10,7 +10,7 @@ export type EditableColumnDef<TData, TValue> = ColumnDef<TData, TValue> & {
 };
 
 export const columns = (
-  products: Product[],
+  products: Item[],
   onValueChange: (assignmentId: number, productId: number, value: number) => void,
   // Nueva función para calcular el stock disponible
   getAvailableStock?: (productId: number) => number

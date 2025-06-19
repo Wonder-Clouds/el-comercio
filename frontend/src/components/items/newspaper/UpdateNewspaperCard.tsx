@@ -13,38 +13,24 @@ import { Ban, Save } from "lucide-react";
 import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Newspaper, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 
 /**
  * Se define un tipo auxiliar para el formulario en el que los campos numéricos se manejan como string.
  */
 type NewspaperForm = Omit<
-  Newspaper,
+  Item,
   "returns_date" |
-    "monday_price" |
-    "tuesday_price" |
-    "wednesday_price" |
-    "thursday_price" |
-    "friday_price" |
-    "saturday_price" |
-    "sunday_price" |
-    "type"
+  "type"
 > & {
   returns_date: string;
-  monday_price: string;
-  tuesday_price: string;
-  wednesday_price: string;
-  thursday_price: string;
-  friday_price: string;
-  saturday_price: string;
-  sunday_price: string;
   type: string;
 };
 
 interface UpdateNewspaperCardProps {
   closeModal: () => void;
   updateData: () => void;
-  productData: Newspaper; 
+  productData: Item;
 }
 
 const UpdateNewspaperCard = ({
@@ -59,13 +45,6 @@ const UpdateNewspaperCard = ({
   const [formData, setFormData] = useState<NewspaperForm>({
     ...productData,
     returns_date: productData.returns_date.toString(),
-    monday_price: productData.monday_price.toString(),
-    tuesday_price: productData.tuesday_price.toString(),
-    wednesday_price: productData.wednesday_price.toString(),
-    thursday_price: productData.thursday_price.toString(),
-    friday_price: productData.friday_price.toString(),
-    saturday_price: productData.saturday_price.toString(),
-    sunday_price: productData.sunday_price.toString(),
     type: "NEWSPAPER",
   });
 
@@ -74,13 +53,6 @@ const UpdateNewspaperCard = ({
     setFormData({
       ...productData,
       returns_date: productData.returns_date.toString(),
-      monday_price: productData.monday_price.toString(),
-      tuesday_price: productData.tuesday_price.toString(),
-      wednesday_price: productData.wednesday_price.toString(),
-      thursday_price: productData.thursday_price.toString(),
-      friday_price: productData.friday_price.toString(),
-      saturday_price: productData.saturday_price.toString(),
-      sunday_price: productData.sunday_price.toString(),
       type: "NEWSPAPER",
     });
   }, [productData]);
@@ -105,14 +77,7 @@ const UpdateNewspaperCard = ({
 
     if (
       !formData.name.trim() ||
-      !formData.returns_date ||
-      formData.monday_price === "" ||
-      formData.tuesday_price === "" ||
-      formData.wednesday_price === "" ||
-      formData.thursday_price === "" ||
-      formData.friday_price === "" ||
-      formData.saturday_price === "" ||
-      formData.sunday_price === ""
+      !formData.returns_date
     ) {
       toast({
         title: "Error",
@@ -126,19 +91,14 @@ const UpdateNewspaperCard = ({
       setIsSubmitting(true);
 
       // Construye el objeto Product convirtiendo los campos numéricos a number.
-      const updatedNewspaper: Newspaper = {
+      const updatedNewspaper: Item = {
         ...productData,
         name: formData.name,
         returns_date: Number(formData.returns_date),
-        monday_price: Number(formData.monday_price),
-        tuesday_price: Number(formData.tuesday_price),
-        wednesday_price: Number(formData.wednesday_price),
-        thursday_price: Number(formData.thursday_price),
-        friday_price: Number(formData.friday_price),
-        saturday_price: Number(formData.saturday_price),
-        sunday_price: Number(formData.sunday_price),
+        product_price: formData.product_price,
         status_product: formData.status_product,
         type: ProductType.NEWSPAPER,
+        total_quantity: formData.total_quantity,
       };
 
       await updateItem(updatedNewspaper);
@@ -188,72 +148,6 @@ const UpdateNewspaperCard = ({
                   value={formData.returns_date}
                   onChange={handleChange}
                 />
-              </div>
-              {/* Campos de precios diarios */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="monday_price">Precio Lunes</Label>
-                  <Input
-                    id="monday_price"
-                    placeholder="Precio Lunes"
-                    value={formData.monday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tuesday_price">Precio Martes</Label>
-                  <Input
-                    id="tuesday_price"
-                    placeholder="Precio Martes"
-                    value={formData.tuesday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="wednesday_price">Precio Miércoles</Label>
-                  <Input
-                    id="wednesday_price"
-                    placeholder="Precio Miércoles"
-                    value={formData.wednesday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="thursday_price">Precio Jueves</Label>
-                  <Input
-                    id="thursday_price"
-                    placeholder="Precio Jueves"
-                    value={formData.thursday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="friday_price">Precio Viernes</Label>
-                  <Input
-                    id="friday_price"
-                    placeholder="Precio Viernes"
-                    value={formData.friday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="saturday_price">Precio Sábado</Label>
-                  <Input
-                    id="saturday_price"
-                    placeholder="Precio Sábado"
-                    value={formData.saturday_price}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="sunday_price">Precio Domingo</Label>
-                  <Input
-                    id="sunday_price"
-                    placeholder="Precio Domingo"
-                    value={formData.sunday_price}
-                    onChange={handleChange}
-                  />
-                </div>
               </div>
               {/* Campo Estado */}
               <div className="flex flex-col space-y-1.5">

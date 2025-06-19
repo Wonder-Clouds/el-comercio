@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import { AlertCircle, Calendar, FileDown, Printer, RefreshCw } from "lucide-react";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import { getProductsByDate } from "@/api/Product.api";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
@@ -20,9 +20,9 @@ import { motion } from "motion/react"
 
 const DevolutionProduct = () => {
   const tableRefProducts = useRef<HTMLDivElement>(null);
-  
+
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Item[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -91,7 +91,7 @@ const DevolutionProduct = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-  
+
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date);
     setActiveCalendar(false);
@@ -99,10 +99,10 @@ const DevolutionProduct = () => {
 
   const isToday = selectedDate === getLocalDate();
   const formattedDate = assignments.length > 0
-  ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
-  : selectedDate
-    ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
-    : "Fecha seleccionada";
+    ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
+    : selectedDate
+      ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
+      : "Fecha seleccionada";
 
   return (
     <div className="container mx-auto p-4">
@@ -110,7 +110,7 @@ const DevolutionProduct = () => {
         <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
-              Asignación de Periódicos
+              Devolución de Productos
             </CardTitle>
             <Badge variant="outline" className="text-lg font-semibold bg-white/20 text-white backdrop-blur-sm px-4 py-2">
               {formattedDate}

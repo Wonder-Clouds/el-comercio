@@ -3,7 +3,7 @@ import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Newspaper, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import printElement from "@/utils/printElement";
 import { deleteProduct, getNewspapers } from "@/api/Product.api";
 import { debounce } from "lodash";
@@ -16,7 +16,7 @@ function NewspaperManagement() {
   const tableRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [newspapers, setNewspapers] = useState<Newspaper[]>([]);
+  const [newspapers, setNewspapers] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
@@ -26,7 +26,7 @@ function NewspaperManagement() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Newspaper | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
   const fetchNewspapers = useCallback(async () => {
     try {
@@ -99,12 +99,12 @@ function NewspaperManagement() {
   };
 
   // Función para abrir el modal de actualización
-  const handleEdit = (product: Newspaper) => {
+  const handleEdit = (product: Item) => {
     setSelectedProduct(product);
     setShowUpdateModal(true);
   };
 
-  const handleDelete = async (product: Newspaper) => {
+  const handleDelete = async (product: Item) => {
     if (confirm("¿Estás seguro de eliminar este periódico?")) {
       try {
         await deleteProduct(product.id);

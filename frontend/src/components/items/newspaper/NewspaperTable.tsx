@@ -1,18 +1,18 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Newspaper } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { columnsNewspaper } from "./columns-newspaper";
 
 interface NewspaperTableProps {
-  data: Newspaper[];
+  data: Item[];
   page: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef: RefObject<HTMLDivElement>;
-  onEdit: (product:  Newspaper) => void;
-  onDelete: (product: Newspaper) => void;
+  onEdit: (product: Item) => void;
+  onDelete: (product: Item) => void;
 }
 
 export function NewspaperTable({
@@ -92,9 +92,8 @@ export function NewspaperTable({
                   <button
                     key={index}
                     onClick={() => onPageChange(pageNumber)}
-                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${
-                      isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     {pageNumber}
                   </button>
