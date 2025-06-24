@@ -45,7 +45,7 @@ const EditableCell = ({
   }
 
   return (
-    <div onClick={() => setIsEditing(true)} className="p-1 cursor-pointer">
+    <div onClick={() => setIsEditing(true)} className="px-2 py-1 cursor-pointer border rounded hover:bg-gray-100">
       {value}
     </div>
   );

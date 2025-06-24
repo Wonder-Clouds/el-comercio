@@ -12,7 +12,7 @@ import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import printElement from "@/utils/printElement";
-import { Calendar, FileDown, Printer, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { Calendar, FileDown, Printer, AlertCircle, RefreshCw, FilePenLine } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react"
 import { Skeleton } from "@/components/ui/skeleton";
@@ -214,12 +214,12 @@ function AssignmentNewspaper() {
                   >
                     {creating ? (
                       <>
-                        <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                        <RefreshCw className="h-5 w-5 animate-spin" />
                         Asignando...
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="mr-2 h-5 w-5" />
+                        <FilePenLine className="h-5 w-5" />
                         Asignar periódicos para hoy
                       </>
                     )}
@@ -230,7 +230,7 @@ function AssignmentNewspaper() {
                     size="lg"
                     className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
                   >
-                    <CheckCircle className="mr-2 h-5 w-5" />
+                    <FilePenLine className="h-5 w-5" />
                     Editar periodicos asignados
                   </Button>
                 )}
@@ -284,7 +284,7 @@ function AssignmentNewspaper() {
                       totalCount={totalCount}
                       onPageChange={handlePageChange}
                       tableRef={tableRefNewspapers}
-                      tableType="product"
+                      tableType="newspaper"
                     />
                   </div>
                 ) : (

@@ -109,7 +109,7 @@ const EditableCell = ({
     <div className="relative">
       <div
         onClick={handleOneClick}
-        className={`p-1 cursor-pointer ${error ? 'bg-red-100' : ''}`}
+        className={`px-2 py-1 cursor-pointer border rounded hover:bg-gray-100 text-start ${error ? 'bg-red-100' : ''}`}
         title={maxQuantity ? `Máximo: ${maxQuantity}` : ''}
       >
         {value}
