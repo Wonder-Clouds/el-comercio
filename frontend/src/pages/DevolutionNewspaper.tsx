@@ -24,7 +24,7 @@ const DevolutionNewspaper = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [newspapers, setNewspapers] = useState<Item[]>([]);
 
-  const [activeCalendar, setActiveCalendar] = useState(true);
+  const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
 
   const [loading, setLoading] = useState(true);
@@ -185,7 +185,7 @@ const DevolutionNewspaper = () => {
               <div className="flex items-center justify-between px-6 pt-4">
                 <TabsList className="grid w-full max-w-md grid-cols-2">
                   <TabsTrigger value="assignments">Asignaciones</TabsTrigger>
-                  <TabsTrigger value="stats">Estadísticas</TabsTrigger>
+                  {/* <TabsTrigger value="stats">Estadísticas</TabsTrigger> */}
                 </TabsList>
               </div>
 
@@ -220,50 +220,6 @@ const DevolutionNewspaper = () => {
                     </p>
                   </div>
                 )}
-              </TabsContent>
-
-              <TabsContent value="stats">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total Asignaciones
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{totalCount}</div>
-                      <p className="text-xs text-muted-foreground">
-                        +{Math.floor(Math.random() * 10)}% desde el mes pasado
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Periódicos Disponibles
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{newspapers.length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {newspapers.length} periódicos activos
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Eficiencia
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">98%</div>
-                      <p className="text-xs text-muted-foreground">
-                        +2% desde la semana pasada
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
               </TabsContent>
             </Tabs>
           </div>

@@ -51,7 +51,16 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
     if (products.length > 0) {
       setIsSubmitting(true);
 
-      await Promise.all(products.map(element => createItem(element)));
+      // Obtener IDs de productos ya existentes (iniciales)
+      const existingIds = initialProducts?.map(p => p.id) || [];
+
+      // Filtrar productos que no estén en los productos iniciales
+      const newProducts = products.filter(p => !existingIds.includes(p.id));
+
+      // Crear solo los productos nuevos
+      if (newProducts.length > 0) {
+        await Promise.all(newProducts.map(element => createItem(element)));
+      }
 
       updateData();
       closeModal();
@@ -70,10 +79,17 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
   const totalItems = products.reduce((sum, product) => sum + product.total_quantity, 0);
 
   useEffect(() => {
-    if (initialProducts) {
-      setProducts(initialProducts);
+    if (initialProducts && initialProducts.length > 0) {
+      setProducts((prevProducts) => {
+        // Filtrar los que aún no están en prevProducts
+        const newProducts = initialProducts.filter(
+          (newProduct) => !prevProducts.some((p) => p.id === newProduct.id)
+        );
+        return [...prevProducts, ...newProducts];
+      });
     }
   }, [initialProducts]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <motion.div

@@ -157,7 +157,7 @@ const AssignmentTable: React.FC<TableProps> = ({
     const element = document.createElement('div');
     element.innerHTML = `
       <div style="font-family: 'Courier New', Courier, monospace; padding: 16px; width: 300px; border: 1px dashed #000;">
-        <h2 style="text-align: center; margin-bottom: 8px;">🧾 COMPROBANTE DE ENTREGA</h2>
+        <h2 style="text-align: center; margin-bottom: 8px;">COMPROBANTE DE ENTREGA</h2>
         <p style="margin: 0;"><strong>Fecha:</strong> ${date}</p>
         <p style="margin: 0;"><strong>Código Vendedor:</strong> ${row.seller.number_seller}</p>
         <p style="margin: 0;"><strong>Nombre:</strong> ${row.seller.name} ${row.seller.last_name}</p>
@@ -303,16 +303,16 @@ const AssignmentTable: React.FC<TableProps> = ({
           <button
             onClick={() => page > 1 && onPageChange(page - 1)}
             disabled={page <= 1}
-            className="px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium bg-white border cursor-pointer border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            <ChevronLeft className="w-4 h-4" /> Anterior
+            <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => page < totalPages && onPageChange(page + 1)}
             disabled={page >= totalPages}
-            className="px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium bg-white border cursor-pointer border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            Siguiente <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
