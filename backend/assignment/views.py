@@ -1,5 +1,5 @@
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncMonth, TruncDay
 from rest_framework import viewsets, status
 from django.utils import timezone
 import calendar
@@ -365,6 +365,35 @@ class ReportViewSet(viewsets.ViewSet):
             last_day_of_month = month.replace(day=calendar.monthrange(month.year, month.month)[1])
             formatted_report.append({
                 'month': last_day_of_month,
+                'total_earnings': entry['total_earnings']
+            })
+
+        return Response(formatted_report, status=status.HTTP_200_OK)
+    
+
+    @action(detail=False, methods=['get'], url_path='dayly-earnings')
+    def dayly_earnings(self, request):
+        
+        peru_tz = pytz.timezone('America/Lima')
+        today = timezone.now().astimezone(peru_tz).date()
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment=today
+        ).annotate(
+            day=TruncDay('assignment__date_assignment')
+        ).values(
+            'day'
+        ).annotate(
+            total_earnings=Sum(ExpressionWrapper(
+                (F('quantity') - F('returned_amount')) * F('unit_price'),
+                output_field=DecimalField()
+            ))
+        ).order_by('day')
+
+        formatted_report = []
+        for entry in report:
+            formatted_report.append({
+                'day': entry['day'],
                 'total_earnings': entry['total_earnings']
             })
 
