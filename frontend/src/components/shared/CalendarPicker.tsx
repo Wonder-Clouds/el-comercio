@@ -54,7 +54,7 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
     onDateSelect(formatDateToYYYYMMDD(newDate));
     changeStatusCalendar(false);
   };
-  
+
   const getDayClass = (day: number) => {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const today = new Date();
@@ -82,7 +82,7 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
   };
 
   return (
-    <div className="bg-white p-8">
+    <div className="bg-white">
       <div className="mx-auto border border-gray-300 shadow-sm">
         <div className="flex justify-between items-center p-6 bg-gray-50 border-b border-gray-300">
           <button
@@ -94,7 +94,7 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
           <div className="flex flex-col items-center relative">
             <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
               {months[currentDate.getMonth()]}
-              <button 
+              <button
                 onClick={() => setShowYearSelector(!showYearSelector)}
                 className="inline-flex items-center hover:bg-gray-100 rounded px-2 py-1"
               >
@@ -102,7 +102,7 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
             </h2>
-            
+
             {showYearSelector && (
               <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
                 <div className="grid grid-cols-3 gap-1 p-2">
@@ -110,9 +110,8 @@ const CalendarPicker: React.FC<CalendarProps> = ({ onDateSelect, changeStatusCal
                     <button
                       key={year}
                       onClick={() => handleYearClick(year)}
-                      className={`px-3 py-2 text-sm rounded hover:bg-gray-100 ${
-                        year === currentDate.getFullYear() ? 'bg-gray-200' : ''
-                      }`}
+                      className={`px-3 py-2 text-sm rounded hover:bg-gray-100 ${year === currentDate.getFullYear() ? 'bg-gray-200' : ''
+                        }`}
                     >
                       {year}
                     </button>

@@ -131,7 +131,7 @@ const AssignmentProduct = () => {
         // });
       }
     }
-  }, []);
+  }, [selectedDate]);
 
   useEffect(() => {
     fetchAssignments();
@@ -166,7 +166,7 @@ const AssignmentProduct = () => {
         // });
       }
     } finally {
-      // setCreating(false);
+      setCreating(false);
     }
   };
 
@@ -266,7 +266,7 @@ const AssignmentProduct = () => {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => setShowCreateModal(true)} // <- nuevo handler para editar
+                    onClick={() => setShowCreateModal(true)}
                     size="lg"
                     className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
                   >
@@ -285,7 +285,7 @@ const AssignmentProduct = () => {
               exit={{ opacity: 0, y: -20 }}
               className="mb-6"
             >
-              <Card className="border shadow-md">
+              <Card>
                 <CardContent className="p-4">
                   <CalendarPicker
                     onDateSelect={handleDateSelect}
@@ -296,9 +296,9 @@ const AssignmentProduct = () => {
             </motion.div>
           ) : null}
 
-          <div className="rounded-lg border bg-card">
+          <div className="rounded-lg bg-card">
             <Tabs defaultValue="assignments" className="w-full">
-              <div className="flex items-center justify-between px-6 pt-4">
+              <div className="flex items-center justify-between">
                 <TabsList className="grid w-full max-w-md grid-cols-2">
                   <TabsTrigger value="assignments">Asignaciones</TabsTrigger>
                   <TabsTrigger value="stats">Estadísticas</TabsTrigger>

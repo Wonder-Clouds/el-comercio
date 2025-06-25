@@ -9,7 +9,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
 import { Item, ProductType } from "@/models/Product";
-import { createItem } from "@/api/Product.api";
+import { createItem, deleteProduct } from "@/api/Product.api";
 
 interface AssignmentModalProps {
   type: ProductType;
@@ -48,27 +48,32 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
   };
 
   const handleAddProducts = async () => {
-    if (products.length > 0) {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      // Obtener IDs de productos ya existentes (iniciales)
-      const existingIds = initialProducts?.map(p => p.id) || [];
+    // Obtener IDs de productos ya existentes (iniciales)
+    const existingIds = initialProducts?.map(p => p.id) || [];
 
-      // Filtrar productos que no estén en los productos iniciales
-      const newProducts = products.filter(p => !existingIds.includes(p.id));
+    // Filtrar productos que no estén en los productos iniciales
+    const newProducts = products.filter(p => !existingIds.includes(p.id));
 
-      // Crear solo los productos nuevos
-      if (newProducts.length > 0) {
-        await Promise.all(newProducts.map(element => createItem(element)));
-      }
-
-      updateData();
-      closeModal();
+    // Crear solo los productos nuevos
+    if (newProducts.length > 0) {
+      await Promise.all(newProducts.map(element => createItem(element)));
     }
+
+    updateData();
+    closeModal();
   };
 
-  const handleRemoveProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+  const handleRemoveProduct = async (id: number) => {
+    if (isSubmitting) return; // Evitar acciones mientras se está enviando
+
+    try {
+      setProducts(products.filter(product => product.id !== id));
+      await deleteProduct(id);
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+    }
   };
 
   const filteredProducts = products.filter(product =>
@@ -289,7 +294,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
               <Ban className="mr-2 h-4 w-4" /> Cancelar
             </Button>
             <Button
-              disabled={isSubmitting || products.length === 0}
+              disabled={isSubmitting}
               className="bg-blue-800 hover:bg-blue-900"
               onClick={handleAddProducts}
             >

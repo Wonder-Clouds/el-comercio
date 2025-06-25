@@ -233,9 +233,9 @@ const AssignmentTable: React.FC<TableProps> = ({
           <span className="action-column">
             <button
               onClick={() => handlePrintRow(row.original)}
-              className="p-2 text-blue-600 hover:underline"
+              className="flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200"
             >
-              <FileDown className="w-5 h-5 inline-block" />
+              <FileDown className="w-5 h-5" />
             </button>
           </span>
         )
@@ -247,7 +247,7 @@ const AssignmentTable: React.FC<TableProps> = ({
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div ref={tableRef} className="overflow-x-auto">
+    <div ref={tableRef} className="overflow-x-auto border rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
@@ -255,7 +255,7 @@ const AssignmentTable: React.FC<TableProps> = ({
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
-                  className={`px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50 ${header.column.id === 'actions' ? 'action-column' : ''}`}
+                  className={`px-6 py-3 text-sm font-medium tracking-wider text-left text-gray-500 uppercase bg-blue-50 ${header.column.id === 'actions' ? 'action-column' : ''}`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -263,7 +263,7 @@ const AssignmentTable: React.FC<TableProps> = ({
             </tr>
           ))}
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-gray-200">
           {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
@@ -277,7 +277,7 @@ const AssignmentTable: React.FC<TableProps> = ({
             </tr>
           ))}
           {/* Fila de totales */}
-          <tr className="bg-gray-50 font-medium border-t-2 border-gray-300">
+          <tr className="font-medium border-t-2">
             <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL USADO</td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
@@ -295,7 +295,7 @@ const AssignmentTable: React.FC<TableProps> = ({
           </tr>
         </tbody>
       </table>
-      <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
+      <div className="flex flex-col items-center justify-between px-2 bg-blue-50 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
           Página {page} de {totalPages}
         </div>
