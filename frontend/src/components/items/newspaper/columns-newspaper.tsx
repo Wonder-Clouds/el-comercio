@@ -34,6 +34,14 @@ export const columnsNewspaper = (
       },
     },
     {
+      accessorKey: "product_price",
+      header: "Precio producto",
+      cell: ({ row }) => {
+        const product = row.original;
+        return <span>{product.product_price}</span>;
+      },
+    },
+    {
       id: "status_product",
       header: "Estado",
       cell: ({ row }) => {

@@ -193,7 +193,7 @@ function Debtors() {
               <CardFooter className="bg-gray-50 border-t">
                 <div className="flex justify-between items-center w-full pt-3">
                   <p className="text-sm">Deuda total:</p>
-                  <p className="font-bold text-lg">${calculateTotalDebt(debtor)}</p>
+                  <p className="font-bold text-lg">S/.{calculateTotalDebt(debtor)}</p>
                 </div>
               </CardFooter>
             </Card>

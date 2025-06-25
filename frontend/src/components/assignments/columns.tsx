@@ -37,7 +37,7 @@ export const columns = (
     ...products.map((product) => ({
       id: `quantity_${product.id}`,
       accessorKey: `detail_assignments.${product.id}.quantity`,
-      header: `${product.name} (${product.total_quantity})`,
+      header: `${product.name} (${product.total_quantity} unidades)`,
       editable: true,
       cell: ({ row }: { row: { original: Assignment } }) => {
         const assignment = row.original;
