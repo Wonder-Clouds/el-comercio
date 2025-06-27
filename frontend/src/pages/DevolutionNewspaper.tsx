@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Calendar, FileDown, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, DollarSign, Printer, RefreshCw } from "lucide-react";
 import { Item, ProductType } from "@/models/Product";
 import { getProductsByDate } from "@/api/Product.api";
 import { getAssignments } from "@/api/Assignment.api";
@@ -15,6 +15,7 @@ import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import printElement from "@/utils/printElement";
 import { motion } from "motion/react"
+import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
 
 const DevolutionNewspaper = () => {
   const tableRefNewspapers = useRef<HTMLDivElement>(null);
@@ -133,15 +134,6 @@ const DevolutionNewspaper = () => {
                 variant="outline"
                 className="flex items-center gap-2"
               >
-                <FileDown className="w-4 h-4" />
-                Exportar
-              </Button>
-
-              <Button
-                onClick={handlePrintNewspapers}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
                 <Printer className="w-4 h-4" />
                 Imprimir
               </Button>
@@ -157,6 +149,16 @@ const DevolutionNewspaper = () => {
                   Actualizar
                 </Button>
               )}
+
+
+              <Button
+                onClick={() => generateDailySummaryPDF(assignments, ProductType.NEWSPAPER)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" />
+                Reporte del día
+              </Button>
             </div>
           </div>
 

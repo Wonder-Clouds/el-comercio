@@ -31,6 +31,13 @@ const EditableCell = ({
     setValue(newValue);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
+
   if (isEditing) {
     return (
       <input
@@ -38,6 +45,7 @@ const EditableCell = ({
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         autoFocus
         className="w-full p-1 border rounded"
       />
@@ -45,7 +53,10 @@ const EditableCell = ({
   }
 
   return (
-    <div onClick={() => setIsEditing(true)} className="px-2 py-1 cursor-pointer border rounded hover:bg-gray-100">
+    <div
+      onClick={() => setIsEditing(true)}
+      className="px-2 py-1 cursor-pointer border rounded hover:bg-gray-100"
+    >
       {value}
     </div>
   );
