@@ -132,7 +132,7 @@ function Debtors() {
             <option value="ACTIVO">Activo</option>
           </select>
 
-          <Button className="h-10 gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4">
+          <Button className="bg-blue-800 hover:bg-blue-900 font-semibold p-5 text-md">
             <FileText className="h-4 w-4" />
             <span className="hidden md:inline">Exportar</span>
           </Button>
