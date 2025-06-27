@@ -24,12 +24,12 @@ interface TableProps {
 }
 
 const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData, tableType }) => {
-  const handleValueChange = async (detailAssignmentId: number, value: number) => {
+  const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
     const data: DevolutionQuantity = { quantity: value };
-
     try {
       await postDevolution(detailAssignmentId, data);
       refreshData();
+      console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
     } catch (error) {
       console.error('Error al actualizar:', error);
     }
