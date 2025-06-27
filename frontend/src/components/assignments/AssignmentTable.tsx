@@ -233,7 +233,7 @@ const AssignmentTable: React.FC<TableProps> = ({
           <span className="action-column">
             <button
               onClick={() => handlePrintRow(row.original)}
-              className="flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200"
+              className="flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors duration-200"
             >
               <FileDown className="w-5 h-5" />
             </button>
