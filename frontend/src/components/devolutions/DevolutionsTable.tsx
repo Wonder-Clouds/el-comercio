@@ -10,7 +10,7 @@ import { Item } from '@/models/Product';
 import { DevolutionQuantity } from '@/models/Devolution';
 import { postDevolution } from '@/api/Devolution.api';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
-import generatePDFTicket from '@/utils/generatePdf';
+import generatePDFTicket from '@/utils/generatePdfs/generatePdfTicket';
 
 interface TableProps {
   data: Assignment[];
@@ -24,12 +24,11 @@ interface TableProps {
 }
 
 const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData, tableType }) => {
-  const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
+  const handleValueChange = async (detailAssignmentId: number, value: number) => {
     const data: DevolutionQuantity = { quantity: value };
 
     try {
       await postDevolution(detailAssignmentId, data);
-      console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
       refreshData();
     } catch (error) {
       console.error('Error al actualizar:', error);
