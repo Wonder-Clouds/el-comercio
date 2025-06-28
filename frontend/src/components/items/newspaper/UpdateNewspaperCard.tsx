@@ -13,7 +13,7 @@ import { Ban, Save } from "lucide-react";
 import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 
 /**
  * Se define un tipo auxiliar para el formulario en el que los campos numéricos se manejan como string.
@@ -97,7 +97,7 @@ const UpdateNewspaperCard = ({
         returns_date: Number(formData.returns_date),
         product_price: formData.product_price,
         status_product: formData.status_product,
-        type: ProductType.NEWSPAPER,
+        type: ItemType.NEWSPAPER,
         total_quantity: formData.total_quantity,
       };
 

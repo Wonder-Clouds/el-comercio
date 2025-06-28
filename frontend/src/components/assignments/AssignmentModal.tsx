@@ -8,11 +8,11 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import { createItem, deleteProduct } from "@/api/Product.api";
 
 interface AssignmentModalProps {
-  type: ProductType;
+  type: ItemType;
   closeModal: () => void;
   updateData: () => void;
   initialProducts?: Item[];

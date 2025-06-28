@@ -13,7 +13,7 @@ import { Ban, Save } from "lucide-react";
 import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { defaultItem, Item, ProductType } from "@/models/Product";
+import { defaultItem, Item, ItemType } from "@/models/Product";
 
 interface CreateNewspaperCardProps {
   closeModal: () => void;
@@ -25,7 +25,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
     ...defaultItem,
     id: 0,
     name: "",
-    type: ProductType.NEWSPAPER,
+    type: ItemType.NEWSPAPER,
     returns_date: 0,
     product_price: 0,
     status_product: true,
@@ -89,7 +89,7 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
         returns_date: Number(formData.returns_date),
         product_price: 0,
         total_quantity: 0,
-        type: ProductType.NEWSPAPER,
+        type: ItemType.NEWSPAPER,
       };
 
 

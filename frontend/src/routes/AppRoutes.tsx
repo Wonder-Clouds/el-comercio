@@ -26,6 +26,8 @@ const protectedRoutes = [
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },
+  { path: "/finanzas/ingresos", element: <DevolutionNewspaper /> },
+  { path: "/finanzas/egresos", element: <DevolutionNewspaper /> },
 ];
 
 const AppRoutes = () => {
