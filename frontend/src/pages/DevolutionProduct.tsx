@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Calendar, DollarSign, FileDown, RefreshCw } from "lucide-react";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import { getProductsByDate } from "@/api/Product.api";
 import { getAssignments } from "@/api/Assignment.api";
 import { Assignment } from "@/models/Assignment";
@@ -64,7 +64,7 @@ const DevolutionProduct = () => {
     const today = getLocalDate();
     const date = selectedDate || today;
     try {
-      const products = await getProductsByDate(date, ProductType.PRODUCT);
+      const products = await getProductsByDate(date, ItemType.PRODUCT);
       setProducts(products.results);
       setTotalCount(products.count);
     } catch (error) {
@@ -151,7 +151,7 @@ const DevolutionProduct = () => {
               )}
 
               <Button
-                onClick={() => generateDailySummaryPDF(assignments, ProductType.PRODUCT)}
+                onClick={() => generateDailySummaryPDF(assignments, ItemType.PRODUCT)}
                 variant="outline"
                 className="flex items-center gap-2"
               >
