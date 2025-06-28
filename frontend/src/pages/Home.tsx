@@ -35,7 +35,7 @@ const Home = () => {
     {
       title: "Ver Devoluciones",
       description: "Control de devoluciones de productos",
-      icon:   RotateCcw,
+      icon: RotateCcw,
       path: "/devoluciones",
       color: "text-red-600"
     },
@@ -46,7 +46,7 @@ const Home = () => {
       path: "/reportes",
       color: "text-yellow-600"
     }
-    
+
   ];
 
   return (
@@ -61,7 +61,7 @@ const Home = () => {
           />
         </div>
         <h1 className="mb-2 text-4xl font-bold text-gray-800">Distribuciones El Comercio</h1>
-        <p className="text-lg text-gray-600">Sistema Administrativo para la Distribución de Periodicos y Productos</p>
+        <p className="text-lg text-gray-600">Sistema Administrativo para la Distribución de Periódicos y Productos</p>
       </div>
 
       {/* Quick Stats */}

@@ -2,6 +2,7 @@ from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.db.models.functions import TruncMonth, TruncDay
 from rest_framework import viewsets, status
 from django.utils import timezone
+from datetime import datetime
 import calendar
 from datetime import timedelta
 from seller.models import Seller
@@ -182,12 +183,9 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         """
         peru_tz = pytz.timezone('America/Lima')
         
-        now_in_peru = timezone.now().astimezone(peru_tz)
+        now_in_peru = datetime.now(peru_tz)
         
-        if now_in_peru.hour < 1:
-            today = now_in_peru - timedelta(days=1)
-        else:
-            today = now_in_peru.date()  
+        today = now_in_peru.date()
 
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []

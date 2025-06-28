@@ -77,6 +77,7 @@ function AssignmentNewspaper() {
   const fetchNewspapers = useCallback(async () => {
     const today = getLocalDate();
     const date = selectedDate || today;
+    console.log(selectedDate)
     try {
       const newspapers = await getProductsByDate(date, ProductType.NEWSPAPER);
       setNewspapers(newspapers.results);
@@ -90,7 +91,7 @@ function AssignmentNewspaper() {
         // });
       }
     }
-  }, []);
+  }, [selectedDate]);
 
   useEffect(() => {
     fetchAssignments();
@@ -245,20 +246,18 @@ function AssignmentNewspaper() {
               exit={{ opacity: 0, y: -20 }}
               className="mb-6"
             >
-              <Card className="border shadow-md">
-                <CardContent className="p-4">
-                  <CalendarPicker
-                    onDateSelect={handleDateSelect}
-                    changeStatusCalendar={() => setActiveCalendar(false)}
-                  />
-                </CardContent>
-              </Card>
+              <div className="p-4">
+                <CalendarPicker
+                  onDateSelect={handleDateSelect}
+                  changeStatusCalendar={() => setActiveCalendar(false)}
+                />
+              </div>
             </motion.div>
           ) : null}
 
-          <div className="rounded-lg border bg-card">
+          <div className="rounded-lg bg-card">
             <Tabs defaultValue="assignments" className="w-full">
-              <div className="flex items-center justify-between px-6 pt-4">
+              <div className="flex items-center justify-between ">
                 <TabsList className="grid w-full max-w-md grid-cols-2">
                   <TabsTrigger value="assignments">Asignaciones</TabsTrigger>
                   <TabsTrigger value="stats">Estadísticas</TabsTrigger>

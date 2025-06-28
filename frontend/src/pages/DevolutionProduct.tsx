@@ -5,9 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { TabsList } from "@radix-ui/react-tabs";
-import { AlertCircle, Calendar, FileDown, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, DollarSign, FileDown, RefreshCw } from "lucide-react";
 import { Item, ProductType } from "@/models/Product";
 import { getProductsByDate } from "@/api/Product.api";
 import { getAssignments } from "@/api/Assignment.api";
@@ -17,6 +15,7 @@ import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import printElement from "@/utils/printElement";
 import { motion } from "motion/react"
+import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
 
 const DevolutionProduct = () => {
   const tableRefProducts = useRef<HTMLDivElement>(null);
@@ -139,15 +138,6 @@ const DevolutionProduct = () => {
                 Exportar
               </Button>
 
-              <Button
-                onClick={handlePrintProducts}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir
-              </Button>
-
               {(assignments.length > 0 || !isToday) && (
                 <Button
                   onClick={fetchAssignments}
@@ -159,6 +149,15 @@ const DevolutionProduct = () => {
                   Actualizar
                 </Button>
               )}
+
+              <Button
+                onClick={() => generateDailySummaryPDF(assignments, ProductType.PRODUCT)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" />
+                Reporte del día
+              </Button>
             </div>
           </div>
 
@@ -180,51 +179,40 @@ const DevolutionProduct = () => {
             </motion.div>
           ) : null}
 
-          <div className="rounded-lg border bg-card">
-            <Tabs defaultValue="assignments" className="w-full">
-              <div className="flex items-center justify-between px-6 pt-4">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
-                  <TabsTrigger value="assignments">Asignaciones</TabsTrigger>
-                </TabsList>
+          <div className="px-1">
+            {loading ? (
+              <div className="space-y-4 p-6">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
               </div>
-
-              <TabsContent value="assignments" className="pt-4 px-1">
-                {loading ? (
-                  <div className="space-y-4 p-6">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                ) : assignments.length > 0 ? (
-                  <div className="p-2">
-                    <DevolutionTable
-                      data={assignments}
-                      products={products}
-                      page={page}
-                      pageSize={pageSize}
-                      totalCount={totalCount}
-                      onPageChange={handlePageChange}
-                      refreshData={fetchAssignments}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-900 mb-2">No hay asignaciones</h3>
-                    <p className="text-gray-500 max-w-md">
-                      No se encontraron asignaciones para {formattedDate}.
-                      {isToday && " Puedes crear nuevas asignaciones usando el botón 'Asignar periódicos para hoy'."}
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+            ) : assignments.length > 0 ? (
+              <DevolutionTable
+                data={assignments}
+                products={products}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={handlePageChange}
+                refreshData={fetchAssignments}
+                tableType="product"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-900 mb-2">No hay asignaciones</h3>
+                <p className="text-gray-500 max-w-md">
+                  No se encontraron asignaciones para {formattedDate}.
+                  {isToday && " Puedes crear nuevas asignaciones usando el botón 'Asignar periódicos para hoy'."}
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
 
