@@ -26,8 +26,9 @@ urlpatterns = [
     path('api/v1/', include('assignment.urls')),
     path('api/v1/', include('product.urls')),
     path('api/v1/', include('detail_assignment.urls')),
-
+    path('api/v1/', include('cash.urls')),
     path('api/v1/', include('devolution.urls')),
+    path('api/v1/', include('yape.urls')),
 
     # Swagger
     path('', include('core.urls')),
@@ -35,5 +36,4 @@ urlpatterns = [
     # Simple JWT
     path('api/v1/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
 ]

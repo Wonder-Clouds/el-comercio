@@ -27,10 +27,11 @@ class TimeStampedModel(models.Model):
         for field in self._meta.fields:
             if field.unique and field.name != 'id':
                 original_value = getattr(self, field.name)
-                max_length = field.max_length
-                truncated_value = original_value[:max_length - len(unique_suffix) - 1]
-                setattr(self, f'original_{field.name}', original_value)
-                setattr(self, field.name, f'{truncated_value}_{unique_suffix}')
+                if original_value is not None:
+                    max_length = field.max_length
+                    truncated_value = original_value[:max_length - len(unique_suffix) - 1]
+                    setattr(self, f'original_{field.name}', original_value)
+                    setattr(self, field.name, f'{truncated_value}_{unique_suffix}')
 
         self.delete_at = now()
         self.save()
