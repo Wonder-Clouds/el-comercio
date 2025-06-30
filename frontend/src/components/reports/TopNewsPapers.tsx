@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TopNewsPapersResponse } from "@/models/Report";
 import { DateRange } from "react-day-picker";
 
@@ -28,7 +28,7 @@ export function TopNewsPapers({ data, dateRange }: TopNewsPapersProps) {
     }).format(value);
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Periódicos Más Vendidos</CardTitle>
         <CardDescription>
@@ -74,6 +74,6 @@ export function TopNewsPapers({ data, dateRange }: TopNewsPapersProps) {
           )}
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

@@ -45,15 +45,32 @@ class SellerViewSet(viewsets.ModelViewSet):
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
 
+        # Filter the assigment by seller
         if start_date and end_date:
             detail_assignments = DetailAssignment.objects.filter(
                 status='PENDING',
-                assignment__date_assignment__range=[start_date, end_date]
+                return_date__range=[start_date, end_date]
             )
         else:
             detail_assignments = DetailAssignment.objects.filter(
                 status='PENDING'
             )
 
-        serializer = DetailAssignmentSerializer(detail_assignments, many=True)
-        return Response(serializer.data)
+        # Group the assigment by seller
+        sellers = Seller.objects.filter(delete_at__isnull=True)
+        result = []
+
+        for seller in sellers:
+            seller_assignments = detail_assignments.filter(assignment__seller=seller)
+
+            result.append({
+                'seller_id': seller.id,
+                'seller_name': f"{seller.name} {seller.last_name}",
+                'seller_code': seller.number_seller,
+                'seller_dni': seller.dni,
+                'seller_phone': seller.phone,
+                'seller_status': seller.status,
+                'assignments': DetailAssignmentSerializer(seller_assignments, many=True).data
+            })
+
+        return Response(result, status=status.HTTP_200_OK)

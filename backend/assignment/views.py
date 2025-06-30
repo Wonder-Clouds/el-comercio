@@ -1,14 +1,17 @@
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncMonth, TruncDay
 from rest_framework import viewsets, status
 from django.utils import timezone
+from datetime import datetime
 import calendar
+from datetime import timedelta
 from seller.models import Seller
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
+import pytz
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
@@ -178,7 +181,12 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         Returns:
             Response: The created assignments.
         """
-        today = timezone.now().date()
+        peru_tz = pytz.timezone('America/Lima')
+        
+        now_in_peru = datetime.now(peru_tz)
+        
+        today = now_in_peru.date()
+
         active_sellers = Seller.objects.filter(status=True)
         created_assignments = []
         existing_assignments = []
@@ -197,6 +205,16 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=False, methods=['delete'], url_path='delete-assignments')
+    def delete_assignments(self, request):
+        peru_tz = pytz.timezone('America/Lima')
+        today = timezone.now().astimezone(peru_tz).date()
+        all_assignments = Assignment.objects.filter(date_assignment=today)
+
+        for assignment in all_assignments:
+            assignment.soft_delete()
+
+        return Response(status=status.HTTP_200_OK)
 
 class ReportViewSet(viewsets.ViewSet):
     """
@@ -317,8 +335,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    import calendar
-
     @action(detail=False, methods=['get'], url_path='monthly-earnings')
     def monthly_earnings(self, request):
         start_date = request.query_params.get('start_date')
@@ -347,6 +363,35 @@ class ReportViewSet(viewsets.ViewSet):
             last_day_of_month = month.replace(day=calendar.monthrange(month.year, month.month)[1])
             formatted_report.append({
                 'month': last_day_of_month,
+                'total_earnings': entry['total_earnings']
+            })
+
+        return Response(formatted_report, status=status.HTTP_200_OK)
+    
+
+    @action(detail=False, methods=['get'], url_path='dayly-earnings')
+    def dayly_earnings(self, request):
+        
+        peru_tz = pytz.timezone('America/Lima')
+        today = timezone.now().astimezone(peru_tz).date()
+
+        report = DetailAssignment.objects.filter(
+            assignment__date_assignment=today
+        ).annotate(
+            day=TruncDay('assignment__date_assignment')
+        ).values(
+            'day'
+        ).annotate(
+            total_earnings=Sum(ExpressionWrapper(
+                (F('quantity') - F('returned_amount')) * F('unit_price'),
+                output_field=DecimalField()
+            ))
+        ).order_by('day')
+
+        formatted_report = []
+        for entry in report:
+            formatted_report.append({
+                'day': entry['day'],
                 'total_earnings': entry['total_earnings']
             })
 

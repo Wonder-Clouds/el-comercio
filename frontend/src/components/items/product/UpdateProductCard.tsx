@@ -10,20 +10,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { updateProduct } from "@/api/Product.api";
+import { updateItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import type { Product } from "@/models/Product";
+import type { Item } from "@/models/Product";
 
 interface UpdateProductCardProps {
   closeModal: () => void;
   updateData: () => void;
-  productData: Product;
+  productData: Item;
 }
 
 const UpdateProductCard = ({ closeModal, updateData, productData }: UpdateProductCardProps) => {
-  const [formData, setFormData] = useState<Product>(productData);
+  const [formData, setFormData] = useState<Item>(productData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -58,7 +57,7 @@ const UpdateProductCard = ({ closeModal, updateData, productData }: UpdateProduc
     }
     try {
       setIsSubmitting(true);
-      await updateProduct(formData);
+      await updateItem(formData);
       toast({
         title: "Éxito",
         description: "Producto actualizado exitosamente",
@@ -130,7 +129,6 @@ const UpdateProductCard = ({ closeModal, updateData, productData }: UpdateProduc
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };

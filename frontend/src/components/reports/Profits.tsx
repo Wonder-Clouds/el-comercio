@@ -7,7 +7,6 @@ import {
   LabelList,
 } from "recharts";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -53,7 +52,7 @@ export function Profits({ data, dateRange }: ProfitsProps) {
       : "Seleccione un rango de fechas";
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Ganancias por Vendedor</CardTitle>
         <CardDescription>{formattedDateRange}</CardDescription>
@@ -92,6 +91,6 @@ export function Profits({ data, dateRange }: ProfitsProps) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-    </Card>
+    </div>
   );
 }

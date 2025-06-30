@@ -1,22 +1,21 @@
-// src/components/products/newspaper/NewspaperManagement.tsx
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Product, ProductType } from "@/models/Product";
+import { Item, ProductType } from "@/models/Product";
 import printElement from "@/utils/printElement";
-import { getProducts, deleteProduct } from "@/api/Product.api";
+import { deleteProduct, getNewspapers } from "@/api/Product.api";
 import { debounce } from "lodash";
-import { NewspaperTable } from "./newspaper/NewspaperTable";
-import CreateNewspaperCard from "./newspaper/CreateNewspaperCard";
-import UpdateNewspaperCard from "./newspaper/UpdateNewspaperCard";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { NewspaperTable } from "@/components/items/newspaper/NewspaperTable";
+import CreateNewspaperCard from "@/components/items/newspaper/CreateNewspaperCard";
+import UpdateNewspaperCard from "@/components/items/newspaper/UpdateNewspaperCard";
 
-function NewspaperManagement() {
+const Newspapers = () => {
   const tableRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [newspapers, setNewspapers] = useState<Product[]>([]);
+  const [newspapers, setNewspapers] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
@@ -26,11 +25,11 @@ function NewspaperManagement() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
   const fetchNewspapers = useCallback(async () => {
     try {
-      const response = await getProducts(page, pageSize, ProductType.NEWSPAPER, searchTerm);
+      const response = await getNewspapers(page, pageSize, ProductType.NEWSPAPER);
       setNewspapers(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -41,7 +40,7 @@ function NewspaperManagement() {
         variant: "destructive",
       });
     }
-  }, [page, pageSize, searchTerm, toast]);
+  }, [page, pageSize, toast]);
 
   useEffect(() => {
     fetchNewspapers();
@@ -49,11 +48,11 @@ function NewspaperManagement() {
 
   const debouncedSearch = useMemo(
     () =>
-      debounce(async (term: string) => {
-        if (term) {
+      debounce(async (newspaperName: string) => {
+        if (newspaperName) {
           setIsSearching(true);
           try {
-            const response = await getProducts(1, pageSize, ProductType.NEWSPAPER, term);
+            const response = await getNewspapers(1, pageSize, ProductType.NEWSPAPER, newspaperName);
             setNewspapers(response.results);
             setTotalCount(response.count);
             setPage(1);
@@ -99,12 +98,12 @@ function NewspaperManagement() {
   };
 
   // Función para abrir el modal de actualización
-  const handleEdit = (product: Product) => {
+  const handleEdit = (product: Item) => {
     setSelectedProduct(product);
     setShowUpdateModal(true);
   };
 
-  const handleDelete = async (product: Product) => {
+  const handleDelete = async (product: Item) => {
     if (confirm("¿Estás seguro de eliminar este periódico?")) {
       try {
         await deleteProduct(product.id);
@@ -126,7 +125,7 @@ function NewspaperManagement() {
   };
 
   return (
-    <>
+    <div className="container space-y-5 mx-auto py-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-4xl font-bold">Periódicos</h1>
         <div className="flex flex-wrap gap-3">
@@ -196,8 +195,8 @@ function NewspaperManagement() {
           productData={selectedProduct}
         />
       )}
-    </>
+    </div>
   );
 }
 
-export default NewspaperManagement;
+export default Newspapers;

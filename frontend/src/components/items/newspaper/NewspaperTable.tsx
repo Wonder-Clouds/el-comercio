@@ -1,21 +1,21 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Product } from "@/models/Product";
-import { columnsProduct } from "./columns-product";
+import { Item } from "@/models/Product";
+import { columnsNewspaper } from "./columns-newspaper";
 
-interface ProductTableProps {
-  data: Product[];
+interface NewspaperTableProps {
+  data: Item[];
   page: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef: RefObject<HTMLDivElement>;
-  onEdit: (product: Product) => void;
-  onDelete: (product: Product) => void;
+  onEdit: (product: Item) => void;
+  onDelete: (product: Item) => void;
 }
 
-export function ProductTable({
+export function NewspaperTable({
   data,
   page,
   pageSize,
@@ -24,9 +24,9 @@ export function ProductTable({
   onPageChange,
   onEdit,
   onDelete,
-}: ProductTableProps) {
-  // Se generan las columnas pasándole las funciones de edición y eliminación.
-  const columns = columnsProduct(onEdit, onDelete);
+}: NewspaperTableProps) {
+  // Se generan las columnas pasándole solo las funciones de edición y eliminación
+  const columns = columnsNewspaper(onEdit, onDelete);
 
   const table = useReactTable({
     data,
@@ -69,7 +69,6 @@ export function ProductTable({
           </tbody>
         </table>
       </div>
-      {/* Paginación */}
       <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
           Página {page} de {totalPages}
@@ -93,9 +92,8 @@ export function ProductTable({
                   <button
                     key={index}
                     onClick={() => onPageChange(pageNumber)}
-                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${
-                      isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-200 rounded-lg focus:outline-none ${isCurrentPage ? "bg-blue-50 text-gray-500" : "text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     {pageNumber}
                   </button>

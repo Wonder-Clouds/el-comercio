@@ -10,11 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { createProduct } from "@/api/Product.api";
+import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { Product, defaultProduct, ProductType } from "@/models/Product";
+import { defaultItem, Item, ProductType } from "@/models/Product";
 
 interface CreateNewspaperCardProps {
   closeModal: () => void;
@@ -22,23 +21,18 @@ interface CreateNewspaperCardProps {
 }
 
 const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProps) => {
-  const initialFormData: Product = {
-    ...defaultProduct,
+  const initialFormData: Item = {
+    ...defaultItem,
     id: 0,
     name: "",
     type: ProductType.NEWSPAPER,
-    monday_price: 0,
-    tuesday_price: 0,
-    wednesday_price: 0,
-    thursday_price: 0,
-    friday_price: 0,
-    saturday_price: 0,
-    sunday_price: 0,
     returns_date: 0,
+    product_price: 0,
     status_product: true,
+
   };
 
-  const [formData, setFormData] = useState<Product>(initialFormData);
+  const [formData, setFormData] = useState<Item>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -69,28 +63,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
       return false;
     }
 
-    const prices = [
-      { field: "monday_price", name: "Precio Lunes" },
-      { field: "tuesday_price", name: "Precio Martes" },
-      { field: "wednesday_price", name: "Precio Miércoles" },
-      { field: "thursday_price", name: "Precio Jueves" },
-      { field: "friday_price", name: "Precio Viernes" },
-      { field: "saturday_price", name: "Precio Sábado" },
-      { field: "sunday_price", name: "Precio Domingo" },
-    ];
-
-    for (const price of prices) {
-      const value = formData[price.field as keyof Product];
-      if (typeof value !== "number" || isNaN(value)) {
-        toast({
-          title: "Error",
-          description: `${price.name} debe ser un número válido`,
-          variant: "destructive",
-        });
-        return false;
-      }
-    }
-
     if (typeof formData.returns_date !== "number" || isNaN(formData.returns_date)) {
       toast({
         title: "Error",
@@ -112,20 +84,17 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
 
     try {
       setIsSubmitting(true);
-      const formDataToSubmit: Product = {
+      const formDataToSubmit: Item = {
         ...formData,
-        monday_price: Number(formData.monday_price),
-        tuesday_price: Number(formData.tuesday_price),
-        wednesday_price: Number(formData.wednesday_price),
-        thursday_price: Number(formData.thursday_price),
-        friday_price: Number(formData.friday_price),
-        saturday_price: Number(formData.saturday_price),
-        sunday_price: Number(formData.sunday_price),
         returns_date: Number(formData.returns_date),
+        product_price: 0,
+        total_quantity: 0,
         type: ProductType.NEWSPAPER,
       };
 
-      await createProduct(formDataToSubmit);
+
+      await createItem(formDataToSubmit);
+
       toast({
         title: "Éxito",
         description: "Periódico creado exitosamente",
@@ -181,34 +150,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
                 />
               </div>
 
-              {/* Campos de precios diarios */}
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { id: "monday_price", label: "Precio Lunes" },
-                  { id: "tuesday_price", label: "Precio Martes" },
-                  { id: "wednesday_price", label: "Precio Miércoles" },
-                  { id: "thursday_price", label: "Precio Jueves" },
-                  { id: "friday_price", label: "Precio Viernes" },
-                  { id: "saturday_price", label: "Precio Sábado" },
-                  { id: "sunday_price", label: "Precio Domingo" },
-                ].map((price) => (
-                  <div key={price.id} className="flex flex-col space-y-1.5">
-                    <Label htmlFor={price.id}>{price.label}</Label>
-                    <Input
-                      id={price.id}
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder={price.label}
-                      value={String(formData[price.id as keyof Product] ?? "")}
-                      onChange={handleChange}
-                      required
-                    />
-
-                  </div>
-                ))}
-              </div>
-
               {/* Campo Estado */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="status_product">Estado del Periódico</Label>
@@ -234,7 +175,6 @@ const CreateNewspaperCard = ({ closeModal, updateData }: CreateNewspaperCardProp
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };

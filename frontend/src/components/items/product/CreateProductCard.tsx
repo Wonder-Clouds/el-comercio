@@ -10,11 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { createProduct } from "@/api/Product.api";
+import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { Product, defaultProduct, ProductType } from "@/models/Product";
+import { Item, defaultItem, ProductType } from "@/models/Product";
 
 interface CreateProductCardProps {
   closeModal: () => void;
@@ -22,9 +21,8 @@ interface CreateProductCardProps {
 }
 
 const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) => {
-  // Se fuerza el type a ProductType.PRODUCT
-  const [formData, setFormData] = useState<Product>({
-    ...defaultProduct,
+  const [formData, setFormData] = useState<Item>({
+    ...defaultItem,
     type: ProductType.PRODUCT,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,7 +54,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
     }
     try {
       setIsSubmitting(true);
-      await createProduct(formData);
+      await createItem(formData);
       toast({
         title: "Éxito",
         description: "Producto creado exitosamente",
@@ -95,6 +93,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
                 <Input
                   id="returns_date"
                   type="number"
+                  min="1"
                   placeholder="Cantidad de días"
                   value={formData.returns_date}
                   onChange={handleChange}
@@ -102,7 +101,7 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="product_price">Precio producto</Label>
-                <Input id="product_price" placeholder="Precio producto" value={formData.product_price} onChange={handleChange} />
+                <Input id="product_price" type="number" placeholder="Precio producto" min={1} step="0.01" value={formData.product_price} onChange={handleChange} />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="status_product">Estado del Producto</Label>
@@ -128,7 +127,6 @@ const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) =
           </Button>
         </CardFooter>
       </Card>
-      <Toaster />
     </div>
   );
 };

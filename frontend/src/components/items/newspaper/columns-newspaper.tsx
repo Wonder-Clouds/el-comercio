@@ -1,22 +1,21 @@
-import { Product, ProductType } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
 
 /**
- * Genera las columnas de la tabla de productos.
- *
- * Ahora se muestra el contenido de cada celda de forma estática, sin edición inline,
- * y se añade la columna de estado. La edición y eliminación se realizan únicamente
- * mediante los botones de la columna "Acciones".
+ * Genera las columnas de la tabla de periódicos.
+ * 
+ * Ahora la edición directa en celdas se ha deshabilitado; la única forma de editar o eliminar
+ * es a través de los botones en la columna "Acciones".
  *
  * @param onEdit Función que se llama al hacer clic en el botón de editar.
  * @param onDelete Función que se llama al hacer clic en el botón de eliminar.
  */
-export const columnsProduct = (
-  onEdit: (product: Product) => void,
-  onDelete: (product: Product) => void
-): ColumnDef<Product>[] => {
+export const columnsNewspaper = (
+  onEdit: (product: Item) => void,
+  onDelete: (product: Item) => void
+): ColumnDef<Item>[] => {
   return [
     {
       accessorKey: "name",
@@ -24,18 +23,6 @@ export const columnsProduct = (
       cell: ({ row }) => {
         const product = row.original;
         return <span>{product.name}</span>;
-      },
-    },
-    {
-      accessorKey: "type",
-      header: "Tipo",
-      cell: ({ row }) => {
-        const product = row.original;
-        return (
-          <span>
-            {product.type === ProductType.NEWSPAPER ? "PERIODICO" : "PRODUCTO"}
-          </span>
-        );
       },
     },
     {
@@ -62,9 +49,8 @@ export const columnsProduct = (
         return (
           <div className="flex items-center gap-2">
             <span
-              className={`text-sm font-semibold ${
-                product.status_product ? "text-green-500" : "text-red-500"
-              }`}
+              className={`text-sm font-semibold ${product.status_product ? "text-green-500" : "text-red-500"
+                }`}
             >
               {product.status_product ? "Activo" : "Inactivo"}
             </span>
