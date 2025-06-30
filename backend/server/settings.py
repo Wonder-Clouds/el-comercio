@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'devolution',
     'cash',
     'yape',
+    'finance',
 ]
 
 MIDDLEWARE = [

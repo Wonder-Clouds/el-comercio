@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/v1/', include('cash.urls')),
     path('api/v1/', include('devolution.urls')),
     path('api/v1/', include('yape.urls')),
+    path('api/v1/', include('finance.urls')),
 
     # Swagger
     path('', include('core.urls')),
