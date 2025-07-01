@@ -5,3 +5,6 @@ migrations/
 *.sqlite3
 .idea/
 venv
+staticfiles/
+*/staticfiles/
+**/staticfiles/

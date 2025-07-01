@@ -15,4 +15,4 @@ RUN chmod +x /app/wait_for_db.sh /app/create_super_user.sh
 EXPOSE 8000
 
 # Ejecutar los scripts explícitamente con sh
-CMD sh /app/wait_for_db.sh && sh /app/create_super_user.sh && python manage.py runserver 0.0.0.0:8000
+CMD sh /app/wait_for_db.sh && sh /app/create_super_user.sh && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000
