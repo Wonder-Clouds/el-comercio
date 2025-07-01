@@ -213,7 +213,7 @@ SIMPLE_JWT = {
 
 # WhiteNoise configuration
 if DEBUG:
-    # En desarrollo, usar el storage por defecto
+    # On development, use the default storage
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -223,7 +223,7 @@ if DEBUG:
         },
     }
 else:
-    # En producción, usar WhiteNoise
+    # On production, use Whitenoise
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
