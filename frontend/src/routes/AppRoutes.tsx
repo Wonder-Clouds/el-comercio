@@ -12,6 +12,7 @@ import Newspapers from "@/pages/Newspapers";
 import AssignmentProduct from "@/pages/AssignmentProduct";
 import AssignmentNewspaper from "@/pages/AssignmentNewspaper";
 import Returns from "@/pages/Returns";
+import Finances from "@/pages/Finances";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
@@ -24,8 +25,7 @@ const protectedRoutes = [
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },
-  // { path: "/finanzas/ingresos", element: <DevolutionNewspaper /> },
-  // { path: "/finanzas/egresos", element: <DevolutionNewspaper /> },
+  { path: "/finanzas", element: <Finances /> },
 ];
 
 const AppRoutes = () => {

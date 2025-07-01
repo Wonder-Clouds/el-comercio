@@ -7,7 +7,7 @@ import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, Calendar, DollarSign, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, ClipboardList, DollarSign, Printer, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
 import { motion } from "motion/react"
@@ -17,6 +17,7 @@ import CalendarPicker from "@/components/shared/CalendarPicker";
 import { Badge } from "@/components/ui/badge";
 import printElement from "@/utils/printElement";
 import { useParams } from "react-router";
+import generateSalesReport from "@/utils/generatePdfs/generateSalesReport";
 
 const Returns = () => {
   const { type } = useParams();
@@ -164,6 +165,15 @@ const Returns = () => {
               >
                 <DollarSign className="w-4 h-4" />
                 Reporte del día
+              </Button>
+
+              <Button
+                onClick={() => generateSalesReport(assignments)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ClipboardList className="w-4 h-4" />
+                Liquidación
               </Button>
             </div>
           </div>
