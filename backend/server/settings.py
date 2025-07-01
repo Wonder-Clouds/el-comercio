@@ -59,6 +59,9 @@ INSTALLED_APPS = [
     'product',
     'detail_assignment',
     'devolution',
+    'cash',
+    'yape',
+    'finance',
 ]
 
 MIDDLEWARE = [
