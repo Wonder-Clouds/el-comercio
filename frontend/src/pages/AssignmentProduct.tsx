@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Assignment } from "@/models/Assignment";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -119,7 +119,7 @@ const AssignmentProduct = () => {
     const today = getLocalDate();
     const date = selectedDate || today;
     try {
-      const products = await getProductsByDate(date, ProductType.PRODUCT);
+      const products = await getProductsByDate(date, ItemType.PRODUCT);
       setProducts(products.results);
       setTotalCount(products.count);
     } catch (error) {
@@ -390,7 +390,7 @@ const AssignmentProduct = () => {
 
       {/* Assignment creation modal */}
       {showCreateModal && (
-        <AssignmentModal type={ProductType.PRODUCT} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
+        <AssignmentModal type={ItemType.PRODUCT} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
       )}
 
     </div>

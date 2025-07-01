@@ -1,27 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getAssignments } from "@/api/Assignment.api";
+import { getProductsByDate } from "@/api/Product.api";
+import { Assignment } from "@/models/Assignment";
+import { Item, ItemType } from "@/models/Product";
+import capitalizeFirstLetter from "@/utils/capitalize";
+import { formatDateToSpanishSafe } from "@/utils/formatDate";
+import { getLocalDate } from "@/utils/getLocalDate";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle, Calendar, ClipboardList, DollarSign, Printer, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
+import { motion } from "motion/react"
+import { Skeleton } from "@/components/ui/skeleton";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Calendar, DollarSign, FileDown, RefreshCw } from "lucide-react";
-import { Item, ProductType } from "@/models/Product";
-import { getProductsByDate } from "@/api/Product.api";
-import { getAssignments } from "@/api/Assignment.api";
-import { Assignment } from "@/models/Assignment";
-import { getLocalDate } from "@/utils/getLocalDate";
-import capitalizeFirstLetter from "@/utils/capitalize";
-import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import printElement from "@/utils/printElement";
-import { motion } from "motion/react"
-import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
+import { useParams } from "react-router";
+import generateSalesReport from "@/utils/generatePdfs/generateSalesReport";
 
-const DevolutionProduct = () => {
-  const tableRefProducts = useRef<HTMLDivElement>(null);
+const Returns = () => {
+  const { type } = useParams();
+  const itemType = type === "productos" ? ItemType.PRODUCT : ItemType.NEWSPAPER;
+
+  const pageTitle = itemType === ItemType.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
+
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [products, setProducts] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -60,30 +67,30 @@ const DevolutionProduct = () => {
     }
   }, [page, pageSize, selectedDate]);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchItems = useCallback(async () => {
     const today = getLocalDate();
     const date = selectedDate || today;
     try {
-      const products = await getProductsByDate(date, ProductType.PRODUCT);
-      setProducts(products.results);
-      setTotalCount(products.count);
+      const newspapers = await getProductsByDate(date, itemType);
+      setItems(newspapers.results);
+      setTotalCount(newspapers.count);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
       }
     }
-  }, []);
+  }, [itemType, selectedDate]);
 
   useEffect(() => {
     fetchAssignments();
-    fetchProducts();
-  }, [fetchAssignments, fetchProducts]);
+    fetchItems();
+  }, [type, fetchAssignments, fetchItems]);
 
-  const handlePrintProducts = () => {
-    if (tableRefProducts.current) {
-      const clone = tableRefProducts.current.cloneNode(true) as HTMLElement;
+  const handlePrintNewspapers = () => {
+    if (tableRef.current) {
+      const clone = tableRef.current.cloneNode(true) as HTMLElement;
       clone.querySelectorAll(".action-column").forEach((el) => el.remove());
-      printElement(clone, "Reporte de Productos");
+      printElement(clone, "Reporte de Periódicos");
     }
   };
 
@@ -109,7 +116,7 @@ const DevolutionProduct = () => {
         <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
-              Devolución de Productos
+              {pageTitle}
             </CardTitle>
             <Badge variant="outline" className="text-lg font-semibold bg-white/20 text-white backdrop-blur-sm px-4 py-2">
               {formattedDate}
@@ -130,12 +137,12 @@ const DevolutionProduct = () => {
               </Button>
 
               <Button
-                onClick={handlePrintProducts}
+                onClick={handlePrintNewspapers}
                 variant="outline"
                 className="flex items-center gap-2"
               >
-                <FileDown className="w-4 h-4" />
-                Exportar
+                <Printer className="w-4 h-4" />
+                Imprimir
               </Button>
 
               {(assignments.length > 0 || !isToday) && (
@@ -150,13 +157,23 @@ const DevolutionProduct = () => {
                 </Button>
               )}
 
+
               <Button
-                onClick={() => generateDailySummaryPDF(assignments, ProductType.PRODUCT)}
+                onClick={() => generateDailySummaryPDF(assignments, itemType)}
                 variant="outline"
                 className="flex items-center gap-2"
               >
                 <DollarSign className="w-4 h-4" />
                 Reporte del día
+              </Button>
+
+              <Button
+                onClick={() => generateSalesReport(assignments)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ClipboardList className="w-4 h-4" />
+                Liquidación
               </Button>
             </div>
           </div>
@@ -191,13 +208,13 @@ const DevolutionProduct = () => {
             ) : assignments.length > 0 ? (
               <DevolutionTable
                 data={assignments}
-                products={products}
+                products={items}
                 page={page}
                 pageSize={pageSize}
                 totalCount={totalCount}
                 onPageChange={handlePageChange}
                 refreshData={fetchAssignments}
-                tableType="product"
+                tableType={itemType}
               />
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -212,8 +229,8 @@ const DevolutionProduct = () => {
           </div>
         </CardContent>
       </Card>
-    </div >
+    </div>
   );
 }
 
-export default DevolutionProduct;
+export default Returns;

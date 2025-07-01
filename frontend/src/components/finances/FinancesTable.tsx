@@ -1,68 +1,25 @@
-import React from 'react';
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
 } from '@tanstack/react-table';
 import { columns } from './columns';
-import { Assignment } from '@/models/Assignment';
-import { Item, ItemType } from '@/models/Product';
-import { DevolutionQuantity } from '@/models/Devolution';
-import { postDevolution } from '@/api/Devolution.api';
-import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
-import generatePDFTicket from '@/utils/generatePdfs/generatePdfTicket';
+import { Finance } from "@/models/Finance";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface TableProps {
-  data: Assignment[];
-  products: Item[];
+interface FinancesProps {
+  data: Finance[];
   page: number;
   pageSize: number;
   totalCount: number
   onPageChange: (page: number) => void;
-  refreshData: () => void;
-  tableType: ItemType;
 }
 
-const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData, tableType }) => {
-  const handleValueChange = async (assignmentId: number, detailAssignmentId: number, productId: number, value: number) => {
-    const data: DevolutionQuantity = { quantity: value };
-    try {
-      await postDevolution(detailAssignmentId, data);
-      refreshData();
-      console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
-    } catch (error) {
-      console.error('Error al actualizar:', error);
-    }
-  };
-
-  const handlePrintTicket = (row: Assignment) => {
-    if (!row.detail_assignments) return;
-
-    const filteredDetails = row.detail_assignments.filter(
-      d => d.product.type === tableType
-    );
-
-    generatePDFTicket(row, filteredDetails);
-  };
+const FinancesTable: React.FC<FinancesProps> = ({ data, page, pageSize, totalCount, onPageChange }) => {
 
   const table = useReactTable({
     data,
-    columns: [...columns(products, handleValueChange),
-    {
-      id: "actions",
-      header: () => <span className="action-column">Acciones</span>,
-      cell: ({ row }: { row: { original: Assignment } }) => (
-        <span className="action-column">
-          <button
-            onClick={() => handlePrintTicket(row.original)}
-            className="flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors duration-200"
-          >
-            <FileDown className="w-5 h-5" />
-          </button>
-        </span>
-      )
-    }
-    ],
+    columns: columns(page, pageSize),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -174,4 +131,4 @@ const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize,
   );
 };
 
-export default DevolutionTable;
+export default FinancesTable;

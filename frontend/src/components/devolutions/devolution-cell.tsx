@@ -1,6 +1,6 @@
 import { Assignment } from "@/models/Assignment";
 import { DetailAssignment } from "@/models/DetailAssignment";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import { Separator } from "@radix-ui/react-separator";
 import EditableCell from "./editable-cell";
 import { RotateCcw } from "lucide-react";
@@ -75,7 +75,7 @@ const DevolutionCell: React.FC<DevolutionCellProps> = ({ assignment, detailAssig
   return (
     <>
       {detailAssignment?.quantity === 0 || detailAssignment?.quantity == null ? (
-        <span className="text-gray-500 text-sm">No se le asignó nada</span>
+        <span className="text-gray-500 text-sm">Sin asignaciones</span>
       ) : (
         <Card className="w-full max-w-sm">
           <div className="p-4">
@@ -85,14 +85,14 @@ const DevolutionCell: React.FC<DevolutionCellProps> = ({ assignment, detailAssig
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">Precio unitario</p>
                   <p className="text-lg font-medium">
-                    S/.{detailAssignment?.product?.type === ProductType.NEWSPAPER
+                    S/.{detailAssignment?.product?.type === ItemType.NEWSPAPER
                       ? detailAssignment?.unit_price
                       : detailAssignment?.product?.product_price || 0}
                   </p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <span className={`text-sm font-medium ${isFinalized ? "text-green-600" : "text-red-600"}`}>
-                    {isFinalized ? "Finalizado" : "Pendiente"}
+                    {isFinalized ? "Pagado" : "Pendiente"}
                   </span>
                   <Switch className="mx-auto" checked={isFinalized} onCheckedChange={handleToggleStatus} />
                 </div>

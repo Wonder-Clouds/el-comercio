@@ -1,4 +1,4 @@
-export enum ProductType {
+export enum ItemType {
   NEWSPAPER = "NEWSPAPER",
   PRODUCT = "PRODUCT",
 }
@@ -6,7 +6,7 @@ export enum ProductType {
 export interface Item {
   id: number;
   name: string;
-  type: ProductType | null;
+  type: ItemType | null;
   returns_date: number;
   product_price: number;
   status_product: boolean;

@@ -8,11 +8,11 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import { createItem, deleteProduct } from "@/api/Product.api";
 
 interface AssignmentModalProps {
-  type: ProductType;
+  type: ItemType;
   closeModal: () => void;
   updateData: () => void;
   initialProducts?: Item[];
@@ -171,7 +171,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   className="bg-blue-800 hover:bg-blue-900"
                   disabled={!name || !returnDays || !price || !totalQuantity}
                 >
-                  <Plus className="mr-1 h-4 w-4" /> Añadir
+                  <Plus className="h-4 w-4" /> Guardar
                 </Button>
               </div>
             </div>
