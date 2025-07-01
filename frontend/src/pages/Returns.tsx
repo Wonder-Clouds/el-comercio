@@ -1,14 +1,33 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
+import { getProductsByDate } from "@/api/Product.api";
 import { Assignment } from "@/models/Assignment";
-import { Item } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
+import capitalizeFirstLetter from "@/utils/capitalize";
+import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import { useCallback, useRef, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle, Calendar, DollarSign, Printer, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
+import { motion } from "motion/react"
+import { Skeleton } from "@/components/ui/skeleton";
+import DevolutionTable from "@/components/devolutions/DevolutionsTable";
+import CalendarPicker from "@/components/shared/CalendarPicker";
+import { Badge } from "@/components/ui/badge";
+import printElement from "@/utils/printElement";
+import { useParams } from "react-router";
 
-const Returns = ({ type }) => {
-  const tableRefNewspapers = useRef<HTMLDivElement>(null);
+const Returns = () => {
+  const { type } = useParams();
+  const itemType = type === "productos" ? ItemType.PRODUCT : ItemType.NEWSPAPER;
+
+  const pageTitle = itemType === ItemType.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
+
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [newspapers, setNewspapers] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -47,10 +66,159 @@ const Returns = ({ type }) => {
     }
   }, [page, pageSize, selectedDate]);
 
+  const fetchItems = useCallback(async () => {
+    const today = getLocalDate();
+    const date = selectedDate || today;
+    try {
+      const newspapers = await getProductsByDate(date, itemType);
+      setItems(newspapers.results);
+      setTotalCount(newspapers.count);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  }, [itemType, selectedDate]);
+
+  useEffect(() => {
+    fetchAssignments();
+    fetchItems();
+  }, [type, fetchAssignments, fetchItems]);
+
+  const handlePrintNewspapers = () => {
+    if (tableRef.current) {
+      const clone = tableRef.current.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".action-column").forEach((el) => el.remove());
+      printElement(clone, "Reporte de Periódicos");
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleDateSelect = (date: string | null) => {
+    setSelectedDate(date);
+    setActiveCalendar(false);
+  };
+
+  const isToday = selectedDate === getLocalDate();
+  const formattedDate = assignments.length > 0
+    ? capitalizeFirstLetter(formatDateToSpanishSafe(assignments[0].date_assignment.toString()))
+    : selectedDate
+      ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
+      : "Fecha seleccionada";
+
   return (
-    <div>
-      <h1>Returns</h1>
-      <p>This is the Returns page.</p>
+    <div className="container mx-auto p-4">
+      <Card className="bg-white shadow-lg border-0">
+        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-3xl font-bold">
+              {pageTitle}
+            </CardTitle>
+            <Badge variant="outline" className="text-lg font-semibold bg-white/20 text-white backdrop-blur-sm px-4 py-2">
+              {formattedDate}
+            </Badge>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-6">
+          <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={() => setActiveCalendar(!activeCalendar)}
+                variant="outline"
+                className="flex items-center gap-2 border-2 border-blue-200 hover:bg-blue-50 transition-colors"
+              >
+                <Calendar className="w-5 h-5" />
+                Cambiar fecha
+              </Button>
+
+              <Button
+                onClick={handlePrintNewspapers}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Imprimir
+              </Button>
+
+              {(assignments.length > 0 || !isToday) && (
+                <Button
+                  onClick={fetchAssignments}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  disabled={loading}
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  Actualizar
+                </Button>
+              )}
+
+
+              <Button
+                onClick={() => generateDailySummaryPDF(assignments, itemType)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" />
+                Reporte del día
+              </Button>
+            </div>
+          </div>
+
+          {activeCalendar ? (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-6"
+            >
+              <Card className="border shadow-md">
+                <CardContent className="p-4">
+                  <CalendarPicker
+                    onDateSelect={handleDateSelect}
+                    changeStatusCalendar={() => setActiveCalendar(false)}
+                  />
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : null}
+
+          <div className="px-1">
+            {loading ? (
+              <div className="space-y-4 p-6">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            ) : assignments.length > 0 ? (
+              <DevolutionTable
+                data={assignments}
+                products={items}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={handlePageChange}
+                refreshData={fetchAssignments}
+                tableType={itemType}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-900 mb-2">No hay asignaciones</h3>
+                <p className="text-gray-500 max-w-md">
+                  No se encontraron asignaciones para {formattedDate}.
+                  {isToday && " Puedes crear nuevas asignaciones usando el botón 'Asignar periódicos para hoy'."}
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

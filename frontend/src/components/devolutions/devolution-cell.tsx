@@ -75,7 +75,7 @@ const DevolutionCell: React.FC<DevolutionCellProps> = ({ assignment, detailAssig
   return (
     <>
       {detailAssignment?.quantity === 0 || detailAssignment?.quantity == null ? (
-        <span className="text-gray-500 text-sm">No se le asignó nada</span>
+        <span className="text-gray-500 text-sm">Sin asignaciones</span>
       ) : (
         <Card className="w-full max-w-sm">
           <div className="p-4">

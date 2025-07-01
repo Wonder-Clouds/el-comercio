@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { Assignment } from '@/models/Assignment';
-import { Item } from '@/models/Product';
+import { Item, ItemType } from '@/models/Product';
 import { DevolutionQuantity } from '@/models/Devolution';
 import { postDevolution } from '@/api/Devolution.api';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
@@ -20,7 +20,7 @@ interface TableProps {
   totalCount: number
   onPageChange: (page: number) => void;
   refreshData: () => void;
-  tableType: 'newspaper' | 'product';
+  tableType: ItemType;
 }
 
 const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData, tableType }) => {
@@ -39,7 +39,7 @@ const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize,
     if (!row.detail_assignments) return;
 
     const filteredDetails = row.detail_assignments.filter(
-      d => (d.product.type?.toLowerCase() || "") === tableType
+      d => d.product.type === tableType
     );
 
     generatePDFTicket(row, filteredDetails);

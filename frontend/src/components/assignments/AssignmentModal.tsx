@@ -171,7 +171,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   className="bg-blue-800 hover:bg-blue-900"
                   disabled={!name || !returnDays || !price || !totalQuantity}
                 >
-                  <Plus className="mr-1 h-4 w-4" /> Añadir
+                  <Plus className="h-4 w-4" /> Guardar
                 </Button>
               </div>
             </div>
