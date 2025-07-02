@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Espera a que la base de datos esté disponible
-until nc -z -v -w30 db 5432
+until nc -z -v -w30 database 5432
 do
   echo "Esperando a que la base de datos esté disponible..."
   sleep 1
