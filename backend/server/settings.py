@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'cash',
     'yape',
     'finance',
+    'type_product',
 ]
 
 MIDDLEWARE = [
