@@ -20,17 +20,17 @@ jobs:
             set -e
             
             echo "🔄 Entrando al directorio del proyecto"
-            cd ~/pachamama-journeys
+            cd ~/el-comercio
 
             echo "📥 Haciendo pull de la rama main"
             git pull origin main --no-rebase
 
             echo "🧹 Limpiando imágenes antiguas de backend"
-            podman images --format "{{.Repository}} {{.ID}} {{.CreatedAt}}" | grep pachamama-journeys_backend \
+            podman images --format "{{.Repository}} {{.ID}} {{.CreatedAt}}" | grep el-comercio_backend \
               | sort -rk3 | tail -n +2 | awk '{print $2}' | xargs -r podman rmi -f
 
             echo "🧹 Limpiando imágenes antiguas de frontend"
-            podman images --format "{{.Repository}} {{.ID}} {{.CreatedAt}}" | grep pachamama-journeys_frontend \
+            podman images --format "{{.Repository}} {{.ID}} {{.CreatedAt}}" | grep el-comercio_frontend \
               | sort -rk3 | tail -n +2 | awk '{print $2}' | xargs -r podman rmi -f
 
             echo "🛑 Deteniendo backend y frontend (si existen)"
