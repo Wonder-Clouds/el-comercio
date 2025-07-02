@@ -1,10 +1,10 @@
 import jsPDF from "jspdf";
 import { Assignment } from "@/models/Assignment";
-import { ProductType } from "@/models/Product";
+import { ItemType } from "@/models/Product";
 
 const generateDailySummaryPDF = (
   assignments: Assignment[],
-  productType: ProductType
+  itemType: ItemType
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -76,7 +76,7 @@ const generateDailySummaryPDF = (
   assignments.forEach((assignment, i) => {
     const filteredDetails =
       assignment.detail_assignments?.filter(
-        (detail) => detail.product.type === productType
+        (detail) => detail.product.type === itemType
       ) || [];
 
     if (filteredDetails.length === 0) return;

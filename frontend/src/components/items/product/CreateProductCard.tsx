@@ -13,7 +13,7 @@ import { Ban, Save } from "lucide-react";
 import { createItem } from "@/api/Product.api";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Item, defaultItem, ProductType } from "@/models/Product";
+import { Item, defaultItem, ItemType } from "@/models/Product";
 
 interface CreateProductCardProps {
   closeModal: () => void;
@@ -23,7 +23,7 @@ interface CreateProductCardProps {
 const CreateProductCard = ({ closeModal, updateData }: CreateProductCardProps) => {
   const [formData, setFormData] = useState<Item>({
     ...defaultItem,
-    type: ProductType.PRODUCT,
+    type: ItemType.PRODUCT,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();

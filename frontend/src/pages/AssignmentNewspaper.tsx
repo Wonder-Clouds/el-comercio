@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Assignment } from "@/models/Assignment";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
@@ -79,7 +79,7 @@ function AssignmentNewspaper() {
     const date = selectedDate || today;
     console.log(selectedDate)
     try {
-      const newspapers = await getProductsByDate(date, ProductType.NEWSPAPER);
+      const newspapers = await getProductsByDate(date, ItemType.NEWSPAPER);
       setNewspapers(newspapers.results);
       setTotalCount(newspapers.count);
     } catch (error) {
@@ -348,7 +348,7 @@ function AssignmentNewspaper() {
 
       {/* Assignment creation modal */}
       {showCreateModal && (
-        <AssignmentModal type={ProductType.NEWSPAPER} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={newspapers} />
+        <AssignmentModal type={ItemType.NEWSPAPER} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={newspapers} />
       )}
 
     </div>

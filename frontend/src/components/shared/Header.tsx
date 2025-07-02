@@ -13,7 +13,8 @@ import {
   OctagonAlert,
   ChevronDown,
   // HandCoins,
-  LucideIcon
+  LucideIcon,
+  PiggyBank
 } from 'lucide-react';
 
 // Definimos interfaces para mejorar el tipado
@@ -33,15 +34,15 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<string>('');
-  
+
   const dropdownRef = useRef<HTMLUListElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Detectar ruta actual para marcado activo
   useEffect(() => {
     const path = window.location.pathname;
-    const active = menuItems.find(item => 
-      item.to === path || 
+    const active = menuItems.find(item =>
+      item.to === path ||
       (item.children?.some(child => child.to === path))
     );
     if (active) {
@@ -59,7 +60,7 @@ const Header: React.FC = () => {
         { to: "/entregas/periodicos", text: "Periódicos" },
       ]
     },
-    { 
+    {
       text: "Devoluciones",
       icon: RotateCcw,
       children: [
@@ -68,8 +69,8 @@ const Header: React.FC = () => {
       ]
     },
     // { to: "/cobranzas", text: "Cobranzas", icon: HandCoins },
-    { 
-      text: "Artículos",
+    {
+      text: "Inventario",
       icon: Package,
       children: [
         { to: "/productos", text: "Productos" },
@@ -78,7 +79,8 @@ const Header: React.FC = () => {
     },
     { to: "/clientes", text: "Clientes", icon: Users },
     { to: "/deudores", text: "Deudores", icon: OctagonAlert },
-    { to: "/reportes", text: "Reportes", icon: TrendingUp }
+    { to: "/reportes", text: "Reportes", icon: TrendingUp },
+    { to: "/finanzas", text: "Finanzas", icon: PiggyBank }
   ];
 
   const handleLogout = (): void => {
@@ -97,18 +99,18 @@ const Header: React.FC = () => {
       ) {
         setDropdownOpen(null);
       }
-      
+
       // Cerrar menú móvil si se hace clic fuera
       if (
-        isOpen && 
-        mobileMenuRef.current && 
+        isOpen &&
+        mobileMenuRef.current &&
         !mobileMenuRef.current.contains(event.target as Node) &&
         (event.target as Element).closest('button')?.getAttribute('aria-label') !== 'Toggle menu'
       ) {
         setIsOpen(false);
       }
     };
-  
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -120,8 +122,8 @@ const Header: React.FC = () => {
       <nav className="container px-4 mx-auto py-4">
         <div className="flex items-center justify-between">
           {/* Mobile menu button */}
-          <button 
-            onClick={() => setIsOpen(!isOpen)} 
+          <button
+            onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden text-white rounded-md p-2 hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Toggle menu"
           >
@@ -136,11 +138,10 @@ const Header: React.FC = () => {
                   {!item.children ? (
                     <Link
                       to={item.to || "#"}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${
-                        activeItem === item.text 
-                          ? 'bg-blue-600 text-white font-medium' 
-                          : 'hover:bg-gray-800'
-                      }`}
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${activeItem === item.text
+                        ? 'bg-blue-600 text-white font-medium'
+                        : 'hover:bg-gray-800'
+                        }`}
                       onClick={() => setActiveItem(item.text)}
                     >
                       <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
@@ -150,25 +151,23 @@ const Header: React.FC = () => {
                     <div className="relative">
                       <button
                         onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${
-                          activeItem === item.text 
-                            ? 'bg-blue-600 text-white font-medium' 
-                            : 'hover:bg-gray-800'
-                        }`}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${activeItem === item.text
+                          ? 'bg-blue-600 text-white font-medium'
+                          : 'hover:bg-gray-800'
+                          }`}
                         aria-expanded={dropdownOpen === item.text}
                       >
                         <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
                         <span>{item.text}</span>
-                        <ChevronDown 
-                          size={16} 
-                          className={`ml-1 transition-transform duration-200 ${
-                            dropdownOpen === item.text ? 'rotate-180' : ''
-                          }`} 
+                        <ChevronDown
+                          size={16}
+                          className={`ml-1 transition-transform duration-200 ${dropdownOpen === item.text ? 'rotate-180' : ''
+                            }`}
                         />
                       </button>
                       {dropdownOpen === item.text && (
-                        <ul 
-                          ref={dropdownRef} 
+                        <ul
+                          ref={dropdownRef}
                           className="absolute left-0 z-20 mt-1 bg-gray-800 rounded-md shadow-lg w-48 py-1 animate-fadeIn"
                         >
                           {item.children.map((child) => (
@@ -205,7 +204,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div 
+          <div
             ref={mobileMenuRef}
             className="lg:hidden mt-4 bg-gray-900 rounded-lg shadow-xl border border-gray-800 animate-slideDown"
           >
@@ -215,11 +214,10 @@ const Header: React.FC = () => {
                   {!item.children ? (
                     <Link
                       to={item.to || "#"}
-                      className={`flex items-center space-x-3 p-2 rounded-md ${
-                        activeItem === item.text 
-                          ? 'bg-blue-600 text-white' 
-                          : 'hover:bg-gray-800'
-                      }`}
+                      className={`flex items-center space-x-3 p-2 rounded-md ${activeItem === item.text
+                        ? 'bg-blue-600 text-white'
+                        : 'hover:bg-gray-800'
+                        }`}
                       onClick={() => {
                         setActiveItem(item.text);
                         setIsOpen(false);
@@ -232,24 +230,22 @@ const Header: React.FC = () => {
                     <div>
                       <button
                         onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
-                        className={`w-full flex items-center justify-between p-2 rounded-md ${
-                          activeItem === item.text 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-gray-800'
-                        }`}
+                        className={`w-full flex items-center justify-between p-2 rounded-md ${activeItem === item.text
+                          ? 'bg-blue-600 text-white'
+                          : 'hover:bg-gray-800'
+                          }`}
                       >
                         <div className="flex items-center space-x-3">
                           <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
                           <span>{item.text}</span>
                         </div>
-                        <ChevronDown 
-                          size={16} 
-                          className={`transition-transform duration-200 ${
-                            dropdownOpen === item.text ? 'rotate-180' : ''
-                          }`} 
+                        <ChevronDown
+                          size={16}
+                          className={`transition-transform duration-200 ${dropdownOpen === item.text ? 'rotate-180' : ''
+                            }`}
                         />
                       </button>
-                      
+
                       {dropdownOpen === item.text && (
                         <ul className="ml-6 mt-1 space-y-1 border-l-2 border-gray-700 pl-3">
                           {item.children.map((child) => (
@@ -273,7 +269,7 @@ const Header: React.FC = () => {
                   )}
                 </li>
               ))}
-              
+
               <li className="px-3 py-2 mt-3 border-t border-gray-700">
                 <button
                   onClick={handleLogout}
