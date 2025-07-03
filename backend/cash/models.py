@@ -4,7 +4,7 @@ from core.models import TimeStampedModel
 # Create your models here.
 class Cash(TimeStampedModel):
     """
-    Model representing an Cash
+    Model representing a Cash
     """
     date_cash = models.DateField(null=False, blank=False, auto_now=False)
     two_hundred = models.IntegerField(null=True, blank=True)

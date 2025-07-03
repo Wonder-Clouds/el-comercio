@@ -276,3 +276,5 @@ staticfiles/
 */staticfiles/
 **/staticfiles/
 prod.env
+
+.github/
