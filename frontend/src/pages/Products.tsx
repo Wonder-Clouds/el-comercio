@@ -1,4 +1,4 @@
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import { Button } from "@/components/ui/button";
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ const Products = () => {
   // Product filter by type PRODUCT
   const fetchProduct = useCallback(async () => {
     try {
-      const response = await getProducts(page, pageSize, ProductType.PRODUCT);
+      const response = await getProducts(page, pageSize, ItemType.PRODUCT);
       setProducts(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -56,7 +56,7 @@ const Products = () => {
         if (productName) {
           setIsSearching(true);
           try {
-            const response = await getProducts(1, pageSize, ProductType.PRODUCT, productName);
+            const response = await getProducts(1, pageSize, ItemType.PRODUCT, productName);
             setProducts(response.results);
             setTotalCount(response.count);
             setPage(1);

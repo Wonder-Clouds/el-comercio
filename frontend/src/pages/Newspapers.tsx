@@ -1,6 +1,6 @@
 import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Item, ProductType } from "@/models/Product";
+import { Item, ItemType } from "@/models/Product";
 import printElement from "@/utils/printElement";
 import { deleteProduct, getNewspapers } from "@/api/Product.api";
 import { debounce } from "lodash";
@@ -29,7 +29,7 @@ const Newspapers = () => {
 
   const fetchNewspapers = useCallback(async () => {
     try {
-      const response = await getNewspapers(page, pageSize, ProductType.NEWSPAPER);
+      const response = await getNewspapers(page, pageSize, ItemType.NEWSPAPER);
       setNewspapers(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -52,7 +52,7 @@ const Newspapers = () => {
         if (newspaperName) {
           setIsSearching(true);
           try {
-            const response = await getNewspapers(1, pageSize, ProductType.NEWSPAPER, newspaperName);
+            const response = await getNewspapers(1, pageSize, ItemType.NEWSPAPER, newspaperName);
             setNewspapers(response.results);
             setTotalCount(response.count);
             setPage(1);

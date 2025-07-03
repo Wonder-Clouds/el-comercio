@@ -278,7 +278,7 @@ const AssignmentTable: React.FC<TableProps> = ({
           ))}
           {/* Fila de totales */}
           <tr className="font-medium border-t-2">
-            <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL USADO</td>
+            <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL</td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             {/* Celdas para cada producto */}
