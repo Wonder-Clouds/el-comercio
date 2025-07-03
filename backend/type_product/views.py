@@ -23,3 +23,14 @@ class TypeProductViewSet(viewsets.ModelViewSet):
     # Setttings of filters 
     filter_backends = [DjangoFilterBackend]
     filterset_class = TypeProductFilter
+
+    def list(self, request, *args, **kwargs):
+        # Names of types of products
+        type_products = ['TROME', 'COMERCIO', 'GESTION', 'PERU 21', 'OJO']
+
+        # Verify and create the names of type products
+        for name in type_products:
+            TypeProduct.objects.get_or_create(name=name)
+        
+        #$ Continue with the method list
+        return super().list(request, *args, **kwargs)
