@@ -33,6 +33,9 @@ jobs:
             podman images --format "{{.Repository}} {{.ID}} {{.CreatedAt}}" | grep el-comercio_frontend \
               | sort -rk3 | tail -n +2 | awk '{print $2}' | xargs -r podman rmi -f
 
+            echo "🧹 Limpiando imágenes dangling (<none>)"
+            podman images -f "dangling=true" -q | xargs -r podman rmi -f
+
             echo "🛑 Deteniendo backend y frontend (si existen)"
             podman-compose stop backend frontend || true
 
