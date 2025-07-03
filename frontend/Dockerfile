@@ -16,19 +16,12 @@ RUN pnpm install
 # Copy the rest of the files
 COPY . .
 
-
 # Declare argument of build
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-# Print the argument
-RUN echo "VITE_API_URL: $VITE_API_URL"
-
 # Build the application
 RUN pnpm run build
-
-# Verificar la existencia de la carpeta 'dist' después del build
-RUN ls -l /app/dist
 
 # Stage 2: Serve the React application using Nginx
 FROM nginx:alpine
