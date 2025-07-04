@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import TypeProduct
 
-
 class TypeProductSerializer(serializers.ModelSerializer):
     """
     Serializer for the class Type Product
@@ -9,4 +8,4 @@ class TypeProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypeProduct
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'type']
