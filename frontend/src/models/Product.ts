@@ -1,12 +1,9 @@
-export enum ItemType {
-  NEWSPAPER = "NEWSPAPER",
-  PRODUCT = "PRODUCT",
-}
+import { TypeProduct } from "./TypeProduct";
 
 export interface Item {
   id: number;
   name: string;
-  type: ItemType | null;
+  type: TypeProduct | null;
   returns_date: number;
   product_price: number;
   status_product: boolean;

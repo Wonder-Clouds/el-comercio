@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/v1/', include('devolution.urls')),
     path('api/v1/', include('yape.urls')),
     path('api/v1/', include('finance.urls')),
+    path('api/v1/', include('type_product.urls')),
 
     # Swagger
     path('', include('core.urls')),
