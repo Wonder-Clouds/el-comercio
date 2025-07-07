@@ -58,7 +58,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # Filter by product type if provided
         if product_type:
-            products = products.filter(type=product_type)
+            products = products.filter(type_product__name=product_type)
 
         page = self.paginate_queryset(products)
         if page is not None:
