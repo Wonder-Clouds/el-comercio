@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,18 +10,32 @@ import { cashToRows, CashRow } from "@/models/Cash";
 
 interface CashProps {
   data: Cash[];
+  cashRows: CashRow[];
+  setCashRows: React.Dispatch<React.SetStateAction<CashRow[]>>;
 }
 
-const CashTable: React.FC<CashProps> = ({ data }) => {
-  const [cashRows, setCashRows] = useState<CashRow[]>([]);
+const CashTable: React.FC<CashProps> = ({ data, cashRows, setCashRows }) => {
+  const prevDataRef = useRef<Cash[]>([]);
 
   useEffect(() => {
-    if (data.length > 0) {
-      setCashRows(cashToRows(data[0]));
-    } else {
-      setCashRows(cashToRows(defaultCash));
+    // Solo actualizar si los datos han cambiado realmente
+    const dataChanged =
+      prevDataRef.current.length !== data.length ||
+      (data.length > 0 && prevDataRef.current[0] !== data[0]);
+
+    if (dataChanged) {
+      if (data.length > 0) {
+        setCashRows(cashToRows(data[0]));
+      } else {
+        setCashRows(cashToRows(defaultCash));
+      }
+      prevDataRef.current = data;
     }
-  }, [data]);
+  }, [data, setCashRows]);
+
+  const getDenominationValue = (label: string): number => {
+    return parseFloat(label.replace("S/", "").replace(",", ".").trim());
+  };
 
   const handleQuantityChange = (index: number, newQuantity: number) => {
     setCashRows(prev =>
@@ -33,16 +47,8 @@ const CashTable: React.FC<CashProps> = ({ data }) => {
     );
   };
 
-  const getDenominationValue = (label: string): number => {
-    return parseFloat(label.replace("S/", "").replace(",", ".").trim());
-  };
-
   const columns = buildColumns(handleQuantityChange);
-  const table = useReactTable({
-    data: cashRows,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const table = useReactTable({ data: cashRows, columns, getCoreRowModel: getCoreRowModel() });
 
   const totalAmount = cashRows.reduce((sum, row) => sum + row.total, 0);
 
@@ -67,7 +73,7 @@ const CashTable: React.FC<CashProps> = ({ data }) => {
           {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-2 py-4 whitespace-nowrap">
+                <td key={cell.id} className="px-2 py-2 whitespace-nowrap">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

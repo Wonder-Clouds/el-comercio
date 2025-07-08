@@ -6,11 +6,12 @@ import {
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { Assignment } from '@/models/Assignment';
-import { Item, ItemType } from '@/models/Product';
+import { Item } from '@/models/Product';
 import { DevolutionQuantity } from '@/models/Devolution';
 import { postDevolution } from '@/api/Devolution.api';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
 import generatePDFTicket from '@/utils/generatePdfs/generatePdfTicket';
+import { Types } from '@/models/TypeProduct';
 
 interface TableProps {
   data: Assignment[];
@@ -20,7 +21,7 @@ interface TableProps {
   totalCount: number
   onPageChange: (page: number) => void;
   refreshData: () => void;
-  tableType: ItemType;
+  tableType: Types;
 }
 
 const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize, totalCount, onPageChange, refreshData, tableType }) => {
@@ -39,7 +40,7 @@ const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize,
     if (!row.detail_assignments) return;
 
     const filteredDetails = row.detail_assignments.filter(
-      d => d.product.type === tableType
+      d => d.product.type_product?.type === tableType
     );
 
     generatePDFTicket(row, filteredDetails);

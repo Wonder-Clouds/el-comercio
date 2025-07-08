@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router";
-import logo  from "@/assets/elcomercio_logo.webp";
+import logo from "@/assets/elcomercio_logo.webp";
 import { Token } from "@/api/Token.api";
 
 export default function LoginForm() {

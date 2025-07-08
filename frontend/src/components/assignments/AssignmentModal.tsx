@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Ban, Save, Plus, Trash2, Package, Search, Tag, Calendar, CheckCircle, Hash } from "lucide-react";
+import { Ban, Save, Plus, Trash2, Package, Search, Tag, Calendar, CheckCircle, Hash, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -8,11 +8,14 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
-import { Item, ItemType } from "@/models/Product";
+import { Item, ItemCreateData } from "@/models/Product";
 import { createItem, deleteProduct } from "@/api/Product.api";
+import { TypeProduct, Types } from "@/models/TypeProduct";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { getTypeProducts } from "@/api/TypeProduct.api";
 
 interface AssignmentModalProps {
-  type: ItemType;
+  type: Types;
   closeModal: () => void;
   updateData: () => void;
   initialProducts?: Item[];
@@ -24,26 +27,36 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
   const [returnDays, setReturnDays] = useState("");
   const [price, setPrice] = useState("");
   const [totalQuantity, setTotalQuantity] = useState("");
-  const [products, setProducts] = useState<Item[]>([]);
+  const [products, setProducts] = useState<ItemCreateData[]>([]);
+  const [options, setOptions] = useState<TypeProduct[]>([]);
+  const [selectedValue, setSelectedValue] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleAddSingleProduct = () => {
-    if (name && returnDays && price && totalQuantity) {
-      const newProduct = {
+    if (name && returnDays && price && totalQuantity && selectedValue) {
+      // Buscar el objeto TypeProduct completo
+      const selectedTypeProduct = options.find(opt => opt.id.toString() === selectedValue);
+
+      if (!selectedTypeProduct) return; // Protección extra
+
+      const newProduct: ItemCreateData = {
         id: products.length + 1,
-        name: name,
+        name,
         product_price: parseFloat(price),
         returns_date: parseInt(returnDays),
         total_quantity: parseInt(totalQuantity),
-        type: type,
+        type_product: selectedTypeProduct.id,
         status_product: true,
       };
 
       setProducts([...products, newProduct]);
+
+      // Limpiar formulario
       setName("");
       setReturnDays("");
       setPrice("");
       setTotalQuantity("");
+      setSelectedValue(undefined); // Reinicia el select también si quieres
     }
   };
 
@@ -83,17 +96,46 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
   const totalPrice = products.reduce((sum, product) => sum + (product.product_price * product.total_quantity), 0).toFixed(2);
   const totalItems = products.reduce((sum, product) => sum + product.total_quantity, 0);
 
+  const fetchTypeProducts = async () => {
+    try {
+      const res = await getTypeProducts();
+      const filtered = res.filter((opt) => opt.type === type);
+
+      setOptions(filtered);
+
+      if (filtered.length === 1) {
+        setSelectedValue(filtered[0].id.toString()); // auto-select
+      }
+    } catch (error) {
+      console.error("Error al cargar opciones", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTypeProducts();
+  }, []);
+
   useEffect(() => {
     if (initialProducts && initialProducts.length > 0) {
+      const convertedProducts: ItemCreateData[] = initialProducts.map((p) => ({
+        id: p.id,
+        name: p.name,
+        product_price: p.product_price,
+        returns_date: p.returns_date,
+        total_quantity: p.total_quantity,
+        type_product: p.type_product?.id ?? null, // convertir a número
+        status_product: p.status_product,
+      }));
+
       setProducts((prevProducts) => {
-        // Filtrar los que aún no están en prevProducts
-        const newProducts = initialProducts.filter(
+        const newProducts = convertedProducts.filter(
           (newProduct) => !prevProducts.some((p) => p.id === newProduct.id)
         );
         return [...prevProducts, ...newProducts];
       });
     }
   }, [initialProducts]);
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -102,7 +144,15 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="w-[50rem] shadow-xl border-0">
+        <Card className="w-[52rem] max-h-[90vh] overflow-y-auto relative shadow-xl border-0">
+          {/* Botón X para cerrar */}
+          <button
+            onClick={closeModal}
+            className="absolute top-3 right-3 text-white hover:text-red-300 z-10"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
           <CardHeader className="bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-t-lg">
             <CardTitle className="text-2xl flex items-center gap-2">
               <Package className="h-6 w-6" />
@@ -112,20 +162,39 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
               Añade los artículos que deseas asignar
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="flex flex-wrap gap-4 w-full mb-4">
-              <div className="flex-1 min-w-[180px]">
-                <Label htmlFor="name" className="text-sm font-medium">Nombre del producto</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ingrese nombre del producto"
-                  className="mt-1"
-                  required
-                />
+
+          <CardContent className="pt-4 px-6">
+            <div className="mb-3">
+              <Label htmlFor="name" className="text-sm font-medium">Nombre del producto</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ingrese nombre del producto"
+                className="mt-1"
+                required
+              />
+            </div>
+
+            {/* Grid del formulario */}
+            <div className="grid grid-cols-6 gap-4 mb-6">
+              {/* Select arriba */}
+              <div className="col-span-2">
+                <Label htmlFor="returns_date" className="text-sm font-medium">Tipo</Label>
+                <Select value={selectedValue} onValueChange={setSelectedValue} disabled={options.length === 1}>
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((opt) => (
+                      <SelectItem key={opt.id} value={opt.id.toString()}>
+                        {opt.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="w-28">
+              <div>
                 <Label htmlFor="total_quantity" className="text-sm font-medium">Cantidad</Label>
                 <Input
                   id="total_quantity"
@@ -138,7 +207,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   required
                 />
               </div>
-              <div className="w-28">
+              <div>
                 <Label htmlFor="returns_date" className="text-sm font-medium">Días devolución</Label>
                 <Input
                   id="returns_date"
@@ -151,8 +220,8 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   required
                 />
               </div>
-              <div className="w-32">
-                <Label htmlFor="price" className="text-sm font-medium">Precio producto</Label>
+              <div>
+                <Label htmlFor="price" className="text-sm font-medium">Precio</Label>
                 <Input
                   id="price"
                   type="number"
@@ -160,18 +229,18 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   step="0.01"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0.00"
+                  placeholder="S/. 0.00"
                   className="mt-1"
                   required
                 />
               </div>
-              <div className="self-end pb-0.5">
+              <div className="flex items-end">
                 <Button
                   onClick={handleAddSingleProduct}
-                  className="bg-blue-800 hover:bg-blue-900"
+                  className="bg-blue-800 hover:bg-blue-900 w-full"
                   disabled={!name || !returnDays || !price || !totalQuantity}
                 >
-                  <Plus className="h-4 w-4" /> Guardar
+                  <Plus className="h-4 w-4 mr-1" /> Guardar
                 </Button>
               </div>
             </div>

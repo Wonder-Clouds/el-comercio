@@ -3,7 +3,17 @@ import { TypeProduct } from "./TypeProduct";
 export interface Item {
   id: number;
   name: string;
-  type: TypeProduct | null;
+  type_product: TypeProduct | null;
+  returns_date: number;
+  product_price: number;
+  status_product: boolean;
+  total_quantity: number;
+}
+
+export interface ItemCreateData {
+  id: number;
+  name: string;
+  type_product: number | null;
   returns_date: number;
   product_price: number;
   status_product: boolean;
@@ -13,7 +23,7 @@ export interface Item {
 export const defaultItem: Item = {
   id: 0,
   name: "",
-  type: null,
+  type_product: null,
   returns_date: 0,
   product_price: 0,
   status_product: false,

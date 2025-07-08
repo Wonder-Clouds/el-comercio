@@ -121,7 +121,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="text-white bg-gradient-to-r from-slate-900 to-gray-950 shadow-lg">
-      <nav className="container px-4 mx-auto py-4">
+      <nav className="container lg:mx-auto p-4">
         <div className="flex items-center justify-between">
           {/* Mobile menu button */}
           <button

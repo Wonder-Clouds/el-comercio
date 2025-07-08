@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
 import { getProductsByDate } from "@/api/Product.api";
 import { Assignment } from "@/models/Assignment";
-import { Item, ItemType } from "@/models/Product";
+import { Item } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, Calendar, ClipboardList, DollarSign, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, ClipboardList, DollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
 import { motion } from "motion/react"
@@ -15,17 +15,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { Badge } from "@/components/ui/badge";
-import printElement from "@/utils/printElement";
 import { useParams } from "react-router";
 import generateSalesReport from "@/utils/generatePdfs/generateSalesReport";
+import { Types } from "@/models/TypeProduct";
 
 const Returns = () => {
   const { type } = useParams();
-  const itemType = type === "productos" ? ItemType.PRODUCT : ItemType.NEWSPAPER;
+  const itemType = type === "productos" ? Types.PRODUCT : Types.NEWSPAPER;
 
-  const pageTitle = itemType === ItemType.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
-
-  const tableRef = useRef<HTMLDivElement>(null);
+  const pageTitle = itemType === Types.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [items, setItems] = useState<Item[]>([]);
@@ -86,14 +84,6 @@ const Returns = () => {
     fetchItems();
   }, [type, fetchAssignments, fetchItems]);
 
-  const handlePrintNewspapers = () => {
-    if (tableRef.current) {
-      const clone = tableRef.current.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll(".action-column").forEach((el) => el.remove());
-      printElement(clone, "Reporte de Periódicos");
-    }
-  };
-
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
@@ -134,15 +124,6 @@ const Returns = () => {
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha
-              </Button>
-
-              <Button
-                onClick={handlePrintNewspapers}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir
               </Button>
 
               {(assignments.length > 0 || !isToday) && (

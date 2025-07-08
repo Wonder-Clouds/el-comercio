@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
 import { getProductsByDate } from "@/api/Product.api";
@@ -15,8 +15,7 @@ import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import printElement from "@/utils/printElement";
-import { AlertCircle, Calendar, FileDown, FilePenLine, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, FileDown, FilePenLine, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { motion } from "motion/react"
 
@@ -24,10 +23,8 @@ const Assignments = () => {
   const { type } = useParams();
   const itemType = type === "productos" ? Types.PRODUCT : Types.NEWSPAPER;
 
-  const pageTitle = itemType === Types.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
+  const pageTitle = itemType === Types.PRODUCT ? "Entregas de Productos" : "Entregas de Periódicos";
   const assignmentButton = itemType === Types.PRODUCT ? "Asignar productos" : "Asignar periódicos";
-
-  const tableRef = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Item[]>([]);
@@ -124,14 +121,6 @@ const Assignments = () => {
     fetchProducts();
   }, [fetchAssignments, fetchProducts]);
 
-  const handlePrintProducts = () => {
-    if (tableRefProducts.current) {
-      const clone = tableRefProducts.current.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll(".action-column").forEach((el) => el.remove());
-      printElement(clone, "Reporte de Productos");
-    }
-  };
-
   const handleCreateAssignments = async () => {
     await fetchProducts();
     setCreating(true);
@@ -191,15 +180,6 @@ const Assignments = () => {
               >
                 <FileDown className="w-4 h-4" />
                 Exportar
-              </Button>
-
-              <Button
-                onClick={handlePrintProducts}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir
               </Button>
 
               {(assignments.length > 0 || !isToday) && (
@@ -268,7 +248,7 @@ const Assignments = () => {
             </motion.div>
           ) : null}
 
-          <div className="rounded-lg pt-4 px-1">
+          <div className="rounded-lg">
             {loading ? (
               <div className="space-y-4 p-6">
                 <Skeleton className="h-12 w-full" />

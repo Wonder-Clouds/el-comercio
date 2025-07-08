@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +10,16 @@ import { motion } from "motion/react";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import CashTable from "@/components/cash/CashTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getYapes } from "@/api/Yape.api";
+import { Yape } from "@/models/Yape";
+import YapeTable from "@/components/yape/YapeTable";
+import { postCash } from "@/api/Cash.api";
+import { CashRow, cashToRows, defaultCash } from "@/models/Cash";
 
 const Cash = () => {
+  const [yapes, setYapes] = useState<Yape[]>([]);
+  const [cashRows, setCashRows] = useState<CashRow[]>(cashToRows(defaultCash));
+
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
 
@@ -23,6 +31,40 @@ const Cash = () => {
   const formattedDate = selectedDate
     ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
     : "Fecha seleccionada";
+
+  const fetchYapeData = async () => {
+    const response = await getYapes();
+    setYapes(response);
+  }
+
+  const handleSaveCash = async () => {
+    const cashData = {
+      date_cash: selectedDate || new Date().toISOString().split("T")[0],
+      two_hundred: cashRows[0].quantity,
+      one_hundred: cashRows[1].quantity,
+      fifty: cashRows[2].quantity,
+      twenty: cashRows[3].quantity,
+      ten: cashRows[4].quantity,
+      five: cashRows[5].quantity,
+      two: cashRows[6].quantity,
+      one: cashRows[7].quantity,
+      fifty_cents: cashRows[8].quantity,
+      twenty_cents: cashRows[9].quantity,
+      ten_cents: cashRows[10].quantity,
+      amount: cashRows.reduce((sum, row) => sum + row.total, 0),
+    };
+
+    try {
+      await postCash(cashData);
+      console.log("Cash guardado correctamente.");
+    } catch (error) {
+      console.error("Error al guardar cash:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchYapeData();
+  }, [selectedDate]);
 
   return (
     <div className="container mx-auto p-4">
@@ -78,26 +120,31 @@ const Cash = () => {
               </div>
 
               <TabsContent value="cash_count" className="flex flex-row pt-4 px-1">
-                <div className="px-4 w-1/2">
-                  <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">COMERCIO</h4>
+                <div className="px-4 w-full">
+                  <div className="flex justify-between">
+                    <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">COMERCIO</h4>
+                    <Button onClick={handleSaveCash}>Guardar</Button>
+                  </div>
                   <CashTable
                     data={[]}
+                    cashRows={cashRows}
+                    setCashRows={setCashRows}
                   />
                 </div>
-                <div className="px-4 w-1/2">
+                {/* <div className="px-4 w-1/2">
                   <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">OJO</h4>
                   <CashTable
                     data={[]}
                   />
-                </div>
+                </div> */}
               </TabsContent>
 
               <TabsContent value="yape">
-
+                <YapeTable
+                  data={yapes}
+                />
               </TabsContent>
             </Tabs>
-
-
 
           </div>
         </CardContent>
