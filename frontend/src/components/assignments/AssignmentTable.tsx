@@ -10,8 +10,9 @@ import { postDetailAssignments } from '@/api/DetailAssignment.api';
 import { AssignmentStatus, PostDetailAssignment } from '@/models/DetailAssignment';
 import { Item } from '@/models/Product';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
-import printElement from '@/utils/printElement';
 import { toast } from '@/hooks/use-toast';
+import { Types } from '@/models/TypeProduct';
+import generateAssignmentTicket from '@/utils/generatePdfs/generateAssignmentTicket';
 
 interface TableProps {
   data: Assignment[];
@@ -21,7 +22,7 @@ interface TableProps {
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef?: RefObject<HTMLDivElement>;
-  tableType: 'newspaper' | 'product';
+  tableType: Types;
 }
 
 const AssignmentTable: React.FC<TableProps> = ({
@@ -31,7 +32,6 @@ const AssignmentTable: React.FC<TableProps> = ({
   pageSize,
   totalCount,
   onPageChange,
-  tableRef,
   tableType
 }) => {
   // Estado local para mantener los datos actualizados
@@ -144,47 +144,22 @@ const AssignmentTable: React.FC<TableProps> = ({
     }
   };
 
-  // Función para imprimir el reporte individual
-  const handlePrintRow = (row: Assignment) => {
+  const handleCreateTicket = (row: Assignment) => {
     if (!row.detail_assignments) return;
 
     const filteredDetails = row.detail_assignments.filter(
-      d => (d.product.type?.toLowerCase() || "") === tableType
+      d => d.product.type_product?.type === tableType
     );
 
-    const date = new Date().toLocaleString();
+    if (filteredDetails.length === 0) {
+      toast({
+        title: "Sin productos",
+        description: "Este vendedor no tiene productos de este tipo.",
+      });
+      return;
+    }
 
-    const element = document.createElement('div');
-    element.innerHTML = `
-      <div style="font-family: 'Courier New', Courier, monospace; padding: 16px; width: 300px; border: 1px dashed #000;">
-        <h2 style="text-align: center; margin-bottom: 8px;">COMPROBANTE DE ENTREGA</h2>
-        <p style="margin: 0;"><strong>Fecha:</strong> ${date}</p>
-        <p style="margin: 0;"><strong>Código Vendedor:</strong> ${row.seller.number_seller}</p>
-        <p style="margin: 0;"><strong>Nombre:</strong> ${row.seller.name} ${row.seller.last_name}</p>
-        <hr style="margin: 8px 0;">
-        <h3 style="margin-bottom: 4px;">Detalle de Productos</h3>
-        <table style="width: 100%; font-size: 14px;">
-          <thead>
-            <tr>
-              <th style="text-align: left;">Producto</th>
-              <th style="text-align: right;">Cantidad</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filteredDetails.map(d => `
-              <tr>
-                <td>${d.product.name}</td>
-                <td style="text-align: right;">${d.quantity}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        <hr style="margin: 8px 0;">
-        <p style="text-align: center; margin-top: 12px;">Gracias por su preferencia</p>
-      </div>
-    `;
-
-    printElement(element, `Comprobante_${row.seller.number_seller}`);
+    generateAssignmentTicket(filteredDetails, row);
   };
 
   // Calcular los totales para cada columna de producto
@@ -232,7 +207,7 @@ const AssignmentTable: React.FC<TableProps> = ({
         cell: ({ row }: { row: { original: Assignment } }) => (
           <span className="action-column">
             <button
-              onClick={() => handlePrintRow(row.original)}
+              onClick={() => handleCreateTicket(row.original)}
               className="flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors duration-200"
             >
               <FileDown className="w-5 h-5" />
@@ -247,7 +222,7 @@ const AssignmentTable: React.FC<TableProps> = ({
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div ref={tableRef} className="overflow-x-auto border rounded-lg">
+    <div className="overflow-x-auto border rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (

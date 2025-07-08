@@ -1,4 +1,3 @@
-import { ItemType } from '@/models/Product';
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
@@ -7,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { Types } from '@/models/TypeProduct';
 
 const formSchema = z.object({
   id_product: z.number().int().positive(),
   name: z.string().min(1, 'El nombre es requerido'),
-  type: z.nativeEnum(ItemType),
+  type: z.nativeEnum(Types),
   returns_date: z.number().int().min(0, 'La fecha de devolución debe ser un número positivo'),
 })
 
@@ -25,7 +25,7 @@ function ProductForm() {
     defaultValues: {
       id_product: 0,
       name: '',
-      type: ItemType.PRODUCT,
+      type: Types.PRODUCT,
       returns_date: 0,
     },
   })
@@ -69,8 +69,8 @@ function ProductForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={ItemType.NEWSPAPER}>Periódico</SelectItem>
-                  <SelectItem value={ItemType.PRODUCT}>Producto</SelectItem>
+                  <SelectItem value={Types.NEWSPAPER}>Periódico</SelectItem>
+                  <SelectItem value={Types.PRODUCT}>Producto</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>

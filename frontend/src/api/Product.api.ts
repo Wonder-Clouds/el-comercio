@@ -1,11 +1,12 @@
 import api from "@/config/axios";
 import PaginatedResponse from "@/models/PaginatedResponse";
-import { Item, ItemType } from "@/models/Product";
+import { Item, ItemCreateData } from "@/models/Product";
+import { Types } from "@/models/TypeProduct";
 
 export const getProducts = async (
   page: number,
   pageSize: number,
-  itemType: ItemType = ItemType.PRODUCT,
+  itemType: Types = Types.PRODUCT,
   productName?: string
 ): Promise<PaginatedResponse<Item>> => {
   const response = await api.get("/products/", {
@@ -22,7 +23,7 @@ export const getProducts = async (
 export const getNewspapers = async (
   page: number,
   pageSize: number,
-  itemType: ItemType = ItemType.NEWSPAPER,
+  itemType: Types = Types.NEWSPAPER,
   productName?: string
 ): Promise<PaginatedResponse<Item>> => {
   const response = await api.get("/products/", {
@@ -36,14 +37,14 @@ export const getNewspapers = async (
   return response.data;
 };
 
-export const getProductsByDate = async (date: string, type: ItemType) => {
+export const getProductsByDate = async (date: string, product_type: Types) => {
   const response = await api.get(`/products/by-date/`, {
-    params: { date, type },
+    params: { date, product_type },
   });
   return response.data;
 };
 
-export const createItem = async (item: Item): Promise<Item> => {
+export const createItem = async (item: ItemCreateData): Promise<Item> => {
   const response = await api.post("/products/", item);
   return response.data;
 };

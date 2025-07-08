@@ -9,23 +9,23 @@ import { Outlet, Route, Routes } from "react-router";
 import Debtors from "@/pages/Debtors";
 import Collections from "@/pages/Collections";
 import Newspapers from "@/pages/Newspapers";
-import AssignmentProduct from "@/pages/AssignmentProduct";
-import AssignmentNewspaper from "@/pages/AssignmentNewspaper";
 import Returns from "@/pages/Returns";
 import Finances from "@/pages/Finances";
+import Cash from "@/pages/Cash";
+import Assignments from "@/pages/Assignments";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
-  { path: "/entregas/productos", element: <AssignmentProduct /> },
-  { path: "/entregas/periodicos", element: <AssignmentNewspaper /> },
+  { path: "/entregas/:type", element: <Assignments /> },
   { path: "/devoluciones/:type", element: <Returns /> },
+  { path: "/finanzas", element: <Finances /> },
   { path: "/productos", element: <Products /> },
   { path: "/periodicos", element: <Newspapers /> },
   { path: "/cobranzas", element: <Collections /> },
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },
   { path: "/reportes", element: <Reports /> },
-  { path: "/finanzas", element: <Finances /> },
+  { path: "/caja", element: <Cash /> },
 ];
 
 const AppRoutes = () => {

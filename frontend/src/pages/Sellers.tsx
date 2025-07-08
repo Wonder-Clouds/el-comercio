@@ -5,9 +5,8 @@ import CreateCard from "@/components/sellers/SellersCreateCard"
 import UpdateCard from "@/components/sellers/SellerUpdateCard"
 import type { Seller } from "@/models/Seller"
 import { Input } from "@/components/ui/input"
-import { Search, FileDown, Printer, UserPlus, X } from "lucide-react"
+import { Search, UserPlus, X } from "lucide-react"
 import debounce from "lodash/debounce"
-import printElement from "@/utils/printElement"
 import { deleteSeller, getSellers } from "@/api/Seller.api"
 import { getColumns } from "@/components/sellers/columns"
 import { useToast } from "@/hooks/use-toast"
@@ -112,12 +111,6 @@ function Sellers() {
     setPage(1)
   }
 
-  const handlePrint = () => {
-    if (tableRef.current) {
-      printElement(tableRef.current, "Reporte de Ventas")
-    }
-  }
-
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
   }
@@ -144,15 +137,7 @@ function Sellers() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
           <div className="flex flex-wrap gap-3">
-            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
-              <FileDown className="w-4 h-4" />
-              Exportar
-            </Button>
-            <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
-              <Printer className="w-4 h-4" />
-              Imprimir
-            </Button>
-            <Button onClick={openCreateModal} className="flex items-center gap-2">
+            <Button onClick={openCreateModal} className="flex items-center gap-2 bg-blue-900 hover:bg-blue-700">
               <UserPlus className="w-4 h-4" />
               Crear vendedor
             </Button>

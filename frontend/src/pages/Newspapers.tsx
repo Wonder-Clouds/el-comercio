@@ -1,7 +1,6 @@
-import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
+import { FileDown, Search, UserPlus, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Item, ItemType } from "@/models/Product";
-import printElement from "@/utils/printElement";
+import { Item } from "@/models/Product";
 import { deleteProduct, getNewspapers } from "@/api/Product.api";
 import { debounce } from "lodash";
 import { useToast } from "@/hooks/use-toast";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { NewspaperTable } from "@/components/items/newspaper/NewspaperTable";
 import CreateNewspaperCard from "@/components/items/newspaper/CreateNewspaperCard";
 import UpdateNewspaperCard from "@/components/items/newspaper/UpdateNewspaperCard";
+import { Types } from "@/models/TypeProduct";
 
 const Newspapers = () => {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -29,7 +29,7 @@ const Newspapers = () => {
 
   const fetchNewspapers = useCallback(async () => {
     try {
-      const response = await getNewspapers(page, pageSize, ItemType.NEWSPAPER);
+      const response = await getNewspapers(page, pageSize, Types.NEWSPAPER);
       setNewspapers(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -52,7 +52,7 @@ const Newspapers = () => {
         if (newspaperName) {
           setIsSearching(true);
           try {
-            const response = await getNewspapers(1, pageSize, ItemType.NEWSPAPER, newspaperName);
+            const response = await getNewspapers(1, pageSize, Types.NEWSPAPER, newspaperName);
             setNewspapers(response.results);
             setTotalCount(response.count);
             setPage(1);
@@ -85,12 +85,6 @@ const Newspapers = () => {
   const clearSearch = () => {
     setSearchTerm("");
     setPage(1);
-  };
-
-  const handlePrint = () => {
-    if (tableRef.current) {
-      printElement(tableRef.current, "Reporte de Periódicos");
-    }
   };
 
   const handlePageChange = (newPage: number) => {
@@ -132,10 +126,6 @@ const Newspapers = () => {
           <Button variant="outline" className="flex items-center gap-2">
             <FileDown className="w-4 h-4" />
             Exportar
-          </Button>
-          <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
-            <Printer className="w-4 h-4" />
-            Imprimir
           </Button>
           <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2">
             <UserPlus className="w-4 h-4" />

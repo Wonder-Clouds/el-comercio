@@ -14,7 +14,8 @@ import {
   ChevronDown,
   // HandCoins,
   LucideIcon,
-  PiggyBank
+  PiggyBank,
+  HandCoins
 } from 'lucide-react';
 
 // Definimos interfaces para mejorar el tipado
@@ -68,6 +69,7 @@ const Header: React.FC = () => {
         { to: "/devoluciones/periodicos", text: "Periódicos" },
       ]
     },
+    { to: "/finanzas", text: "Finanzas", icon: HandCoins },
     // { to: "/cobranzas", text: "Cobranzas", icon: HandCoins },
     {
       text: "Inventario",
@@ -80,7 +82,7 @@ const Header: React.FC = () => {
     { to: "/clientes", text: "Clientes", icon: Users },
     { to: "/deudores", text: "Deudores", icon: OctagonAlert },
     { to: "/reportes", text: "Reportes", icon: TrendingUp },
-    { to: "/finanzas", text: "Finanzas", icon: PiggyBank }
+    { to: "/caja", text: "Caja", icon: PiggyBank },
   ];
 
   const handleLogout = (): void => {
@@ -119,7 +121,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="text-white bg-gradient-to-r from-slate-900 to-gray-950 shadow-lg">
-      <nav className="container px-4 mx-auto py-4">
+      <nav className="container lg:mx-auto p-4">
         <div className="flex items-center justify-between">
           {/* Mobile menu button */}
           <button

@@ -1,15 +1,15 @@
-import { Item, ItemType } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { Button } from "@/components/ui/button";
-import { FileDown, Printer, Search, UserPlus, X } from "lucide-react";
+import { FileDown, Search, UserPlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getProducts, deleteProduct } from "@/api/Product.api";
 import { debounce } from "lodash";
-import printElement from "@/utils/printElement";
 import { useToast } from "@/hooks/use-toast";
 import { ProductTable } from "@/components/items/product/ProductTable";
 import CreateProductCard from "@/components/items/product/CreateProductCard";
 import UpdateProductCard from "@/components/items/product/UpdateProductCard";
+import { Types } from "@/models/TypeProduct";
 
 const Products = () => {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ const Products = () => {
   // Product filter by type PRODUCT
   const fetchProduct = useCallback(async () => {
     try {
-      const response = await getProducts(page, pageSize, ItemType.PRODUCT);
+      const response = await getProducts(page, pageSize, Types.PRODUCT);
       setProducts(response.results);
       setTotalCount(response.count);
     } catch (error) {
@@ -56,7 +56,7 @@ const Products = () => {
         if (productName) {
           setIsSearching(true);
           try {
-            const response = await getProducts(1, pageSize, ItemType.PRODUCT, productName);
+            const response = await getProducts(1, pageSize, Types.PRODUCT, productName);
             setProducts(response.results);
             setTotalCount(response.count);
             setPage(1);
@@ -89,12 +89,6 @@ const Products = () => {
   const clearSearch = () => {
     setSearchTerm("");
     setPage(1);
-  };
-
-  const handlePrint = () => {
-    if (tableRef.current) {
-      printElement(tableRef.current, "Reporte de Productos");
-    }
   };
 
   const handlePageChange = (newPage: number) => {
@@ -137,10 +131,7 @@ const Products = () => {
             <FileDown className="w-4 h-4" />
             Exportar
           </Button>
-          <Button onClick={handlePrint} variant="outline" className="flex items-center gap-2">
-            <Printer className="w-4 h-4" />
-            Imprimir
-          </Button>
+
           <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2">
             <UserPlus className="w-4 h-4" />
             Nuevo producto

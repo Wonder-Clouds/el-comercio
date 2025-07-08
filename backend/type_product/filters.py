@@ -10,7 +10,8 @@ class TypeProductFilter(django_filters.FilterSet):
 
     # Filter by specific name or partial match
     name = django_filters.CharFilter(lookup_expr='icontains')
+    type = django_filters.ChoiceFilter(choices=TypeProduct.TYPE)
 
     class Meta:
         model = TypeProduct
-        fields = ['name']
+        fields = ['name', 'type']
