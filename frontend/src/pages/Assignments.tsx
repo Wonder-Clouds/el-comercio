@@ -1,26 +1,33 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router";
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
 import { getProductsByDate } from "@/api/Product.api";
+import AssignmentModal from "@/components/assignments/AssignmentModal";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Assignment } from "@/models/Assignment";
-import { Item, ItemType } from "@/models/Product";
+import { Item } from "@/models/Product";
+import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import printElement from "@/utils/printElement";
-import { Calendar, FileDown, Printer, AlertCircle, RefreshCw, FilePenLine } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "motion/react"
-import { Skeleton } from "@/components/ui/skeleton";
-import AssignmentModal from "@/components/assignments/AssignmentModal";
+import { AlertCircle, Calendar, FileDown, FilePenLine, Printer, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
+import { motion } from "motion/react"
 
-const AssignmentProduct = () => {
-  const tableRefProducts = useRef<HTMLDivElement>(null);
+const Assignments = () => {
+  const { type } = useParams();
+  const itemType = type === "productos" ? Types.PRODUCT : Types.NEWSPAPER;
+
+  const pageTitle = itemType === Types.PRODUCT ? "Devolución de Productos" : "Devolución de Periódicos";
+  const assignmentButton = itemType === Types.PRODUCT ? "Asignar productos" : "Asignar periódicos";
+
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Item[]>([]);
@@ -43,14 +50,6 @@ const AssignmentProduct = () => {
         const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
-      } catch (error) {
-        if (error instanceof Error) {
-          // toast({
-          //   title: "Error al cargar asignaciones",
-          //   description: error.message,
-          //   variant: "destructive"
-          // });
-        }
       } finally {
         setLoading(false);
       }
@@ -61,14 +60,6 @@ const AssignmentProduct = () => {
         const assignments = await getAssignments(page, pageSize, today);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
-      } catch (error) {
-        if (error instanceof Error) {
-          // toast({
-          //   title: "Error al cargar asignaciones",
-          //   description: error.message,
-          //   variant: "destructive"
-          // });
-        }
       } finally {
         setLoading(false);
       }
@@ -119,19 +110,14 @@ const AssignmentProduct = () => {
     const today = getLocalDate();
     const date = selectedDate || today;
     try {
-      const products = await getProductsByDate(date, ItemType.PRODUCT);
+      const products = await getProductsByDate(date, itemType);
+      console.log("Products fetched:", products);
       setProducts(products.results);
       setTotalCount(products.count);
-    } catch (error) {
-      if (error instanceof Error) {
-        // toast({
-        //   title: "Error al cargar productos",
-        //   description: error.message,
-        //   variant: "destructive"
-        // });
-      }
+    } finally {
+      setLoading(false);
     }
-  }, [selectedDate]);
+  }, [selectedDate, itemType]);
 
   useEffect(() => {
     fetchAssignments();
@@ -152,19 +138,6 @@ const AssignmentProduct = () => {
     try {
       await postAllAssignments();
       await fetchAssignments();
-      // toast({
-      //   title: "Asignación exitosa",
-      //   description: "Los productos han sido asignados correctamente",
-      //   variant: "default",
-      // });
-    } catch (error) {
-      if (error instanceof Error) {
-        // toast({
-        //   title: "Error al crear asignaciones",
-        //   description: error.message,
-        //   variant: "destructive"
-        // });
-      }
     } finally {
       setCreating(false);
     }
@@ -185,14 +158,13 @@ const AssignmentProduct = () => {
     : selectedDate
       ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
       : "Fecha seleccionada";
-
   return (
-    <div className="container mx-auto p-4">
+    <div className="max-w-full lg:container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
         <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
-              Asignación de Productos
+              {pageTitle}
             </CardTitle>
             <Badge variant="outline" className="text-lg font-semibold bg-white/20 text-white backdrop-blur-sm px-4 py-2">
               {formattedDate}
@@ -260,7 +232,7 @@ const AssignmentProduct = () => {
                     ) : (
                       <>
                         <FilePenLine className="h-5 w-5" />
-                        Asignar productos para hoy
+                        {assignmentButton}
                       </>
                     )}
                   </Button>
@@ -296,105 +268,50 @@ const AssignmentProduct = () => {
             </motion.div>
           ) : null}
 
-          <div className="rounded-lg bg-card">
-            <Tabs defaultValue="assignments" className="w-full">
-              <div className="flex items-center justify-between">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
-                  <TabsTrigger value="assignments">Asignaciones</TabsTrigger>
-                  <TabsTrigger value="stats">Estadísticas</TabsTrigger>
-                </TabsList>
+          <div className="rounded-lg pt-4 px-1">
+            {loading ? (
+              <div className="space-y-4 p-6">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
               </div>
-
-              <TabsContent value="assignments" className="pt-4 px-1">
-                {loading ? (
-                  <div className="space-y-4 p-6">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                ) : assignments.length > 0 ? (
-                  <div className="p-2">
-                    <AssignmentTable
-                      data={assignments}
-                      products={products}
-                      page={page}
-                      pageSize={pageSize}
-                      totalCount={totalCount}
-                      onPageChange={handlePageChange}
-                      tableRef={tableRefProducts}
-                      tableType="product"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-xl font-medium text-gray-900 mb-2">No hay asignaciones</h3>
-                    <p className="text-gray-500 max-w-md">
-                      No se encontraron asignaciones para {formattedDate}.
-                      {isToday && " Puedes crear nuevas asignaciones usando el botón 'Asignar productos para hoy'."}
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="stats">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total Asignaciones
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{totalCount}</div>
-                      <p className="text-xs text-muted-foreground">
-                        +{Math.floor(Math.random() * 10)}% desde el mes pasado
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Productos Disponibles
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{products.length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {products.length} productos activos
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Eficiencia
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">98%</div>
-                      <p className="text-xs text-muted-foreground">
-                        +2% desde la semana pasada
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
+            ) : assignments.length > 0 ? (
+              <div className="p-2">
+                <AssignmentTable
+                  data={assignments}
+                  products={products}
+                  page={page}
+                  pageSize={pageSize}
+                  totalCount={totalCount}
+                  onPageChange={handlePageChange}
+                  tableType={itemType}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-900 mb-2">No hay asignaciones</h3>
+                <p className="text-gray-500 max-w-md">
+                  No se encontraron asignaciones para {formattedDate}.
+                  {isToday && " Puedes crear nuevas asignaciones usando el botón 'Asignar productos para hoy'."}
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
-
       {/* Assignment creation modal */}
-      {showCreateModal && (
-        <AssignmentModal type={ItemType.PRODUCT} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
-      )}
+      {
+        showCreateModal && (
+          <AssignmentModal type={itemType} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 
-export default AssignmentProduct;
+export default Assignments;

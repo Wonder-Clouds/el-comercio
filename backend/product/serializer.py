@@ -20,7 +20,8 @@ class ProductSerializer(serializers.ModelSerializer):
         if instance.type_product:
             representation['type_product'] = {
                 'id': instance.type_product.id,
-                'name': instance.type_product.name
+                'name': instance.type_product.name,
+                'type': instance.type_product.type
             }
         
         representation.pop('type_product_detail', None)
