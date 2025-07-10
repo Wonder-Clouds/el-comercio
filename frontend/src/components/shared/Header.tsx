@@ -75,8 +75,8 @@ const Header: React.FC = () => {
       text: "Inventario",
       icon: Package,
       children: [
-        { to: "/productos", text: "Productos" },
-        { to: "/periodicos", text: "Periódicos" },
+        { to: "/articulos/productos", text: "Productos" },
+        { to: "/articulos/periodicos", text: "Periódicos" },
       ]
     },
     { to: "/clientes", text: "Clientes", icon: Users },

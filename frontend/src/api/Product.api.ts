@@ -3,37 +3,21 @@ import PaginatedResponse from "@/models/PaginatedResponse";
 import { Item, ItemCreateData } from "@/models/Product";
 import { Types } from "@/models/TypeProduct";
 
-export const getProducts = async (
+export const getItems = async (
   page: number,
   pageSize: number,
-  itemType: Types = Types.PRODUCT,
-  productName?: string
+  itemType?: Types,
+  name?: string
 ): Promise<PaginatedResponse<Item>> => {
   const response = await api.get("/products/", {
     params: {
       page,
       page_size: pageSize,
       product_type: itemType,
-      ...(productName && { product_name: productName }),
+      ...(name && { product_name: name }),
     },
   });
-  return response.data;
-};
 
-export const getNewspapers = async (
-  page: number,
-  pageSize: number,
-  itemType: Types = Types.NEWSPAPER,
-  productName?: string
-): Promise<PaginatedResponse<Item>> => {
-  const response = await api.get("/products/", {
-    params: {
-      page,
-      page_size: pageSize,
-      product_type: itemType,
-      ...(productName && { product_name: productName }),
-    },
-  });
   return response.data;
 };
 

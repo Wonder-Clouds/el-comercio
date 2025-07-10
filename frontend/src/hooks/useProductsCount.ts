@@ -1,5 +1,5 @@
+import { getItems } from "@/api/Product.api";
 import { useEffect, useState } from "react";
-import { getProducts } from "@/api/Product.api";
 
 const useProductsCount = () => {
   const [totalProducts, setTotalProducts] = useState<number | null>(null);
@@ -9,8 +9,10 @@ const useProductsCount = () => {
   useEffect(() => {
     const fetchProductsCount = async () => {
       try {
-        const response = await getProducts(1, 1000);
-        const activeProducts = response.results.filter((product) => product.status_product === true); 
+        const response = await getItems(1, 1000);
+        const activeProducts = response.results.filter(
+          (product) => product.status_product === true
+        );
         setTotalProducts(activeProducts.length);
       } catch (err) {
         console.error("Error al obtener productos:", err);

@@ -1,36 +1,29 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefObject } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Item } from "@/models/Product";
-import { columnsProduct } from "./columns-product";
+import { Item } from "@/models/Product";
+import { columnsItems } from "./columns-items";
 
-interface ProductTableProps {
+interface ItemTableProps {
   data: Item[];
   page: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
   tableRef: RefObject<HTMLDivElement>;
-  onEdit: (product: Item) => void;
-  onDelete: (product: Item) => void;
 }
 
-export function ProductTable({
+export const ItemTable = ({
   data,
   page,
   pageSize,
   totalCount,
-  tableRef,
   onPageChange,
-  onEdit,
-  onDelete,
-}: ProductTableProps) {
-  // Se generan las columnas pasándole las funciones de edición y eliminación.
-  const columns = columnsProduct(onEdit, onDelete);
-
+  tableRef,
+}: ItemTableProps) => {
   const table = useReactTable({
     data,
-    columns,
+    columns: columnsItems(),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -69,6 +62,7 @@ export function ProductTable({
           </tbody>
         </table>
       </div>
+
       {/* Paginación */}
       <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
@@ -83,11 +77,13 @@ export function ProductTable({
             <ChevronLeft className="w-4 h-4 mr-1" />
             Anterior
           </button>
+
           <div className="flex items-center">
             {Array.from({ length: totalPages }, (_, index) => {
               const pageNumber = index + 1;
               const isCurrentPage = pageNumber === page;
               const isWithinRange = Math.abs(pageNumber - page) <= 1;
+
               if (pageNumber === 1 || pageNumber === totalPages || isWithinRange) {
                 return (
                   <button
@@ -109,9 +105,11 @@ export function ProductTable({
                   </span>
                 );
               }
+
               return null;
             })}
           </div>
+
           <button
             onClick={() => page < totalPages && onPageChange(page + 1)}
             disabled={page >= totalPages}
@@ -124,4 +122,4 @@ export function ProductTable({
       </div>
     </div>
   );
-}
+};
