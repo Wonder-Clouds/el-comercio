@@ -51,7 +51,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 p-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900  to-slate-800 p-4">
 
       {/* Contenedor principal */}
       <div className="relative z-10 w-full max-w-md">
@@ -120,7 +120,7 @@ export default function Login() {
                 type="submit"
                 disabled={isLoading}
                 onClick={handleSubmit}
-                className="h-12 bg-gradient-to-r flex justify-center from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 mx-auto"
+                className="h-12 bg-gradient-to-r flex justify-center bg-slate-600 hover:bg-blue-800 text-white font-semibold shadow-lg hover:shadow-xl duration-200 mx-auto"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">

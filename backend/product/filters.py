@@ -3,7 +3,7 @@ from .models import Product
 
 class ProductFilter(django_filters.FilterSet):
     # Filter by type product
-    product_type = django_filters.CharFilter(field_name="type_product__name", lookup_expr='icontains')
+    product_type = django_filters.CharFilter(field_name="type_product__type", lookup_expr='icontains')
     
     # Filter by name of product
     product_name = django_filters.CharFilter(field_name="name", lookup_expr='icontains')
