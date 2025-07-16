@@ -6,6 +6,7 @@ import { Search, FileText, RefreshCw } from "lucide-react";
 import { DetailAssignment } from "@/models/DetailAssignment";
 import DebtorCard from "@/components/debtors/DebtorCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { generateDebtorsReport } from "@/utils/generatePdfs/generateDebtorsReport";
 
 interface DebtorsProps {
   seller_id: number;
@@ -127,7 +128,7 @@ function Debtors() {
                   <span className="hidden md:inline ml-2">Actualizar</span>
                 </Button>
 
-                <Button className="bg-blue-800 hover:bg-blue-900 font-semibold h-10 px-4">
+                <Button onClick={() => generateDebtorsReport(filteredDebtors)} className="bg-blue-800 hover:bg-blue-900 font-semibold h-10 px-4">
                   <FileText className="h-4 w-4" />
                   <span className="hidden md:inline ml-2">Exportar</span>
                 </Button>

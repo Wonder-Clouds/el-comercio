@@ -255,7 +255,7 @@ class ReportViewSet(viewsets.ViewSet):
 
         report = DetailAssignment.objects.filter(
             assignment__date_assignment__range=[start_date, end_date],
-            product__type='NEWSPAPER'
+            product__type_product__type='NEWSPAPER'
         ).values(
             'product__name'
         ).annotate(
@@ -275,7 +275,7 @@ class ReportViewSet(viewsets.ViewSet):
 
         report = DetailAssignment.objects.filter(
             assignment__date_assignment__range=[start_date, end_date],
-            product__type='PRODUCT'
+            product__type_product__type='PRODUCT'
         ).values(
             'product__name'
         ).annotate(
