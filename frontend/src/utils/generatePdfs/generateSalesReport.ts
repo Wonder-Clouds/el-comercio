@@ -1,10 +1,10 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Assignment } from "@/models/Assignment";
-import { ItemType } from "@/models/Product";
+import { Types } from "@/models/TypeProduct";
 
 // Agrupa por producto/periódico
-const groupByProduct = (assignments: Assignment[], type: ItemType) => {
+const groupByProduct = (assignments: Assignment[], type: Types) => {
   const map = new Map<
     number,
     {
@@ -18,7 +18,11 @@ const groupByProduct = (assignments: Assignment[], type: ItemType) => {
   assignments.forEach((assignment) => {
     assignment.detail_assignments?.forEach((detail) => {
       const product = detail.product;
-      if (product.type !== type) return;
+      if (
+        typeof product.type_product === "number" ||
+        product.type_product?.type !== type
+      )
+        return;
 
       const existing = map.get(product.id);
       const soldQty = detail.quantity ?? 0;
@@ -126,7 +130,7 @@ const generateSalesReport = (assignments: Assignment[]) => {
     y += 10;
   };
 
-  // Título principal
+  // 🧾 Título principal
   setTitle("LIQUIDACIÓN");
 
   const formattedDate = new Intl.DateTimeFormat("es-PE", {
@@ -138,16 +142,25 @@ const generateSalesReport = (assignments: Assignment[]) => {
   doc.text(`Fecha: ${formattedDate}`, 15, y);
   y += 10;
 
-  // Secciones por tipo
-  const productsData = groupByProduct(assignments, ItemType.PRODUCT);
-  const newspapersData = groupByProduct(assignments, ItemType.NEWSPAPER);
-
+  const productsData = groupByProduct(assignments, Types.PRODUCT);
   if (productsData.length > 0) {
     printTable("PRODUCTOS", productsData);
   }
 
-  if (newspapersData.length > 0) {
-    printTable("PERIÓDICOS", newspapersData);
+  const allNewspapers = groupByProduct(assignments, Types.NEWSPAPER);
+  const ojoData = allNewspapers.filter((p) =>
+    p.name.toUpperCase().includes("OJO")
+  );
+  const otherNewspapers = allNewspapers.filter(
+    (p) => !p.name.toUpperCase().includes("OJO")
+  );
+
+  if (otherNewspapers.length > 0) {
+    printTable("PERIÓDICOS", otherNewspapers);
+  }
+
+  if (ojoData.length > 0) {
+    printTable("PERIÓDICOS - OJO", ojoData);
   }
 
   const currentTime = new Date().toLocaleTimeString("es-PE");
@@ -157,7 +170,6 @@ const generateSalesReport = (assignments: Assignment[]) => {
     align: "center",
   });
 
-  // Abrir
   window.open(doc.output("bloburl"), "_blank");
 };
 

@@ -13,4 +13,4 @@ class Product(TimeStampedModel):
     type_product = models.ForeignKey(TypeProduct, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return self.name + ' ' + self.type + ' ' + f'{ self.status_product }'
+        return self.name + ' ' + self.type_product.name + ' ' + f'{ self.status_product }'

@@ -1,40 +1,10 @@
+import jsPDF from "jspdf";
 import { Assignment } from "@/models/Assignment";
 import { DetailAssignment } from "@/models/DetailAssignment";
-import jsPDF, { TextOptionsLight } from "jspdf";
 
-interface TextOptions {
-  align?: "left" | "center" | "right" | "justify";
-  angle?: number;
-  charSpace?: number;
-  horizontalScale?: number;
-  isInputVisual?: boolean;
-  isInputRtl?: boolean;
-  isOutputVisual?: boolean;
-  isOutputRtl?: boolean;
-  isSymmetricSwapping?: boolean;
-  lineHeightFactor?: number;
-  maxWidth?: number;
-  renderingMode?:
-    | "fill"
-    | "stroke"
-    | "fillThenStroke"
-    | "invisible"
-    | "fillAndAddForClipping"
-    | "strokeAndAddForClipping"
-    | "fillThenStrokeAndAddForClipping"
-    | "addToPathForClipping";
-  baseline?:
-    | "alphabetic"
-    | "ideographic"
-    | "bottom"
-    | "top"
-    | "middle"
-    | "hanging";
-}
-
-const generatePDFTicket = (
-  row: Assignment,
-  filteredDetails: DetailAssignment[]
+const generateAssignmentTicket = async (
+  filteredDetails: DetailAssignment[],
+  assignment: Assignment
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -42,7 +12,6 @@ const generatePDFTicket = (
     format: [100, 148],
   });
 
-  // Configuración
   const config = {
     lineHeight: 4.5,
     pageWidth: 100,
@@ -60,7 +29,6 @@ const generatePDFTicket = (
   const rightX = pageWidth - margin;
   let yPosition = 10;
 
-  // Utilidades
   const drawSeparator = (thickness = 0.5) => {
     doc.setDrawColor(120);
     doc.setLineWidth(thickness);
@@ -77,24 +45,18 @@ const generatePDFTicket = (
     yPosition += lineHeight;
   };
 
-  const addText = (
-    text: string,
-    x: number,
-    y: number,
-    options?: TextOptions
-  ) => {
-    doc.text(text, x, y, options as TextOptionsLight);
+  const addText = (text: string, x: number, y: number, options?: any) => {
+    doc.text(text, x, y, options);
   };
 
   const setStyle = (font: string, size: number, style = "normal") => {
-    console.log(font);
-    doc.setFont("courier", style);
+    doc.setFont(font, style);
     doc.setFontSize(size);
   };
 
   // Encabezado
   setStyle("courier", fontSize.title, "bold");
-  addText("COMPROBANTE DE DEVOLUCIÓN", centerX, yPosition, { align: "center" });
+  addText("COMPROBANTE DE ENTREGA", centerX, yPosition, { align: "center" });
   yPosition += lineHeight;
 
   setStyle("courier", fontSize.normal, "italic");
@@ -119,9 +81,9 @@ const generatePDFTicket = (
   }).format(new Date());
 
   const sellerInfo = [
-    `Código: ${row.seller.number_seller}`,
+    `Código: ${assignment.seller.number_seller}`,
     `Fecha: ${formattedDate}`,
-    `Nombre: ${row.seller.name} ${row.seller.last_name}`,
+    `Nombre: ${assignment.seller.name} ${assignment.seller.last_name}`,
   ];
 
   sellerInfo.forEach((info) => {
@@ -132,11 +94,13 @@ const generatePDFTicket = (
   yPosition += lineHeight;
   drawDoubleSeparator();
 
-  // Encabezado de productos
+  // Encabezado productos según tipo
+  const productType =
+    filteredDetails[0]?.product?.type_product?.type?.toUpperCase() ||
+    "PRODUCTOS";
   setStyle("courier", fontSize.subtitle, "bold");
-  addText("PRODUCTOS A DEVOLVER", margin, yPosition);
+  addText(`${productType} ASIGNADOS`, margin, yPosition);
   yPosition += lineHeight;
-
   drawSeparator(0.3);
 
   setStyle("courier", fontSize.normal, "bold");
@@ -146,68 +110,52 @@ const generatePDFTicket = (
   yPosition += lineHeight;
   drawSeparator();
 
-  // Lista de productos
-  let totalGeneral = 0;
+  // Productos
+  let total = 0;
 
   setStyle("courier", fontSize.normal);
   filteredDetails.forEach((detail, index) => {
     const qty = detail.quantity ?? 0;
-    const returned = detail.returned_amount ?? 0;
-    const unitPrice = detail.unit_price ?? detail.product.product_price ?? 0;
-    const pending = qty - returned;
-    const totalToPay = pending * unitPrice;
+    const unitPrice = detail.product.product_price ?? 0;
+    const subtotal = qty * unitPrice;
+    total += subtotal;
 
-    totalGeneral += totalToPay;
-
-    // Alternar color de fondo (simulado con espaciado)
     if (index % 2 === 0) {
       yPosition += 0.5;
     }
 
     addText(detail.product.name, margin, yPosition);
-    addText(pending.toString(), centerX, yPosition);
-    addText(`S/ ${totalToPay.toFixed(2)}`, rightX, yPosition, {
+    addText(qty.toString(), centerX, yPosition);
+    addText(`S/ ${subtotal.toFixed(2)}`, rightX, yPosition, {
       align: "right",
     });
     yPosition += lineHeight;
-
-    if (index % 2 === 0) {
-      yPosition += 0.5;
-    }
   });
 
   yPosition += lineHeight;
   drawDoubleSeparator();
 
-  // Total final
+  // Total
   setStyle("courier", fontSize.total, "bold");
-  addText("TOTAL A DEVOLVER:", margin, yPosition);
-  addText(`S/ ${totalGeneral.toFixed(2)}`, rightX, yPosition, {
+  addText("TOTAL ASIGNADO:", margin, yPosition);
+  addText(`S/ ${total.toFixed(2)}`, rightX, yPosition, {
     align: "right",
   });
-  yPosition += lineHeight * 1.5;
 
-  drawDoubleSeparator();
-
-  // Mensaje de despedida
-  setStyle("courier", fontSize.normal, "italic");
-  addText("¡Gracias por su confianza!", centerX, yPosition, {
+  yPosition += lineHeight * 2;
+  setStyle("courier", fontSize.normal - 1, "italic");
+  addText("Conserve este comprobante", centerX, yPosition, {
     align: "center",
   });
+
   yPosition += lineHeight;
-
-  setStyle("courier", fontSize.normal - 1);
-  addText("Conserve este comprobante", centerX, yPosition, { align: "center" });
-  yPosition += lineHeight * 2;
-
-  // Pie de página
-  setStyle("courier", fontSize.normal - 1, "italic");
   const currentTime = new Date().toLocaleTimeString("es-PE");
-  addText(`Generado: ${currentTime}`, centerX, yPosition, { align: "center" });
+  addText(`Generado: ${currentTime}`, centerX, yPosition, {
+    align: "center",
+  });
 
-  // Generar y abrir PDF
   doc.autoPrint();
   window.open(doc.output("bloburl"), "_blank");
 };
 
-export default generatePDFTicket;
+export default generateAssignmentTicket;

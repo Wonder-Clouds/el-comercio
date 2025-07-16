@@ -42,8 +42,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], url_path='by-date')
     def products_by_date(self, request):
-        date_str = request.query_params.get('date')  # URL query param: ?date=2025-04-26
-        product_type = request.query_params.get('type')  # URL query param: ?type=PRODUCT
+        date_str = request.query_params.get('date')  # ?date=2025-07-07
+        product_type = request.query_params.get('product_type')  # ?product_type=GESTION
 
         if not date_str:
             return Response({'error': 'El parámetro "date" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -53,12 +53,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         except ValueError:
             return Response({'error': 'Formato de fecha inválido. Usa YYYY-MM-DD.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Filter by date
+        # Primero filtramos por fecha y productos no eliminados
         products = Product.objects.filter(create_at__date=query_date, delete_at__isnull=True)
 
-        # Filter by product type if provided
+        # Si se envía el filtro de tipo, lo aplicamos
         if product_type:
-            products = products.filter(type=product_type)
+            products = products.filter(type_product__type__iexact=product_type)
 
         page = self.paginate_queryset(products)
         if page is not None:

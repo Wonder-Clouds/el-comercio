@@ -1,49 +1,34 @@
 import api from "@/config/axios";
 import PaginatedResponse from "@/models/PaginatedResponse";
-import { Item, ItemType } from "@/models/Product";
+import { Item, ItemCreateData } from "@/models/Product";
+import { Types } from "@/models/TypeProduct";
 
-export const getProducts = async (
+export const getItems = async (
   page: number,
   pageSize: number,
-  itemType: ItemType = ItemType.PRODUCT,
-  productName?: string
+  itemType?: Types,
+  name?: string
 ): Promise<PaginatedResponse<Item>> => {
   const response = await api.get("/products/", {
     params: {
       page,
       page_size: pageSize,
       product_type: itemType,
-      ...(productName && { product_name: productName }),
+      ...(name && { product_name: name }),
     },
   });
+
   return response.data;
 };
 
-export const getNewspapers = async (
-  page: number,
-  pageSize: number,
-  itemType: ItemType = ItemType.NEWSPAPER,
-  productName?: string
-): Promise<PaginatedResponse<Item>> => {
-  const response = await api.get("/products/", {
-    params: {
-      page,
-      page_size: pageSize,
-      product_type: itemType,
-      ...(productName && { product_name: productName }),
-    },
-  });
-  return response.data;
-};
-
-export const getProductsByDate = async (date: string, type: ItemType) => {
+export const getProductsByDate = async (date: string, product_type: Types) => {
   const response = await api.get(`/products/by-date/`, {
-    params: { date, type },
+    params: { date, product_type },
   });
   return response.data;
 };
 
-export const createItem = async (item: Item): Promise<Item> => {
+export const createItem = async (item: ItemCreateData): Promise<Item> => {
   const response = await api.post("/products/", item);
   return response.data;
 };

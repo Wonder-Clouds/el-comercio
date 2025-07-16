@@ -1,6 +1,6 @@
 import { Assignment } from "@/models/Assignment";
 import { DetailAssignment } from "@/models/DetailAssignment";
-import { Item, ItemType } from "@/models/Product";
+import { Item } from "@/models/Product";
 import { Separator } from "@radix-ui/react-separator";
 import EditableCell from "./editable-cell";
 import { RotateCcw } from "lucide-react";
@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import api from "@/config/axios";
 import { refreshReturnedAmount } from "@/api/DetailAssignment.api";
 import { Switch } from "../ui/switch";
+import { Types } from "@/models/TypeProduct";
 
 const toggleStatus = async (detailAssignmentId: number, isFinalized: boolean) => {
   try {
@@ -85,7 +86,7 @@ const DevolutionCell: React.FC<DevolutionCellProps> = ({ assignment, detailAssig
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">Precio unitario</p>
                   <p className="text-lg font-medium">
-                    S/.{detailAssignment?.product?.type === ItemType.NEWSPAPER
+                    S/.{detailAssignment?.product?.type_product?.type === Types.NEWSPAPER
                       ? detailAssignment?.unit_price
                       : detailAssignment?.product?.product_price || 0}
                   </p>
