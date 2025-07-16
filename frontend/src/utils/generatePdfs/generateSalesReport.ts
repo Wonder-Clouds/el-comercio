@@ -142,13 +142,11 @@ const generateSalesReport = (assignments: Assignment[]) => {
   doc.text(`Fecha: ${formattedDate}`, 15, y);
   y += 10;
 
-  // 🛒 PRODUCTOS
   const productsData = groupByProduct(assignments, Types.PRODUCT);
   if (productsData.length > 0) {
     printTable("PRODUCTOS", productsData);
   }
 
-  // 📰 Dividir PERIÓDICOS en "OJO" y los demás
   const allNewspapers = groupByProduct(assignments, Types.NEWSPAPER);
   const ojoData = allNewspapers.filter((p) =>
     p.name.toUpperCase().includes("OJO")
