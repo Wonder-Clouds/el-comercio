@@ -6,7 +6,14 @@ class Cash(TimeStampedModel):
     """
     Model representing a Cash
     """
+
+    TYPE_PRODUCT = (
+        ('OJO', 'OJO'),
+        ('COMERCIO', 'COMERCIO'),
+    )
+
     date_cash = models.DateField(null=False, blank=False, auto_now=False)
+    type_product = models.CharField(max_length=8, choices=TYPE_PRODUCT, default='COMERCIO')
     two_hundred = models.IntegerField(null=True, blank=True)
     one_hundred = models.IntegerField(null=True, blank=True)
     fifty = models.IntegerField(null=True, blank=True)

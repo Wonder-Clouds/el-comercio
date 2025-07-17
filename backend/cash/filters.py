@@ -55,6 +55,16 @@ class CashFilter(django_filters.FilterSet):
         label='Maximum total'
     )
 
+    # Filter by type_product
+    type_product = django_filters.ChoiceFilter(
+        field_name='type_product',
+        choices=[
+            ('COMERCIO', 'COMERCIO'),
+            ('OJO', 'OJO'),
+        ],
+        label='Type Product'
+    )
+
     class Meta:
         model = Cash
         fields = {
