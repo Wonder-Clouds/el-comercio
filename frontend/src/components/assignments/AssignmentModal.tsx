@@ -136,6 +136,30 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
     }
   }, [initialProducts]);
 
+  const handleSelectChange = (value: string) => {
+    setSelectedValue(value);
+    const selectedOption = options.find(opt => opt.id.toString() === value);
+    if (selectedOption) {
+      setName(selectedOption.name); // Auto-fill name from selected option
+      setReturnDays("1"); // Default return days to 1
+      const today = new Date().getDay();
+
+      const dayPriceMap: { [key: number]: keyof TypeProduct } = {
+        0: "sunday_price",
+        1: "monday_price",
+        2: "tuesday_price",
+        3: "wednesday_price",
+        4: "thursday_price",
+        5: "friday_price",
+        6: "saturday_price",
+      };
+
+      const todayPriceKey = dayPriceMap[today];
+      const todayPrice = selectedOption[todayPriceKey];
+
+      setPrice(todayPrice?.toString() || "");
+    }
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -144,7 +168,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="w-[52rem] max-h-[90vh] overflow-y-auto relative shadow-xl border-0">
+        <Card className="w-[60rem] max-h-[90vh] overflow-y-auto relative shadow-xl border-0">
           {/* Botón X para cerrar */}
           <button
             onClick={closeModal}
@@ -164,24 +188,10 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
           </CardHeader>
 
           <CardContent className="pt-4 px-6">
-            <div className="mb-3">
-              <Label htmlFor="name" className="text-sm font-medium">Nombre del producto</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ingrese nombre del producto"
-                className="mt-1"
-                required
-              />
-            </div>
-
-            {/* Grid del formulario */}
-            <div className="grid grid-cols-6 gap-4 mb-6">
-              {/* Select arriba */}
-              <div className="col-span-2">
+            <div className="grid grid-cols-4 gap-4 mb-2">
+              <div className="col-span-1">
                 <Label htmlFor="returns_date" className="text-sm font-medium">Tipo</Label>
-                <Select value={selectedValue} onValueChange={setSelectedValue} disabled={options.length === 1}>
+                <Select value={selectedValue} onValueChange={(value: string) => handleSelectChange(value)} disabled={options.length === 1}>
                   <SelectTrigger className="w-full mt-1">
                     <SelectValue placeholder="Selecciona una opción" />
                   </SelectTrigger>
@@ -194,6 +204,26 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   </SelectContent>
                 </Select>
               </div>
+              <div className="col-span-3">
+                <Label htmlFor="name" className="text-sm font-medium">{type === Types.NEWSPAPER ? "Nombre del periódico" : "Nombre del producto"}</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={
+                    type === Types.NEWSPAPER
+                      ? "Ingrese nombre del periódico"
+                      : "Ingrese nombre del producto"
+                  }
+                  className="mt-1"
+                  disabled={options.length > 1}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Grid del formulario */}
+            <div className="grid grid-cols-4 gap-4 mb-6">
               <div>
                 <Label htmlFor="total_quantity" className="text-sm font-medium">Cantidad</Label>
                 <Input
@@ -217,6 +247,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   onChange={(e) => setReturnDays(e.target.value)}
                   placeholder="Días"
                   className="mt-1"
+                  disabled={options.length > 1}
                   required
                 />
               </div>
@@ -231,6 +262,7 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="S/. 0.00"
                   className="mt-1"
+                  disabled={options.length > 1}
                   required
                 />
               </div>
@@ -251,8 +283,11 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                   <Search className="h-4 w-4 text-gray-400" />
                 </div>
                 <Input
-                  placeholder="Buscar productos..."
-                  value={searchQuery}
+                  placeholder={
+                    type === Types.NEWSPAPER
+                      ? "Buscar periódicos..."
+                      : "Buscar productos..."
+                  } value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
@@ -262,11 +297,15 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                 <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                   <h3 className="font-medium text-gray-700 flex items-center gap-2">
                     <Tag className="h-4 w-4" />
-                    Productos seleccionados
+                    {
+                      type === Types.NEWSPAPER
+                        ? "Periódicos seleccionados"
+                        : "Productos seleccionados"
+                    }
                   </h3>
                   <div className="flex gap-2">
                     <Badge variant="outline" className="bg-blue-50 text-blue-800 border-blue-200">
-                      {products.length} productos
+                      {products.length} artículos
                     </Badge>
                     <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
                       <Hash className="h-3 w-3 mr-1" /> {totalItems} unidades
@@ -280,7 +319,11 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                       <TableHeader className="bg-gray-50">
                         <TableRow>
                           <TableHead className="w-[40px]">#</TableHead>
-                          <TableHead>Producto</TableHead>
+                          <TableHead>{
+                            type === Types.NEWSPAPER
+                              ? "Periódicos"
+                              : "Productos"
+                          }</TableHead>
                           <TableHead className="text-center">Cantidad</TableHead>
                           <TableHead className="text-center">Días devolución</TableHead>
                           <TableHead className="text-right">Precio Unit.</TableHead>
@@ -334,8 +377,8 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
                 ) : (
                   <div className="flex flex-col items-center justify-center h-64 text-center">
                     <Package className="h-10 w-10 text-gray-300 mb-2" />
-                    <p className="text-gray-500">No hay productos seleccionados</p>
-                    <p className="text-gray-400 text-sm mt-1">Añade productos usando el formulario superior</p>
+                    <p className="text-gray-500">No hay artículos seleccionados</p>
+                    <p className="text-gray-400 text-sm mt-1">Añade artículos usando el formulario superior</p>
                   </div>
                 )}
 

@@ -108,7 +108,6 @@ const Assignments = () => {
     const date = selectedDate || today;
     try {
       const products = await getProductsByDate(date, itemType);
-      console.log("Products fetched:", products);
       setProducts(products.results);
       setTotalCount(products.count);
     } finally {

@@ -14,16 +14,19 @@ import { getYapes, postYapes } from "@/api/Yape.api";
 import { Yape } from "@/models/Yape";
 import YapeTable from "@/components/yape/YapeTable";
 import { getCash, postCash } from "@/api/Cash.api";
-import { Cash as CashModel, CashRow, cashToRows, defaultCash } from "@/models/Cash";
+import { Cash as CashModel, CashRow, cashToRows, defaultCash, TypesCash } from "@/models/Cash";
 import { Input } from "@/components/ui/input";
 
 const Cash = () => {
-  const [cashData, setCashData] = useState<CashModel[]>([]);
+  const [cashComercio, setCashComercio] = useState<CashModel[]>([]);
+  const [cashOjo, setCashOjo] = useState<CashModel[]>([]);
+  const [cashRowsComercio, setCashRowsComercio] = useState<CashRow[]>(cashToRows(defaultCash));
+  const [cashRowsOjo, setCashRowsOjo] = useState<CashRow[]>(cashToRows(defaultCash));
+
   const [yapeNombre, setYapeNombre] = useState("");
   const [yapeCodigo, setYapeCodigo] = useState("");
   const [yapeMonto, setYapeMonto] = useState("");
   const [yapes, setYapes] = useState<Yape[]>([]);
-  const [cashRows, setCashRows] = useState<CashRow[]>(cashToRows(defaultCash));
 
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -37,9 +40,14 @@ const Cash = () => {
     ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
     : "Fecha seleccionada";
 
-  const fetchCashData = async () => {
-    const response = await getCash();
-    setCashData(response);
+  const fetchCashComercio = async () => {
+    const response = await getCash(TypesCash.COMERCIO);
+    setCashComercio(response);
+  }
+
+  const fetchCashOjo = async () => {
+    const response = await getCash(TypesCash.OJO);
+    setCashOjo(response);
   }
 
   const fetchYapeData = async () => {
@@ -47,21 +55,48 @@ const Cash = () => {
     setYapes(response);
   }
 
-  const handleSaveCash = async () => {
+  const handleSaveCashComercio = async () => {
     const cashData = {
       date_cash: selectedDate || new Date().toISOString().split("T")[0],
-      two_hundred: cashRows[0].quantity,
-      one_hundred: cashRows[1].quantity,
-      fifty: cashRows[2].quantity,
-      twenty: cashRows[3].quantity,
-      ten: cashRows[4].quantity,
-      five: cashRows[5].quantity,
-      two: cashRows[6].quantity,
-      one: cashRows[7].quantity,
-      fifty_cents: cashRows[8].quantity,
-      twenty_cents: cashRows[9].quantity,
-      ten_cents: cashRows[10].quantity,
-      amount: cashRows.reduce((sum, row) => sum + row.total, 0),
+      type_product: TypesCash.COMERCIO,
+      two_hundred: cashRowsComercio[0].quantity,
+      one_hundred: cashRowsComercio[1].quantity,
+      fifty: cashRowsComercio[2].quantity,
+      twenty: cashRowsComercio[3].quantity,
+      ten: cashRowsComercio[4].quantity,
+      five: cashRowsComercio[5].quantity,
+      two: cashRowsComercio[6].quantity,
+      one: cashRowsComercio[7].quantity,
+      fifty_cents: cashRowsComercio[8].quantity,
+      twenty_cents: cashRowsComercio[9].quantity,
+      ten_cents: cashRowsComercio[10].quantity,
+      amount: cashRowsComercio.reduce((sum, row) => sum + row.total, 0),
+    };
+
+    try {
+      await postCash(cashData);
+      console.log("Cash guardado correctamente.");
+    } catch (error) {
+      console.error("Error al guardar cash:", error);
+    }
+  };
+
+  const handleSaveCashOjo = async () => {
+    const cashData = {
+      date_cash: selectedDate || new Date().toISOString().split("T")[0],
+      type_product: TypesCash.OJO,
+      two_hundred: cashRowsOjo[0].quantity,
+      one_hundred: cashRowsOjo[1].quantity,
+      fifty: cashRowsOjo[2].quantity,
+      twenty: cashRowsOjo[3].quantity,
+      ten: cashRowsOjo[4].quantity,
+      five: cashRowsOjo[5].quantity,
+      two: cashRowsOjo[6].quantity,
+      one: cashRowsOjo[7].quantity,
+      fifty_cents: cashRowsOjo[8].quantity,
+      twenty_cents: cashRowsOjo[9].quantity,
+      ten_cents: cashRowsOjo[10].quantity,
+      amount: cashRowsOjo.reduce((sum, row) => sum + row.total, 0),
     };
 
     try {
@@ -94,7 +129,8 @@ const Cash = () => {
   };
 
   useEffect(() => {
-    fetchCashData();
+    fetchCashComercio();
+    fetchCashOjo();
     fetchYapeData();
   }, [selectedDate]);
 
@@ -151,50 +187,55 @@ const Cash = () => {
                 </TabsList>
               </div>
 
-              <TabsContent value="cash_count" className="flex flex-row pt-4 px-1">
-                <div className="px-4 w-full">
+              <TabsContent value="cash_count" className="flex flex-row px-1">
+                <div className="px-4 w-1/2">
                   <div className="flex justify-between">
                     <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">COMERCIO</h4>
-                    <Button onClick={handleSaveCash}>Guardar</Button>
+                    <Button onClick={handleSaveCashComercio}>Guardar</Button>
                   </div>
                   <CashTable
-                    data={cashData}
-                    cashRows={cashRows}
-                    setCashRows={setCashRows}
+                    data={cashComercio}
+                    cashRows={cashRowsComercio}
+                    setCashRows={setCashRowsComercio}
                   />
                 </div>
-                {/* <div className="px-4 w-1/2">
-                  <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">OJO</h4>
+                <div className="px-4 w-1/2">
+                  <div className="flex justify-between">
+                    <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">OJO</h4>
+                    <Button onClick={handleSaveCashOjo}>Guardar</Button>
+                  </div>
                   <CashTable
-                    data={[]}
+                    data={cashOjo}
+                    cashRows={cashRowsOjo}
+                    setCashRows={setCashRowsOjo}
                   />
-                </div> */}
+                </div>
               </TabsContent>
 
               <TabsContent value="yape">
-                <div className="flex flex-row">
+                <div className="flex flex-wrap gap-4 py-2">
                   <Input
                     placeholder="Nombre"
-                    className="flex-1"
+                    className="flex-1 min-w-[200px]"
                     value={yapeNombre}
                     onChange={(e) => setYapeNombre(e.target.value)}
                   />
                   <Input
                     placeholder="Código de operación"
-                    className="w-1/4"
                     type="number"
+                    className="w-full sm:w-1/4 min-w-[150px]"
                     value={yapeCodigo}
                     onChange={(e) => setYapeCodigo(e.target.value)}
                   />
                   <Input
                     placeholder="Monto (S/.)"
-                    className="flex-1"
+                    className="flex-1 min-w-[150px]"
                     value={yapeMonto}
                     onChange={(e) => setYapeMonto(e.target.value)}
                   />
                   <Button
                     onClick={handleAddYape}
-                    className="bg-blue-800 hover:bg-blue-900 font-semibold p-5 text-md"
+                    className="bg-blue-800 hover:bg-blue-900 font-semibold px-4 py-2 text-md flex items-center gap-2"
                   >
                     <FileInput className="h-4 w-4" />
                     <span className="hidden md:inline">Añadir yape</span>
