@@ -1,5 +1,10 @@
+export enum TypesCash {
+  OJO = "OJO",
+  COMERCIO = "COMERCIO",
+}
 export interface Cash {
   date_cash: string;
+  type_product?: TypesCash;
   two_hundred: number;
   one_hundred: number;
   fifty: number;

@@ -8,4 +8,9 @@ class TypeProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypeProduct
-        fields = ['id', 'name', 'type']
+        fields = [
+            'id', 'name', 'type', 
+            'monday_price', 'tuesday_price', 'wednesday_price', 
+            'thursday_price', 'friday_price', 'saturday_price', 
+            'sunday_price'
+        ]

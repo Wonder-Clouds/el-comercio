@@ -1,8 +1,12 @@
 import api from "@/config/axios";
-import { Cash } from "@/models/Cash";
+import { Cash, TypesCash } from "@/models/Cash";
 
-export const getCash = async (): Promise<Cash[]> => {
-  const response = await api.get("/cash/");
+export const getCash = async (type: TypesCash): Promise<Cash[]> => {
+  const response = await api.get("/cash/", {
+    params: {
+      type_product: type,
+    },
+  });
   return response.data.results;
 };
 
