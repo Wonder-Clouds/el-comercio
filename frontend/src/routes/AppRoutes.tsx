@@ -12,6 +12,7 @@ import Finances from "@/pages/Finances";
 import Cash from "@/pages/Cash";
 import Assignments from "@/pages/Assignments";
 import Items from "@/pages/Items";
+import Prices from "@/pages/Prices";
 
 const protectedRoutes = [
   { path: "/", element: <Home /> },
@@ -19,6 +20,7 @@ const protectedRoutes = [
   { path: "/devoluciones/:type", element: <Returns /> },
   { path: "/finanzas", element: <Finances /> },
   { path: "/articulos/:type", element: <Items /> },
+  { path: "/precios", element: <Prices /> },
   { path: "/cobranzas", element: <Collections /> },
   { path: "/clientes", element: <Sellers /> },
   { path: "/deudores", element: <Debtors /> },

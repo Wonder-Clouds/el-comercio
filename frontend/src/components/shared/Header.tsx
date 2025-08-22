@@ -77,6 +77,7 @@ const Header: React.FC = () => {
       children: [
         { to: "/articulos/productos", text: "Productos" },
         { to: "/articulos/periodicos", text: "Periódicos" },
+        { to: "/precios", text: "Precios" },
       ]
     },
     { to: "/clientes", text: "Clientes", icon: Users },

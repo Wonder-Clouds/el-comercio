@@ -56,7 +56,6 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
       setReturnDays("");
       setPrice("");
       setTotalQuantity("");
-      setSelectedValue(undefined); // Reinicia el select también si quieres
     }
   };
 
