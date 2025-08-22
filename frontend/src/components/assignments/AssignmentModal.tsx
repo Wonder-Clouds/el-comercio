@@ -69,8 +69,10 @@ const AssignmentModal = ({ type, closeModal, updateData, initialProducts }: Assi
     // Filtrar productos que no estén en los productos iniciales
     const newProducts = products.filter(p => !existingIds.includes(p.id));
 
+    console.log("Nuevos productos a crear:", newProducts);
     // Crear solo los productos nuevos
     if (newProducts.length > 0) {
+      console.log("Creando Productos...")
       await Promise.all(newProducts.map(element => createItem(element)));
     }
 
