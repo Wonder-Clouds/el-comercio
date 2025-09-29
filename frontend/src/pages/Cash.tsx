@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getYapes, postYapes } from "@/api/Yape.api";
 import { Yape } from "@/models/Yape";
 import YapeTable from "@/components/yape/YapeTable";
-import { getCash, postCash } from "@/api/Cash.api";
+import { getCash, patchCash, postCash } from "@/api/Cash.api";
 import { Cash as CashModel, CashRow, cashToRows, defaultCash, TypesCash } from "@/models/Cash";
 import { Input } from "@/components/ui/input";
+import generateCashReportPdf from "@/utils/generatePdfs/generateCashReportPdf";
 
 const Cash = () => {
   const [cashComercio, setCashComercio] = useState<CashModel[]>([]);
@@ -40,23 +41,48 @@ const Cash = () => {
     ? capitalizeFirstLetter(formatDateToSpanishSafe(selectedDate))
     : "Fecha seleccionada";
 
-  const fetchCashComercio = async () => {
-    const response = await getCash(TypesCash.COMERCIO);
+  const fetchCashComercio = useCallback(async () => {
+    const baseDate = selectedDate || getLocalDate();
+
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + 1);
+
+    const dateTo = date.toISOString().split("T")[0];
+
+    const response = await getCash(
+      TypesCash.COMERCIO,
+      baseDate,
+      dateTo
+    );
+
     setCashComercio(response);
-  }
+  }, [selectedDate]);
 
-  const fetchCashOjo = async () => {
-    const response = await getCash(TypesCash.OJO);
+  const fetchCashOjo = useCallback(async () => {
+    const baseDate = selectedDate || getLocalDate();
+
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + 1);
+
+    const dateTo = date.toISOString().split("T")[0];
+    const response = await getCash(TypesCash.OJO, baseDate, dateTo);
     setCashOjo(response);
-  }
+  }, [selectedDate]);
 
-  const fetchYapeData = async () => {
-    const response = await getYapes();
+  const fetchYapeData = useCallback(async () => {
+    const baseDate = selectedDate || getLocalDate();
+
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + 1);
+
+    const dateTo = date.toISOString().split("T")[0];
+    const response = await getYapes(baseDate, dateTo);
     setYapes(response);
-  }
+  }, [selectedDate]);
 
   const handleSaveCashComercio = async () => {
     const cashData = {
+      id: 0,
       date_cash: selectedDate || new Date().toISOString().split("T")[0],
       type_product: TypesCash.COMERCIO,
       two_hundred: cashRowsComercio[0].quantity,
@@ -81,8 +107,39 @@ const Cash = () => {
     }
   };
 
+  const handleUpdateCashComercio = async () => {
+    if (cashComercio.length === 0) return;
+
+    const existingCash = cashComercio[0];
+
+    const updatedCash = {
+      ...existingCash,
+      two_hundred: cashRowsComercio[0].quantity,
+      one_hundred: cashRowsComercio[1].quantity,
+      fifty: cashRowsComercio[2].quantity,
+      twenty: cashRowsComercio[3].quantity,
+      ten: cashRowsComercio[4].quantity,
+      five: cashRowsComercio[5].quantity,
+      two: cashRowsComercio[6].quantity,
+      one: cashRowsComercio[7].quantity,
+      fifty_cents: cashRowsComercio[8].quantity,
+      twenty_cents: cashRowsComercio[9].quantity,
+      ten_cents: cashRowsComercio[10].quantity,
+      amount: cashRowsComercio.reduce((sum, row) => sum + row.total, 0),
+    };
+
+    try {
+      await patchCash(updatedCash);
+      console.log("Cash actualizado correctamente.");
+      fetchCashComercio();
+    } catch (error) {
+      console.error("Error al actualizar cash:", error);
+    }
+  };
+
   const handleSaveCashOjo = async () => {
     const cashData = {
+      id: 0,
       date_cash: selectedDate || new Date().toISOString().split("T")[0],
       type_product: TypesCash.OJO,
       two_hundred: cashRowsOjo[0].quantity,
@@ -104,6 +161,35 @@ const Cash = () => {
       console.log("Cash guardado correctamente.");
     } catch (error) {
       console.error("Error al guardar cash:", error);
+    }
+  };
+
+  const handleUpdateCashOjo = async () => {
+    if (cashOjo.length === 0) return;
+
+    const existingCash = cashOjo[0];
+
+    const updatedCash = {
+      ...existingCash,
+      two_hundred: cashRowsOjo[0].quantity,
+      one_hundred: cashRowsOjo[1].quantity,
+      fifty: cashRowsOjo[2].quantity,
+      twenty: cashRowsOjo[3].quantity,
+      ten: cashRowsOjo[4].quantity,
+      five: cashRowsOjo[5].quantity,
+      two: cashRowsOjo[6].quantity,
+      one: cashRowsOjo[7].quantity,
+      fifty_cents: cashRowsOjo[8].quantity,
+      twenty_cents: cashRowsOjo[9].quantity,
+      ten_cents: cashRowsOjo[10].quantity,
+      amount: cashRowsOjo.reduce((sum, row) => sum + row.total, 0),
+    };
+
+    try {
+      await patchCash(updatedCash);
+      fetchCashOjo();
+    } catch (error) {
+      console.error("Error al actualizar cash:", error);
     }
   };
 
@@ -132,7 +218,7 @@ const Cash = () => {
     fetchCashComercio();
     fetchCashOjo();
     fetchYapeData();
-  }, [selectedDate]);
+  }, [fetchCashComercio, fetchCashOjo, fetchYapeData]);
 
   return (
     <div className="container mx-auto p-4">
@@ -180,18 +266,26 @@ const Cash = () => {
 
           <div className="flex flex-col md:flex-row gap-4 w-full">
             <Tabs defaultValue="cash_count" className="w-full">
-              <div className="flex items-center justify-between ">
+              <div className="flex items-center justify-between px-5">
                 <TabsList className="grid w-full max-w-md grid-cols-2">
                   <TabsTrigger value="cash_count">Conteo de billetes</TabsTrigger>
                   <TabsTrigger value="yape">YAPE</TabsTrigger>
                 </TabsList>
+                <Button className="bg-indigo-950" onClick={() => generateCashReportPdf(cashComercio[0], cashOjo[0], yapes)}>Generar reporte del día</Button>
               </div>
 
               <TabsContent value="cash_count" className="flex flex-row px-1">
                 <div className="px-4 w-1/2">
                   <div className="flex justify-between">
                     <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">COMERCIO</h4>
-                    <Button onClick={handleSaveCashComercio}>Guardar</Button>
+                    <Button className="bg-indigo-950"
+                      onClick={
+                        cashComercio && cashComercio.length > 0
+                          ? handleUpdateCashComercio
+                          : handleSaveCashComercio
+                      }                    >
+                      {cashComercio.length > 0 ? "Actualizar" : "Guardar"}
+                    </Button>
                   </div>
                   <CashTable
                     data={cashComercio}
@@ -202,7 +296,15 @@ const Cash = () => {
                 <div className="px-4 w-1/2">
                   <div className="flex justify-between">
                     <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">OJO</h4>
-                    <Button onClick={handleSaveCashOjo}>Guardar</Button>
+                    <Button className="bg-indigo-950"
+                      onClick={
+                        cashOjo && cashOjo.length > 0
+                          ? handleUpdateCashOjo
+                          : handleSaveCashOjo
+                      }
+                    >
+                      {cashOjo.length > 0 ? "Actualizar" : "Guardar"}
+                    </Button>
                   </div>
                   <CashTable
                     data={cashOjo}
@@ -246,7 +348,6 @@ const Cash = () => {
                 />
               </TabsContent>
             </Tabs>
-
           </div>
         </CardContent>
       </Card>
