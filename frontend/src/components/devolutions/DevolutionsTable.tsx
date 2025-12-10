@@ -20,7 +20,7 @@ interface TableProps {
   pageSize: number;
   totalCount: number
   onPageChange: (page: number) => void;
-  refreshData: () => void;
+  refreshData: (id: number) => void;
   tableType: Types;
 }
 
@@ -29,7 +29,7 @@ const DevolutionTable: React.FC<TableProps> = ({ data, products, page, pageSize,
     const data: DevolutionQuantity = { quantity: value };
     try {
       await postDevolution(detailAssignmentId, data);
-      refreshData();
+      refreshData(detailAssignmentId);
       console.log('Valor actualizado:', { assignmentId, detailAssignmentId, productId, value });
     } catch (error) {
       console.error('Error al actualizar:', error);

@@ -36,6 +36,32 @@ const Returns = () => {
   const [pageSize] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
 
+  const refreshAssignments = useCallback(async (detailAssignmentId: number) => {
+    console.log(detailAssignmentId)
+    if (selectedDate) {
+      try {
+        const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
+        setAssignments(assignments.results);
+        setTotalCount(assignments.count);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
+      }
+    } else {
+      const yesterday = getLocalDate(-1);
+      try {
+        const assignments = await getAssignments(page, pageSize, yesterday);
+        setAssignments(assignments.results);
+        setTotalCount(assignments.count);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
+      }
+    }
+  }, [page, pageSize, selectedDate]);
+
   const fetchAssignments = useCallback(async () => {
     if (selectedDate) {
       setLoading(true);
@@ -194,7 +220,7 @@ const Returns = () => {
                 pageSize={pageSize}
                 totalCount={totalCount}
                 onPageChange={handlePageChange}
-                refreshData={fetchAssignments}
+                refreshData={refreshAssignments}
                 tableType={itemType}
               />
             ) : (

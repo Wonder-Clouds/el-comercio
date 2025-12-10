@@ -9,6 +9,14 @@ export const columns = (
 ) => {
   return [
     {
+      id: "index",
+      header: "N°",
+      cell: ({ row }: any) => row.index + 1,
+      enableSorting: false,
+      enableColumnFilter: false,
+      size: 40,
+    },
+    {
       id: "number_seller",
       accessorKey: "seller.number_seller",
       header: "Código",
