@@ -5,6 +5,14 @@ import { CheckCircle2, XCircle } from "lucide-react";
 export const columnsItems = (): ColumnDef<Item>[] => {
   return [
     {
+      id: "index",
+      header: "N°",
+      size: 30,
+      cell: ({ row }) => <span>{row.index + 1}</span>,
+      enableSorting: false,
+      enableColumnFilter: false,
+    },
+    {
       accessorKey: "name",
       header: "Nombre",
       cell: ({ row }) => {
