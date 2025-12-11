@@ -15,7 +15,7 @@ import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import { AlertCircle, Calendar, FileDown, FilePenLine, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, FileDown, Pencil, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { motion } from "motion/react"
 
@@ -210,7 +210,7 @@ const Assignments = () => {
                       </>
                     ) : (
                       <>
-                        <FilePenLine className="h-5 w-5" />
+                        <Pencil className="h-5 w-5" />
                         {assignmentButton}
                       </>
                     )}
@@ -221,7 +221,7 @@ const Assignments = () => {
                     size="lg"
                     className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
                   >
-                    <FilePenLine className="h-5 w-5" />
+                    <Pencil className="h-6 w-6" />
                     Editar productos asignados
                   </Button>
                 )}

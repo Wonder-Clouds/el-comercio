@@ -256,6 +256,7 @@ const AssignmentTable: React.FC<TableProps> = ({
             <td className="px-6 py-4 whitespace-nowrap font-bold">TOTAL</td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
             <td className="px-6 py-4 whitespace-nowrap"></td>
+            <td className="px-6 py-4 whitespace-nowrap"></td>
             {/* Celdas para cada producto */}
             {products.map(product => (
               <td key={`total-${product.id}`} className="px-6 py-4 whitespace-nowrap text-center">
