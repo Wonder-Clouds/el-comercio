@@ -278,3 +278,5 @@ staticfiles/
 prod.env
 
 .github/
+
+postgres/

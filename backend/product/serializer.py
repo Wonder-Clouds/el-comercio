@@ -2,18 +2,20 @@ from rest_framework import serializers
 from datetime import datetime
 from .models import Product
 from type_product.serializer import TypeProductSerializer
+from django.db.models import Sum
 
 
 class ProductSerializer(serializers.ModelSerializer):
     type_product_detail = TypeProductSerializer(source='type_product', read_only=True)
     current_day_price = serializers.SerializerMethodField()
+    available_quantity = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
         fields = [
             'id', 'name', 'type_product', 'type_product_detail', 
             'returns_date', 'product_price', 'status_product', 
-            'total_quantity', 'current_day_price'
+            'total_quantity', 'current_day_price', 'available_quantity'
         ]
         extra_kwargs = {
             'type_product': {'write_only': True} 
@@ -37,6 +39,32 @@ class ProductSerializer(serializers.ModelSerializer):
         
         return day_mapping.get(current_day)
 
+    def get_available_quantity(self, obj):
+        """
+        Calculate the available quantity:
+        available = total_quantity - assigned_quantity + returned_quantity
+        
+        Where:
+        - assigned_quantity: sum of all quantities in DetailAssignment (PENDING and FINISHED)
+        - returned_quantity: sum of all returned amounts in DetailAssignment
+        """
+        from detail_assignment.models import DetailAssignment
+        
+        # Sum all quantities assigned to this product (regardless of status)
+        assigned_quantity = DetailAssignment.objects.filter(
+            product=obj
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+        
+        # Sum all quantities returned for this product
+        returned_quantity = DetailAssignment.objects.filter(
+            product=obj
+        ).aggregate(total=Sum('returned_amount'))['total'] or 0
+        
+        # Calculate available quantity
+        available = obj.total_quantity - assigned_quantity + returned_quantity
+        
+        return max(0, available)
+    
     def to_representation(self, instance):
         """Instead of displaying only the ID, display the complete information."""
         representation = super().to_representation(instance)
