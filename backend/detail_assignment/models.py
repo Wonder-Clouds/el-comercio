@@ -44,9 +44,9 @@ class DetailAssignment(TimeStampedModel):
         """
         if not self.unit_price:
             current_day = datetime.datetime.now().strftime('%A').lower()
-            if self.product.type == 'PRODUCT':
+            if self.product.type_product == 'PRODUCT':
                 self.unit_price = self.product.product_price
-            elif self.product.type == 'NEWSPAPER':
+            elif self.product.type_product == 'NEWSPAPER':
                 self.unit_price = getattr(self.product, f'{current_day}_price')
 
         if not self.return_date:
