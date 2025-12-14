@@ -18,13 +18,13 @@ def invalidate_model_cache(model_name):
     Args:
         model_name (str): The name of the model (e.g., 'assignments', 'cash', 'products')
     """
-    # Delete cache for common page numbers
-    for page in range(1, 11):
-        cache_key = f'{model_name}_list_cache:page:{page}'
-        cache.delete(cache_key)
-    
-    # Also delete the default cache key
-    cache.delete(f'{model_name}_list_cache')
+    try:
+        # Delete cache for common page numbers efficiently
+        keys_to_delete = [f'{model_name}_list_cache:page:{page}' for page in range(1, 11)]
+        keys_to_delete.append(f'{model_name}_list_cache')
+        cache.delete_many(keys_to_delete)
+    except Exception:
+        pass  # Silently ignore cache errors
 
 
 def invalidate_model_detail_cache(model_name, obj_id):
@@ -35,8 +35,11 @@ def invalidate_model_detail_cache(model_name, obj_id):
         model_name (str): The name of the model (e.g., 'assignment', 'cash', 'product')
         obj_id (int): The ID of the object
     """
-    cache_key = f'{model_name}_{obj_id}_cache'
-    cache.delete(cache_key)
+    try:
+        cache_key = f'{model_name}_{obj_id}_cache'
+        cache.delete(cache_key)
+    except Exception:
+        pass  # Silently ignore cache errors
 
 
 def invalidate_all_model_caches(model_name):
@@ -105,12 +108,21 @@ def clear_action_caches(action_prefix):
     Args:
         action_prefix (str): The prefix to match (e.g., 'report_', 'product_')
     """
-    keys_to_delete = []
-    for key in cache.keys(f'{action_prefix}*'):
-        if key.startswith(action_prefix):
-            keys_to_delete.append(key)
-    if keys_to_delete:
-        cache.delete_many(keys_to_delete)
+    try:
+        # Use a wildcard pattern instead of iterating through all keys
+        # Redis supports pattern matching natively
+        cache.delete_pattern(f'{action_prefix}*')
+    except AttributeError:
+        # Fallback for cache backends that don't support delete_pattern
+        try:
+            keys_to_delete = []
+            for key in cache.keys(f'{action_prefix}*'):
+                if key.startswith(action_prefix):
+                    keys_to_delete.append(key)
+            if keys_to_delete:
+                cache.delete_many(keys_to_delete)
+        except Exception:
+            pass  # Silently ignore cache errors
 
 
 # Legacy functions for backwards compatibility
