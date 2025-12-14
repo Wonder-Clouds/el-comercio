@@ -3,6 +3,8 @@ Cache utilities for cache invalidation across the application.
 Provides centralized cache invalidation logic for all viewsets.
 """
 from django.core.cache import cache
+from rest_framework.response import Response
+from rest_framework import status
 from functools import wraps
 import json
 import hashlib
@@ -74,16 +76,16 @@ def cached_action(timeout=3600, cache_prefix=None):
             cache_key = f'{prefix}_{params_hash}'
             
             # Try to get from cache
-            cached_response = cache.get(cache_key)
-            if cached_response:
-                return cached_response
+            cached_json = cache.get(cache_key)
+            if cached_json:
+                return Response(json.loads(cached_json), status=status.HTTP_200_OK)
             
             # Execute the action
             response = func(self, request, *args, **kwargs)
             
-            # Cache the response (only if successful)
+            # Cache the response data (only if successful)
             if response.status_code < 400:
-                cache.set(cache_key, response, timeout)
+                cache.set(cache_key, json.dumps(response.data), timeout)
             return response
         
         return wrapper
