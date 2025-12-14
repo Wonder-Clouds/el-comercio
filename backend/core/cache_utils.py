@@ -6,6 +6,7 @@ from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework import status
 from functools import wraps
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 import hashlib
 
@@ -86,9 +87,8 @@ def cached_action(timeout=3600, cache_prefix=None):
             # Cache the response data (only if successful)
             if response.status_code < 400:
                 try:
-                    # Render the response first to ensure it's serializable
-                    response.render()
-                    cache.set(cache_key, response.content.decode(), timeout)
+                    # Cache response.data directly as JSON (no rendering needed)
+                    cache.set(cache_key, json.dumps(response.data, cls=DjangoJSONEncoder), timeout)
                 except Exception:
                     # If caching fails, continue without cache
                     pass
