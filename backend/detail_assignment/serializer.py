@@ -32,6 +32,23 @@ class DetailAssignmentSerializer(serializers.ModelSerializer):
                   'date_assignment', 'seller_name', 'seller_last_name', 'seller_code', 'return_date']
         read_only_fields = ['return_date']
 
+    def validate_quantity(self, value):
+        """
+        Validate that quantity is greater than 0.
+        
+        Args:
+            value: The quantity value to validate.
+            
+        Returns:
+            value: The validated quantity.
+            
+        Raises:
+            serializers.ValidationError: If quantity is not greater than 0.
+        """
+        if value <= 0:
+            raise serializers.ValidationError("La cantidad debe ser mayor que 0.")
+        return value
+
     def get_date_assignment(self, obj):
         """
         Get the date_assignment from the related Assignment.
