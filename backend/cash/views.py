@@ -7,9 +7,14 @@ from .models import Cash
 from .serializer import CashSerializer
 from .filters import CashFilter
 from core.pagination import CustomPagination
+from core.cache_mixin import CacheMixin
 
 # Create your views here.
-class CashViewSet(viewsets.ModelViewSet):
+class CashViewSet(CacheMixin, viewsets.ModelViewSet):
+
+    # Cache configuration
+    cache_key_prefix = 'cash'
+    cache_timeout = 3600
 
     # JWT authentication
     authentication_classes = [JWTAuthentication]

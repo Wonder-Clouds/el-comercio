@@ -11,10 +11,15 @@ from .models import Finance
 from .serializer import FinanceSerializer
 from .filters import FinanceFilter
 from core.pagination import CustomPagination
+from core.cache_mixin import CacheMixin
 
 
 # Create your views here.
-class FinanceViewSet(viewsets.ModelViewSet):
+class FinanceViewSet(CacheMixin, viewsets.ModelViewSet):
+    # Cache configuration
+    cache_key_prefix = 'finances'
+    cache_timeout = 3600
+
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]    
