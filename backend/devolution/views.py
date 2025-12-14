@@ -6,6 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from core.cache_mixin import CacheMixin
+from core.cache_utils import cached_action
 from detail_assignment.models import DetailAssignment
 from devolution.filters import DevolutionFilter
 from devolution.models import Devolution
@@ -70,6 +71,7 @@ class DevolutionViewSet(CacheMixin, viewsets.ModelViewSet):
         serializer = DevolutionSerializer(devolution)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @cached_action(cache_prefix='devolution_detail_assignment_devolutions')
     @action(detail=False, methods=['get'], url_path='detail-assignment-devolutions/(?P<detail_assignment_id>[^/.]+)')
     def detail_assignment_devolutions(self, request, detail_assignment_id=None):
         devolutions = Devolution.objects.filter(detail_assignment_id=detail_assignment_id, delete_at__isnull=True)
