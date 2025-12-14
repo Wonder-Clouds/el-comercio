@@ -85,7 +85,13 @@ def cached_action(timeout=3600, cache_prefix=None):
             
             # Cache the response data (only if successful)
             if response.status_code < 400:
-                cache.set(cache_key, json.dumps(response.data), timeout)
+                try:
+                    # Render the response first to ensure it's serializable
+                    response.render()
+                    cache.set(cache_key, response.content.decode(), timeout)
+                except Exception:
+                    # If caching fails, continue without cache
+                    pass
             return response
         
         return wrapper
