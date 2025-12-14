@@ -5,6 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
 from core.cache_mixin import CacheMixin
+from core.cache_utils import cached_action
 from detail_assignment.models import DetailAssignment
 from detail_assignment.serializer import DetailAssignmentSerializer
 from rest_framework.decorators import action
@@ -97,6 +98,7 @@ class DetailAssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @cached_action(cache_prefix='detail_assignment_sub_total')
     @action(detail=True, methods=['get'], url_path='calculate-sub-total')
     def get_sub_total_action(self, request, pk=None):
         """
