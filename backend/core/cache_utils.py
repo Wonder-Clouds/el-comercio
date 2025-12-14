@@ -19,12 +19,22 @@ def invalidate_model_cache(model_name):
         model_name (str): The name of the model (e.g., 'assignments', 'cash', 'products')
     """
     try:
-        # Delete cache for common page numbers efficiently
-        keys_to_delete = [f'{model_name}_list_cache:page:{page}' for page in range(1, 11)]
-        keys_to_delete.append(f'{model_name}_list_cache')
-        cache.delete_many(keys_to_delete)
-    except Exception:
-        pass  # Silently ignore cache errors
+        # Try to delete using pattern (Redis and compatible backends)
+        cache.delete_pattern(f'{model_name}_list_cache:*')
+    except (AttributeError, TypeError):
+        # Fallback for cache backends that don't support delete_pattern
+        try:
+            keys = cache.keys(f'{model_name}_list_cache:*')
+            if keys:
+                cache.delete_many(keys)
+        except (AttributeError, TypeError):
+            # Last resort: delete old cache keys format
+            keys_to_delete = [f'{model_name}_list_cache:page:{page}' for page in range(1, 11)]
+            keys_to_delete.append(f'{model_name}_list_cache')
+            try:
+                cache.delete_many(keys_to_delete)
+            except Exception:
+                pass
 
 
 def invalidate_model_detail_cache(model_name, obj_id):

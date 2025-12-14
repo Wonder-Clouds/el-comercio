@@ -6,6 +6,7 @@ from rest_framework.response import Response
 import json
 from django.core.cache import cache
 from core.cache_utils import invalidate_model_cache, invalidate_model_detail_cache
+import hashlib
 
 
 class CacheMixin:
@@ -28,11 +29,21 @@ class CacheMixin:
             return self.queryset.model.__name__.lower() + 's'
         return self.cache_key_prefix
     
+    def _generate_list_cache_key(self, request):
+        """
+        Generate a cache key that includes all query parameters.
+        This ensures different filter combinations are cached separately.
+        """
+        prefix = self.get_cache_key_prefix()
+        # Get all query params and sort them for consistency
+        params_dict = request.query_params.dict()
+        params_str = json.dumps(params_dict, sort_keys=True, default=str)
+        params_hash = hashlib.md5(params_str.encode()).hexdigest()
+        return f'{prefix}_list_cache:{params_hash}'
+    
     def list(self, request, *args, **kwargs):
         """Override list to implement caching."""
-        prefix = self.get_cache_key_prefix()
-        page = request.query_params.get('page', 1)
-        cache_key = f'{prefix}_list_cache:page:{page}'
+        cache_key = self._generate_list_cache_key(request)
         
         # Try to get from cache
         cached_json = cache.get(cache_key)
