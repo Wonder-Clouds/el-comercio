@@ -30,41 +30,39 @@ export const ItemTable = ({
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-      <div ref={tableRef} className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div ref={tableRef} className="overflow-x-auto bg-white border border-gray-200 shadow-sm rounded-xl">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-blue-50"
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* Paginación */}
-      <div className="flex flex-col items-center justify-between px-2 mt-6 md:flex-row">
+      <div className="flex flex-col items-center justify-between px-2 bg-blue-50 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
           Página {page} de {totalPages}
         </div>
@@ -121,5 +119,6 @@ export const ItemTable = ({
         </div>
       </div>
     </div>
+
   );
 };

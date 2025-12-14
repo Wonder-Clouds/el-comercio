@@ -1,0 +1,26 @@
+services:
+  database:
+    image: docker.io/library/postgres:17
+    container_name: comercio_database
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_el_comercio:/var/lib/postgresql/data
+
+  redis:
+    image: docker.io/library/redis:latest
+    container_name: comercio_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_el_comercio:/data
+
+volumes:
+  postgres_el_comercio:
+  redis_data_el_comercio:

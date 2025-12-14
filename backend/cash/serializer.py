@@ -10,7 +10,7 @@ class CashSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cash
-        fields = ['id', 'date_cash', 'two_hundred', 'one_hundred', 'fifty', 'twenty', 'ten', 'five', 'two', 'one', 'fifty_cents', 'twenty_cents', 'ten_cents', 'total']
+        fields = ['id', 'date_cash', 'type_product','two_hundred', 'one_hundred', 'fifty', 'twenty', 'ten', 'five', 'two', 'one', 'fifty_cents', 'twenty_cents', 'ten_cents', 'total']
 
     def calculate_total(self, validated_data):
         return (

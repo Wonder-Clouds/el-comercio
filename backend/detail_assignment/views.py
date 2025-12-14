@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
+from core.cache_mixin import CacheMixin
 from detail_assignment.models import DetailAssignment
 from detail_assignment.serializer import DetailAssignmentSerializer
 from rest_framework.decorators import action
@@ -14,10 +15,14 @@ from product.models import Product
 
 
 # Create your views here.
-class DetailAssignmentViewSet(viewsets.ModelViewSet):
+class DetailAssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
     """
     A viewset for viewing and editing detail assignment instances.
     """
+    # Cache configuration
+    cache_key_prefix = 'detail_assignments'
+    cache_timeout = 3600
+
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

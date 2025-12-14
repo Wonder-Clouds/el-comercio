@@ -17,6 +17,14 @@ export const columns = (
 ): EditableColumnDef<Assignment, Seller | Date | number>[] => {
   return [
     {
+      id: "index",
+      header: "N°",
+      cell: ({ row }) => row.index + 1,
+      enableSorting: false,
+      enableColumnFilter: false,
+      size: 40,
+    },
+    {
       id: "number_seller",
       accessorKey: "seller.number_seller",
       header: "Código",

@@ -6,6 +6,14 @@ export const getTypeProducts = async (): Promise<TypeProduct[]> => {
   return response.data.results;
 };
 
+export const editTypeProduct = async (
+  id: number,
+  data: Partial<TypeProduct>
+): Promise<TypeProduct> => {
+  const response = await api.patch(`/type-products/${id}/`, data);
+  return response.data.results;
+};
+
 export const getTypeProductById = async (id: number): Promise<TypeProduct> => {
   const response = await api.get(`/type-products/${id}/`);
   return response.data.results;

@@ -1,5 +1,11 @@
+export enum TypesCash {
+  OJO = "OJO",
+  COMERCIO = "COMERCIO",
+}
 export interface Cash {
+  id: number;
   date_cash: string;
+  type_product?: TypesCash;
   two_hundred: number;
   one_hundred: number;
   fifty: number;
@@ -55,6 +61,7 @@ export const cashToRows = (cash: Cash): CashRow[] => [
 ];
 
 export const defaultCash: Cash = {
+  id: 0,
   date_cash: "",
   two_hundred: 0,
   one_hundred: 0,

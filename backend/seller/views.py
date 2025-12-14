@@ -6,12 +6,17 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 
 from core.pagination import CustomPagination
+from core.cache_mixin import CacheMixin
 from detail_assignment.models import DetailAssignment
 from detail_assignment.serializer import DetailAssignmentSerializer
 from seller.models import Seller
 from seller.serializer import SellerSerializer
 
-class SellerViewSet(viewsets.ModelViewSet):
+class SellerViewSet(CacheMixin, viewsets.ModelViewSet):
+    # Cache configuration
+    cache_key_prefix = 'sellers'
+    cache_timeout = 3600
+
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
