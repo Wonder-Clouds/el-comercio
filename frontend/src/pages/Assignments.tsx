@@ -13,7 +13,7 @@ import { Assignment } from "@/models/Assignment";
 import { Item } from "@/models/Product";
 import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
-import { formatDateToSpanishSafe } from "@/utils/formatDate";
+import { addOneDay, formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import { AlertCircle, Calendar, FileDown, Pencil, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
@@ -44,7 +44,9 @@ const Assignments = () => {
     if (selectedDate) {
       setLoading(true);
       try {
-        const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
+        const endDate = addOneDay(selectedDate);
+
+        const assignments = await getAssignments(page, pageSize, selectedDate, endDate);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
       } finally {
