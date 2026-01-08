@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.db.models import Sum
 
 from core.pagination import CustomPagination
 from core.cache_mixin import CacheMixin
@@ -58,12 +59,19 @@ class DetailAssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
         data = request.data.copy()
         product_id = data.get('product_id')
         assignment_id = data.get('assignment_id')
+        quantity_requested = int(data.get('quantity', 0))
 
         try:
             product = Product.objects.get(id=product_id)
             data['unit_price'] = product.product_price
         except Product.DoesNotExist:
             return Response({'error': 'Product matching query does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate stock availability
+        if quantity_requested > product.available_stock:
+            return Response({
+                'error': f'Insufficient stock. Available: {product.available_stock}, Requested: {quantity_requested}'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         detail_assignments = DetailAssignment.objects.filter(
             assignment_id=assignment_id,
@@ -72,13 +80,29 @@ class DetailAssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
 
         if detail_assignments.exists():
             detail_assignment = detail_assignments.first()
-            detail_assignment.quantity = int(data.get('quantity', 0))
+            old_quantity = detail_assignment.quantity
+            # Validate stock for the difference
+            quantity_difference = quantity_requested - old_quantity
+            if quantity_difference > product.available_stock:
+                return Response({
+                    'error': f'Insufficient stock. Available: {product.available_stock}, Requested difference: {quantity_difference}'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            detail_assignment.quantity = quantity_requested
             detail_assignment.unit_price = data['unit_price']
             detail_assignment.save()
+            
+            # Update reserved stock
+            product.reserved_quantity += quantity_difference
+            product.save()
         else:
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             detail_assignment = serializer.save()
+            
+            # Reserve the stock
+            product.reserved_quantity += quantity_requested
+            product.save()
 
         serializer = self.get_serializer(detail_assignment)
         headers = self.get_success_headers(serializer.data)
@@ -95,6 +119,11 @@ class DetailAssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             Response: The response object with no content.
         """
         instance = self.get_object()
+        # Release the reserved stock
+        product = instance.product
+        product.reserved_quantity -= instance.quantity
+        product.save()
+        
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
