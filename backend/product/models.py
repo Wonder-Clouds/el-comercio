@@ -9,8 +9,22 @@ class Product(TimeStampedModel):
     product_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0.00)
     status_product = models.BooleanField(default=False, null=False, blank=False)
     total_quantity = models.IntegerField(default=0, null=True, blank=True)
+    reserved_quantity = models.IntegerField(default=0, null=False, blank=False)
+    date = models.DateField(null=True, blank=True, default=None)
 
     type_product = models.ForeignKey(TypeProduct, on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        unique_together = ('name', 'type_product', 'date')
+
+    @property
+    def available_stock(self):
+        """
+        Calculate the available stock for assignment.
+        available_stock = total_quantity - reserved_quantity
+        """
+        return self.total_quantity - self.reserved_quantity
+
     def __str__(self):
-        return self.name + ' ' + self.type_product.name + ' ' + f'{ self.status_product }'
+        date_str = str(self.date) if self.date else 'Sin fecha'
+        return self.name + ' ' + self.type_product.name + ' ' + date_str
