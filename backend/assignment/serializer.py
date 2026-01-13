@@ -3,6 +3,7 @@ from seller.models import Seller
 from seller.serializer import SellerSerializer
 from .models import Assignment
 from rest_framework.exceptions import ValidationError
+from product.models import Product
 
 
 class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
@@ -15,10 +16,13 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Seller.objects.all(), write_only=True
     )
     detail_assignments = serializers.SerializerMethodField()
+    products = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Product.objects.all(), write_only=True, required=False
+    )
 
     class Meta:
         model = Assignment
-        fields = ['id', 'seller_id', 'seller', 'date_assignment', 'detail_assignments']
+        fields = ['id', 'seller_id', 'seller', 'date_assignment', 'detail_assignments', 'products']
 
     def create(self, validated_data):
         """
@@ -31,7 +35,10 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
             Assignment: The created Assignment instance.
         """
         seller = validated_data.pop('seller_id')
+        products = validated_data.pop('products', [])
         assignment = Assignment.objects.create(seller=seller, **validated_data)
+        if products:
+            assignment.products.set(products)
         return assignment
 
     def update(self, instance, validated_data):
@@ -46,6 +53,8 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
             Assignment: The updated Assignment instance.
         """
         seller_id = validated_data.pop('seller_id', None)
+        products = validated_data.pop('products', None)
+        
         if seller_id:
             if isinstance(seller_id, Seller):
                 seller_id = seller_id.id
@@ -57,6 +66,10 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+        
+        if products is not None:
+            instance.products.set(products)
+        
         instance.save()
         return instance
 
@@ -72,3 +85,14 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
         """
         from detail_assignment.serializer import DetailAssignmentSerializer
         return DetailAssignmentSerializer(obj.detailassignment_set.all(), many=True).data
+
+    def to_representation(self, instance):
+        """
+        Override to_representation to show product details in read response
+        while still accepting product IDs for write operations.
+        """
+        representation = super().to_representation(instance)
+        from product.serializer import ProductSerializer
+        # Replace products IDs with full product details
+        representation['products'] = ProductSerializer(instance.products.all(), many=True).data
+        return representation
