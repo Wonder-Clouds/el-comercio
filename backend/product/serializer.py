@@ -16,7 +16,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'type_product', 'type_product_detail', 
             'returns_date', 'product_price', 'status_product', 
-            'total_quantity', 'reserved_quantity', 'date', 'current_day_price', 'available_quantity', 'available_stock'
+            'total_quantity', 'reserved_quantity', 'current_day_price', 'available_quantity', 'available_stock'
         ]
         extra_kwargs = {
             'type_product': {'write_only': True} 
