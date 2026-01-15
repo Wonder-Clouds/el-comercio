@@ -177,12 +177,13 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             Response: The created assignments.
         """
         peru_tz = pytz.timezone('America/Lima')
-        
         now_in_peru = datetime.now(peru_tz)
-        
         today = now_in_peru.date()
 
+        product_ids = request.data.get('products', [])
+
         active_sellers = Seller.objects.filter(status=True)
+
         created_assignments = []
         existing_assignments = []
 
@@ -191,6 +192,8 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
                 date_assignment=today,
                 seller=seller
             )
+
+            assignment.products.set(product_ids)
 
             if created:
                 created_assignments.append(assignment)
