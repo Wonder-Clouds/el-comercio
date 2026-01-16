@@ -162,7 +162,6 @@ const Items = () => {
           type={itemType}
           closeModal={() => setIsModalOpen(false)}
           updateData={fetchItems}
-          initialProducts={items}
         />
       )}
     </div>

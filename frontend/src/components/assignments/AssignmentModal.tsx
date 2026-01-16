@@ -24,7 +24,7 @@ import { Types } from "@/models/TypeProduct";
 interface AssignmentModalProps {
   type: Types;
   closeModal: () => void;
-  updateData: () => void;
+  updateData: (selectedItems: number[]) => void;
   initialProducts?: Item[];
 }
 
@@ -109,7 +109,7 @@ const AssignmentModal = ({
     setIsSubmitting(true);
     try {
       console.log("Productos asignados:", seleccionados);
-      updateData();
+      updateData(seleccionados.map(item => item.id));
       closeModal();
     } finally {
       setIsSubmitting(false);
