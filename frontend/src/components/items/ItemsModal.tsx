@@ -8,7 +8,7 @@ import { Badge } from "../ui/badge";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { motion } from "motion/react";
-import { Item, ItemCreateData } from "@/models/Product";
+import { ItemCreateData } from "@/models/Product";
 import { createItem, deleteProduct } from "@/api/Product.api";
 import { TypeProduct, Types } from "@/models/TypeProduct";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -18,10 +18,9 @@ interface ItemsModalProps {
   type: Types;
   closeModal: () => void;
   updateData: () => void;
-  initialProducts?: Item[];
 }
 
-const ItemsModal = ({ type, closeModal, updateData, initialProducts }: ItemsModalProps) => {
+const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [returnDays, setReturnDays] = useState("");
@@ -62,17 +61,11 @@ const ItemsModal = ({ type, closeModal, updateData, initialProducts }: ItemsModa
   const handleAddProducts = async () => {
     setIsSubmitting(true);
 
-    // Obtener IDs de productos ya existentes (iniciales)
-    const existingIds = initialProducts?.map(p => p.id) || [];
+    console.log("Nuevos productos a crear:", products);
 
-    // Filtrar productos que no estén en los productos iniciales
-    const newProducts = products.filter(p => !existingIds.includes(p.id));
-
-    console.log("Nuevos productos a crear:", newProducts);
-    // Crear solo los productos nuevos
-    if (newProducts.length > 0) {
+    if (products.length > 0) {
       console.log("Creando Productos...")
-      await Promise.all(newProducts.map(element => createItem(element)));
+      await Promise.all(products.map(element => createItem(element)));
     }
 
     updateData();
@@ -119,27 +112,6 @@ const ItemsModal = ({ type, closeModal, updateData, initialProducts }: ItemsModa
   useEffect(() => {
     fetchTypeProducts();
   }, []);
-
-  useEffect(() => {
-    if (initialProducts && initialProducts.length > 0) {
-      const convertedProducts: ItemCreateData[] = initialProducts.map((p) => ({
-        id: p.id,
-        name: p.name,
-        product_price: p.product_price,
-        returns_date: p.returns_date,
-        total_quantity: p.total_quantity,
-        type_product: p.type_product?.id ?? null, // convertir a número
-        status_product: p.status_product,
-      }));
-
-      setProducts((prevProducts) => {
-        const newProducts = convertedProducts.filter(
-          (newProduct) => !prevProducts.some((p) => p.id === newProduct.id)
-        );
-        return [...prevProducts, ...newProducts];
-      });
-    }
-  }, [initialProducts]);
 
   const handleSelectChange = (value: string) => {
     setSelectedValue(value);
@@ -337,9 +309,9 @@ const ItemsModal = ({ type, closeModal, updateData, initialProducts }: ItemsModa
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredProducts.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-medium">{product.id}</TableCell>
+                        {filteredProducts.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{index + 1}</TableCell>
                             <TableCell>{product.name}</TableCell>
                             <TableCell className="text-center">
                               <Badge variant="secondary">

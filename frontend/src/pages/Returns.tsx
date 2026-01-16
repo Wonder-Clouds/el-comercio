@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { getAssignments } from "@/api/Assignment.api";
-import { getProductsByDate } from "@/api/Product.api";
 import { Assignment } from "@/models/Assignment";
 import { Item } from "@/models/Product";
 import capitalizeFirstLetter from "@/utils/capitalize";
@@ -91,24 +90,18 @@ const Returns = () => {
     }
   }, [page, pageSize, selectedDate]);
 
-  const fetchItems = useCallback(async () => {
-    const today = getLocalDate();
-    const date = selectedDate || today;
-    try {
-      const newspapers = await getProductsByDate(date, itemType);
-      setItems(newspapers.results);
-      setTotalCount(newspapers.count);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  }, [itemType, selectedDate]);
-
   useEffect(() => {
     fetchAssignments();
-    fetchItems();
-  }, [type, fetchAssignments, fetchItems]);
+  }, [type, fetchAssignments]);
+
+  useEffect(() => {
+    if (assignments.length > 0) {
+      const items = assignments[0].products ?? [];
+      setItems(items);
+    } else {
+      setItems([]);
+    }
+  }, [assignments]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

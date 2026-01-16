@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
-import { getProductsByDate } from "@/api/Product.api";
 import AssignmentModal from "@/components/assignments/AssignmentModal";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
@@ -105,28 +104,23 @@ const Assignments = () => {
     XLSX.writeFile(wb, 'assignment_details.xlsx');
   };
 
-  const fetchProducts = useCallback(async () => {
-    const today = getLocalDate();
-    const date = selectedDate || today;
-    try {
-      const products = await getProductsByDate(date, itemType);
-      setProducts(products.results);
-      setTotalCount(products.count);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedDate, itemType]);
-
   useEffect(() => {
     fetchAssignments();
-    fetchProducts();
-  }, [fetchAssignments, fetchProducts]);
+  }, [fetchAssignments]);
 
-  const handleCreateAssignments = async () => {
-    await fetchProducts();
+  useEffect(() => {
+    if (assignments.length > 0) {
+      const items = assignments[0].products ?? [];
+      setProducts(items);
+    } else {
+      setProducts([]);
+    }
+  }, [assignments]);
+
+  const handleCreateAssignments = async (items: number[]) => {
     setCreating(true);
     try {
-      await postAllAssignments();
+      await postAllAssignments(items);
       await fetchAssignments();
     } finally {
       setCreating(false);
