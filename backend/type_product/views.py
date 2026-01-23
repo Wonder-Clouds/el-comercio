@@ -7,17 +7,11 @@ from .models import TypeProduct
 from .serializer import TypeProductSerializer
 from .filters import TypeProductFilter
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
 
 
 # Create your views here.
-class TypeProductViewSet(CacheMixin, viewsets.ModelViewSet):
-
-    # Cache configuration
-    cache_key_prefix = 'type_products'
-    cache_timeout = 3600
-
-    # JWT authentication 
+class TypeProductViewSet(viewsets.ModelViewSet):
+    # JWT authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 

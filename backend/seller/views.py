@@ -3,21 +3,15 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.db.models import Q, Prefetch
+from django.db.models import Q
 
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
-from core.cache_utils import cached_action
 from detail_assignment.models import DetailAssignment
 from detail_assignment.serializer import DetailAssignmentSerializer
 from seller.models import Seller
 from seller.serializer import SellerSerializer
 
-class SellerViewSet(CacheMixin, viewsets.ModelViewSet):
-    # Cache configuration
-    cache_key_prefix = 'sellers'
-    cache_timeout = 3600
-
+class SellerViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -38,14 +32,14 @@ class SellerViewSet(CacheMixin, viewsets.ModelViewSet):
                 Q(number_seller__icontains=search)
             ).distinct()
 
-        return queryset.filter(delete_at__isnull=True)
+        return queryset  # El SoftDeleteManager ya filtra por delete_at__isnull=True
 
     # Delete Method
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    @cached_action(cache_prefix='seller_unpaid_assignment')
+
     @action(detail=False, methods=['get'], url_path='unpaid-assignment')
     def unpaid_assignment(self, request):
         start_date = request.query_params.get('start_date')
@@ -81,7 +75,7 @@ class SellerViewSet(CacheMixin, viewsets.ModelViewSet):
             
             seller_dict[seller.id]['assignments'].append(DetailAssignmentSerializer(detail_assignment).data)
         # Get all sellers to include those without pending assignments
-        all_sellers = Seller.objects.filter(delete_at__isnull=True).values_list('id', flat=True)
+        all_sellers = Seller.objects.all().values_list('id', flat=True)
         result = []
         
         for seller_id in all_sellers:

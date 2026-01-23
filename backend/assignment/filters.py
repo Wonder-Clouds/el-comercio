@@ -24,9 +24,12 @@ class AssignmentFilter(filters.FilterSet):
     seller_dni = filters.CharFilter(field_name="seller__dni", lookup_expr='icontains')
     """Filter for assignments by seller's DNI (case insensitive)."""
 
+    product_type = filters.CharFilter(field_name="products__type_product__type", lookup_expr='iexact', distinct=True)
+    """Filter for assignments by product type (PRODUCT or NEWSPAPER)."""
+
     class Meta:
         """
         Meta class for AssignmentFilter.
         """
         model = Assignment
-        fields = ['start_date', 'end_date', 'seller_name', 'seller_last_name', 'seller_number_seller', 'seller_dni']
+        fields = ['start_date', 'end_date', 'seller_name', 'seller_last_name', 'seller_number_seller', 'seller_dni', 'product_type']

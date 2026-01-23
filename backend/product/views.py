@@ -6,19 +6,13 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
-from core.cache_utils import cached_action
 from .models import Product
 from .serializer import ProductSerializer
 from .filters import ProductFilter
 from datetime import date
 
 # Create your views here.
-class ProductViewSet(CacheMixin, viewsets.ModelViewSet):
-    # Cache configuration
-    cache_key_prefix = 'products'
-    cache_timeout = 3600
-
+class ProductViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -36,7 +30,6 @@ class ProductViewSet(CacheMixin, viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     # Custom action to list products with status_product set to False
-    @cached_action(cache_prefix='product_inactive_products')
     @action(detail=False, methods=['get'], url_path='inactive-products')
     def inactive_products(self, request):
         inactive_products = Product.objects.filter(status_product=False, delete_at__isnull=True)
@@ -47,7 +40,6 @@ class ProductViewSet(CacheMixin, viewsets.ModelViewSet):
         serializer = self.get_serializer(inactive_products, many=True)
         return Response(serializer.data)
     
-    @cached_action(cache_prefix='product_by_date')
     @action(detail=False, methods=['get'], url_path='by-date')
     def products_by_date(self, request):
         date_str = request.query_params.get('date')  # ?date=2025-07-07

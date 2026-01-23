@@ -76,6 +76,7 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
     def get_detail_assignments(self, obj):
         """
         Get detailed assignments related to the Assignment instance.
+        Filters by product_type if provided in request query params.
 
         Args:
             obj (Assignment): The Assignment instance.
@@ -84,15 +85,42 @@ class AssignmentSerializer(serializers.HyperlinkedModelSerializer):
             list: List of detailed assignments.
         """
         from detail_assignment.serializer import DetailAssignmentSerializer
-        return DetailAssignmentSerializer(obj.detailassignment_set.all(), many=True).data
+
+        # Get all detail assignments
+        detail_assignments = obj.detailassignment_set.all()
+
+        # Filter by product_type if provided in request context
+        request = self.context.get('request')
+        if request and hasattr(request, 'query_params'):
+            product_type = request.query_params.get('product_type')
+            if product_type:
+                # Filter detail assignments by product type
+                detail_assignments = detail_assignments.filter(
+                    product__type_product__type__iexact=product_type
+                )
+
+        return DetailAssignmentSerializer(detail_assignments, many=True).data
 
     def to_representation(self, instance):
         """
         Override to_representation to show product details in read response
         while still accepting product IDs for write operations.
+        Filters products by product_type if provided in request query params.
         """
         representation = super().to_representation(instance)
         from product.serializer import ProductSerializer
-        # Replace products IDs with full product details
-        representation['products'] = ProductSerializer(instance.products.all(), many=True).data
+
+        # Get all products
+        products = instance.products.all()
+
+        # Filter by product_type if provided in request context
+        request = self.context.get('request')
+        if request and hasattr(request, 'query_params'):
+            product_type = request.query_params.get('product_type')
+            if product_type:
+                # Filter products by type
+                products = products.filter(type_product__type__iexact=product_type)
+
+        # Replace products IDs with full product details (filtered)
+        representation['products'] = ProductSerializer(products, many=True).data
         return representation

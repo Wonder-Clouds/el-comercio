@@ -7,16 +7,10 @@ from .models import Yape
 from .serializer import YapeSerializer
 from .filters import YapeFilter
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
 
 
 # Create your views here.
-class YapeViewSet(CacheMixin, viewsets.ModelViewSet):
-
-    # Cache configuration
-    cache_key_prefix = 'yapes'
-    cache_timeout = 3600
-
+class YapeViewSet(viewsets.ModelViewSet):
     # JWT authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
