@@ -12,5 +12,6 @@ services:
     volumes:
       - postgres_el_comercio:/var/lib/postgresql/data
 
+
 volumes:
   postgres_el_comercio:
