@@ -12,26 +12,18 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 import pytz
-from django.core.cache import cache
-import json
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
 from assignment.filters import AssignmentFilter
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
-from core.cache_utils import cached_action, invalidate_model_cache
 from detail_assignment.models import DetailAssignment
 
 
-class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
+class AssignmentViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing assignment instances.
     """
-
-    # Cache configuration
-    cache_key_prefix = 'assignments'
-    cache_timeout = 3600  # 1 hour
 
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
@@ -93,7 +85,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             total += subtotal
         return total
 
-    @cached_action(cache_prefix='assignment_total_assignment')
     @action(detail=True, methods=['get'], url_path='calculate-total-assignment')
     def get_total_assignment(self, request, pk=None):
         """
@@ -117,7 +108,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             'total': total_assignment
         }, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='assignment_total_returned')
     @action(detail=True, methods=['get'], url_path='calculate-total-returned')
     def get_total_returned(self, request, pk=None):
         """
@@ -141,7 +131,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             'total': total_returned
         }, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='assignment_total_pay')
     @action(detail=True, methods=['get'], url_path='calculate-total-pay')
     def get_total_pay(self, request, pk=None):
         """
@@ -200,8 +189,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             else:
                 existing_assignments.append(assignment)
 
-        # Invalidate cache after creation
-        invalidate_model_cache(self.cache_key_prefix)
 
         serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -215,8 +202,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
         for assignment in all_assignments:
             assignment.soft_delete()
 
-        # Invalidate cache after bulk deletion
-        invalidate_model_cache(self.cache_key_prefix)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -229,7 +214,6 @@ class ReportViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @cached_action(cache_prefix='report_sales_by_seller')
     @action(detail=False, methods=['get'], url_path='sales-by-seller')
     def sales_by_seller(self, request):
         start_date = request.query_params.get('start_date')
@@ -250,7 +234,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='report_top_newspapers')
     @action(detail=False, methods=['get'], url_path='top-newspapers')
     def top_newspapers(self, request):
         start_date = request.query_params.get('start_date')
@@ -271,7 +254,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='report_top_products')
     @action(detail=False, methods=['get'], url_path='top-products')
     def top_products(self, request):
         start_date = request.query_params.get('start_date')
@@ -292,7 +274,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='report_returns_and_efficiency')
     @action(detail=False, methods=['get'], url_path='returns-and-efficiency')
     def returns_and_efficiency(self, request):
         start_date = request.query_params.get('start_date')
@@ -320,7 +301,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='report_profits')
     @action(detail=False, methods=['get'], url_path='profits')
     def profits(self, request):
         start_date = request.query_params.get('start_date')
@@ -344,7 +324,6 @@ class ReportViewSet(viewsets.ViewSet):
 
         return Response(report, status=status.HTTP_200_OK)
 
-    @cached_action(cache_prefix='report_monthly_earnings')
     @action(detail=False, methods=['get'], url_path='monthly-earnings')
     def monthly_earnings(self, request):
         start_date = request.query_params.get('start_date')
@@ -379,7 +358,6 @@ class ReportViewSet(viewsets.ViewSet):
         return Response(formatted_report, status=status.HTTP_200_OK)
     
 
-    @cached_action(cache_prefix='report_dayly_earnings')
     @action(detail=False, methods=['get'], url_path='dayly-earnings')
     def dayly_earnings(self, request):
         

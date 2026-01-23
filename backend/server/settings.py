@@ -21,10 +21,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Redis configuration
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_PORT = os.getenv('REDIS_PORT', '6379')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -237,17 +233,14 @@ else:
         },
     }
 
-
-
+# Use local in-memory cache instead of Redis
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
     }
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
+# Use DB-backed sessions to avoid relying on a cache backend for sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+

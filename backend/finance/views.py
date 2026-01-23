@@ -11,16 +11,10 @@ from .models import Finance
 from .serializer import FinanceSerializer
 from .filters import FinanceFilter
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
-from core.cache_utils import cached_action
 
 
 # Create your views here.
-class FinanceViewSet(CacheMixin, viewsets.ModelViewSet):
-    # Cache configuration
-    cache_key_prefix = 'finances'
-    cache_timeout = 3600
-
+class FinanceViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]    
@@ -33,7 +27,6 @@ class FinanceViewSet(CacheMixin, viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = FinanceFilter
 
-    @cached_action(cache_prefix='finance_cash_balance')
     @action(detail=False, methods=['get'], url_path='cash-balance')
     def cash_balance(self, resquest):
         """
@@ -60,7 +53,6 @@ class FinanceViewSet(CacheMixin, viewsets.ModelViewSet):
             'status': 'positive' if balance >= 0 else 'negative'
         })
     
-    @cached_action(cache_prefix='finance_daily_sumary')
     @action(detail=False, methods=['get'], url_path='daily-sumary')
     def daily_sumary(self, request):
         """
@@ -94,7 +86,6 @@ class FinanceViewSet(CacheMixin, viewsets.ModelViewSet):
             'transaction_count': daily_transactions.count()
         })
     
-    @cached_action(cache_prefix='finance_monthly_summary')
     @action(detail=False, methods=['get'], url_path='monthly-summary')
     def monthly_summary(self, request):
         """
