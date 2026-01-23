@@ -1,7 +1,5 @@
 """
-Signals for cache invalidation in devolution app.
+Signals for the app.
 """
-from core.signals import register_cache_invalidation_signals
-from devolution.models import Devolution
-
-register_cache_invalidation_signals(Devolution, 'devolutions')
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver

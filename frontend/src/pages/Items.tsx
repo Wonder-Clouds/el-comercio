@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { ItemTable } from "@/components/items/ItemTable";
+import ItemsModal from "@/components/items/ItemsModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Item } from "@/models/Product";
@@ -25,6 +26,8 @@ const Items = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -100,7 +103,11 @@ const Items = () => {
           <div className="container space-y-5 mx-auto">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => setIsModalOpen(true)}
+                >
                   <Plus className="w-4 h-4" />
                   Agregar nuevo
                 </Button>
@@ -149,6 +156,14 @@ const Items = () => {
           </div>
         </CardContent>
       </Card>
+
+      {isModalOpen && (
+        <ItemsModal
+          type={itemType}
+          closeModal={() => setIsModalOpen(false)}
+          updateData={fetchItems}
+        />
+      )}
     </div>
   )
 }

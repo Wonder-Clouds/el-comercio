@@ -6,18 +6,13 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
 from .models import Product
 from .serializer import ProductSerializer
 from .filters import ProductFilter
 from datetime import date
 
 # Create your views here.
-class ProductViewSet(CacheMixin, viewsets.ModelViewSet):
-    # Cache configuration
-    cache_key_prefix = 'products'
-    cache_timeout = 3600
-
+class ProductViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

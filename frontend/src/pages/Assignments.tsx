@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { getAssignments, postAllAssignments } from "@/api/Assignment.api";
-import { getProductsByDate } from "@/api/Product.api";
 import AssignmentModal from "@/components/assignments/AssignmentModal";
 import AssignmentTable from "@/components/assignments/AssignmentTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
@@ -13,7 +12,7 @@ import { Assignment } from "@/models/Assignment";
 import { Item } from "@/models/Product";
 import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
-import { formatDateToSpanishSafe } from "@/utils/formatDate";
+import { addOneDay, formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
 import { AlertCircle, Calendar, FileDown, Pencil, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
@@ -44,7 +43,9 @@ const Assignments = () => {
     if (selectedDate) {
       setLoading(true);
       try {
-        const assignments = await getAssignments(page, pageSize, selectedDate, selectedDate);
+        const endDate = addOneDay(selectedDate);
+
+        const assignments = await getAssignments(page, pageSize, selectedDate, endDate);
         setAssignments(assignments.results);
         setTotalCount(assignments.count);
       } finally {
@@ -103,28 +104,23 @@ const Assignments = () => {
     XLSX.writeFile(wb, 'assignment_details.xlsx');
   };
 
-  const fetchProducts = useCallback(async () => {
-    const today = getLocalDate();
-    const date = selectedDate || today;
-    try {
-      const products = await getProductsByDate(date, itemType);
-      setProducts(products.results);
-      setTotalCount(products.count);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedDate, itemType]);
-
   useEffect(() => {
     fetchAssignments();
-    fetchProducts();
-  }, [fetchAssignments, fetchProducts]);
+  }, [fetchAssignments]);
 
-  const handleCreateAssignments = async () => {
-    await fetchProducts();
+  useEffect(() => {
+    if (assignments.length > 0) {
+      const items = assignments[0].products ?? [];
+      setProducts(items);
+    } else {
+      setProducts([]);
+    }
+  }, [assignments]);
+
+  const handleCreateAssignments = async (items: number[]) => {
     setCreating(true);
     try {
-      await postAllAssignments();
+      await postAllAssignments(items);
       await fetchAssignments();
     } finally {
       setCreating(false);

@@ -9,13 +9,14 @@ class ProductSerializer(serializers.ModelSerializer):
     type_product_detail = TypeProductSerializer(source='type_product', read_only=True)
     current_day_price = serializers.SerializerMethodField()
     available_quantity = serializers.SerializerMethodField()
+    available_stock = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
         fields = [
             'id', 'name', 'type_product', 'type_product_detail', 
             'returns_date', 'product_price', 'status_product', 
-            'total_quantity', 'current_day_price', 'available_quantity'
+            'total_quantity', 'reserved_quantity', 'current_day_price', 'available_quantity', 'available_stock'
         ]
         extra_kwargs = {
             'type_product': {'write_only': True} 
@@ -38,6 +39,13 @@ class ProductSerializer(serializers.ModelSerializer):
         }
         
         return day_mapping.get(current_day)
+
+    def get_available_stock(self, obj):
+        """
+        Calculate the available stock for assignment.
+        available_stock = total_quantity - reserved_quantity
+        """
+        return obj.available_stock
 
     def get_available_quantity(self, obj):
         """

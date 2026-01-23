@@ -1,7 +1,5 @@
 """
-Signals for cache invalidation in seller app.
+Signals for the app.
 """
-from core.signals import register_cache_invalidation_signals
-from seller.models import Seller
-
-register_cache_invalidation_signals(Seller, 'sellers')
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver

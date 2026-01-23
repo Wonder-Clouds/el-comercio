@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
 from detail_assignment.models import DetailAssignment
 from devolution.filters import DevolutionFilter
 from devolution.models import Devolution
@@ -13,11 +12,7 @@ from devolution.serializer import DevolutionSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-class DevolutionViewSet(CacheMixin, viewsets.ModelViewSet):
-    # Cache configuration
-    cache_key_prefix = 'devolutions'
-    cache_timeout = 3600
-
+class DevolutionViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

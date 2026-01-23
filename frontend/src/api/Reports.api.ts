@@ -29,7 +29,10 @@ export const getMonthlyEarnings = async (
     },
   });
 
-  return response.data;
+  return response.data.map((item: any) => ({
+    ...item,
+    total_earnings: parseFloat(item.total_earnings),
+  }));
 };
 
 export const getTopProducts = async (startDate: string, endDate: string) => {

@@ -12,25 +12,18 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 import pytz
-from django.core.cache import cache
-import json
 
 from assignment.models import Assignment
 from assignment.serializer import AssignmentSerializer
 from assignment.filters import AssignmentFilter
 from core.pagination import CustomPagination
-from core.cache_mixin import CacheMixin
 from detail_assignment.models import DetailAssignment
 
 
-class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
+class AssignmentViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing assignment instances.
     """
-
-    # Cache configuration
-    cache_key_prefix = 'assignments'
-    cache_timeout = 3600  # 1 hour
 
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
@@ -173,12 +166,13 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
             Response: The created assignments.
         """
         peru_tz = pytz.timezone('America/Lima')
-        
         now_in_peru = datetime.now(peru_tz)
-        
         today = now_in_peru.date()
 
+        product_ids = request.data.get('products', [])
+
         active_sellers = Seller.objects.filter(status=True)
+
         created_assignments = []
         existing_assignments = []
 
@@ -188,14 +182,13 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
                 seller=seller
             )
 
+            assignment.products.set(product_ids)
+
             if created:
                 created_assignments.append(assignment)
             else:
                 existing_assignments.append(assignment)
 
-        # Invalidate cache after creation
-        from core.cache_utils import invalidate_model_cache
-        invalidate_model_cache(self.cache_key_prefix)
 
         serializer = AssignmentSerializer(created_assignments + existing_assignments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -209,9 +202,6 @@ class AssignmentViewSet(CacheMixin, viewsets.ModelViewSet):
         for assignment in all_assignments:
             assignment.soft_delete()
 
-        # Invalidate cache after bulk deletion
-        from core.cache_utils import invalidate_model_cache
-        invalidate_model_cache(self.cache_key_prefix)
 
         return Response(status=status.HTTP_200_OK)
 

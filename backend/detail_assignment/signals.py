@@ -1,7 +1,5 @@
 """
-Signals for cache invalidation in detail_assignment app.
+Signals for the app.
 """
-from core.signals import register_cache_invalidation_signals
-from detail_assignment.models import DetailAssignment
-
-register_cache_invalidation_signals(DetailAssignment, 'detail_assignments')
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver

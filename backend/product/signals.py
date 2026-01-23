@@ -1,7 +1,8 @@
 """
-Signals for cache invalidation in product app.
+Signals for product app.
 """
-from core.signals import register_cache_invalidation_signals
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 from product.models import Product
 
-register_cache_invalidation_signals(Product, 'products')

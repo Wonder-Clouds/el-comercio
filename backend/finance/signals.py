@@ -1,7 +1,5 @@
 """
-Signals for cache invalidation in finance app.
+Signals for the app.
 """
-from core.signals import register_cache_invalidation_signals
-from finance.models import Finance
-
-register_cache_invalidation_signals(Finance, 'finances')
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
