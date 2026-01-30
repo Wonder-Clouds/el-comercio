@@ -26,6 +26,7 @@ interface AssignmentModalProps {
   closeModal: () => void;
   updateData: (selectedItems: number[]) => void;
   initialProducts?: Item[];
+  otherProducts?: Item[];
 }
 
 const AssignmentModal = ({
@@ -33,6 +34,7 @@ const AssignmentModal = ({
   closeModal,
   updateData,
   initialProducts,
+  otherProducts
 }: AssignmentModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -108,8 +110,12 @@ const AssignmentModal = ({
   const handleAddProductsToAssignment = async () => {
     setIsSubmitting(true);
     try {
-      console.log("Productos asignados:", seleccionados);
-      updateData(seleccionados.map(item => item.id));
+      const idsSeleccionados = seleccionados.map(item => item.id);
+      const idsOtros = otherProducts?.map(item => item.id) ?? [];
+
+      const idsFinales = [...idsSeleccionados, ...idsOtros];
+
+      updateData(idsFinales);
       closeModal();
     } finally {
       setIsSubmitting(false);
