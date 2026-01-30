@@ -27,6 +27,7 @@ const Assignments = () => {
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Item[]>([]);
+  const [otherProducts, setOtherProducts] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
@@ -111,11 +112,19 @@ const Assignments = () => {
   useEffect(() => {
     if (assignments.length > 0) {
       const items = assignments[0].products ?? [];
-      setProducts(items);
-    } else {
-      setProducts([]);
+
+      const filteredItems = items.filter(
+        (item) => item.type_product?.type === itemType
+      );
+
+      const otherItems = items.filter(
+        (item) => item.type_product?.type !== itemType
+      );
+
+      setProducts(filteredItems);
+      setOtherProducts(otherItems);
     }
-  }, [assignments]);
+  }, [assignments, itemType]);
 
   const handleCreateAssignments = async (items: number[]) => {
     setCreating(true);
@@ -281,7 +290,13 @@ const Assignments = () => {
       {/* Assignment creation modal */}
       {
         showCreateModal && (
-          <AssignmentModal type={itemType} closeModal={() => setShowCreateModal(false)} updateData={handleCreateAssignments} initialProducts={products} />
+          <AssignmentModal
+            type={itemType}
+            closeModal={() => setShowCreateModal(false)}
+            updateData={handleCreateAssignments}
+            initialProducts={products}
+            otherProducts={otherProducts}
+          />
         )
       }
 
