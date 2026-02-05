@@ -7,7 +7,7 @@ export const getItems = async (
   page: number,
   pageSize: number,
   itemType?: Types,
-  name?: string
+  name?: string,
 ): Promise<PaginatedResponse<Item>> => {
   const response = await api.get("/products/", {
     params: {
@@ -33,7 +33,7 @@ export const createItem = async (item: ItemCreateData): Promise<Item> => {
   return response.data;
 };
 
-export const updateItem = async (product: Item): Promise<Item> => {
+export const updateItem = async (product: ItemCreateData): Promise<Item> => {
   const response = await api.patch(`/products/${product.id}/`, product);
   return response.data;
 };

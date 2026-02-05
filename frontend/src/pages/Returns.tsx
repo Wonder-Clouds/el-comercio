@@ -97,11 +97,14 @@ const Returns = () => {
   useEffect(() => {
     if (assignments.length > 0) {
       const items = assignments[0].products ?? [];
-      setItems(items);
-    } else {
-      setItems([]);
+
+      const filteredItems = items.filter(
+        (item) => item.type_product?.type === itemType
+      );
+
+      setItems(filteredItems);
     }
-  }, [assignments]);
+  }, [assignments, itemType]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

@@ -9,6 +9,7 @@ export interface Item {
   status_product: boolean;
   total_quantity: number;
   available_stock?: number;
+  reserved_quantity?: number;
 }
 
 export interface ItemCreateData {

@@ -10,6 +10,7 @@ interface ItemTableProps {
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
+  onEdit: (item: Item) => void;
   tableRef: RefObject<HTMLDivElement>;
 }
 
@@ -19,11 +20,12 @@ export const ItemTable = ({
   pageSize,
   totalCount,
   onPageChange,
+  onEdit,
   tableRef,
 }: ItemTableProps) => {
   const table = useReactTable({
     data,
-    columns: columnsItems(),
+    columns: columnsItems(onEdit),
     getCoreRowModel: getCoreRowModel(),
   });
 
