@@ -12,11 +12,12 @@ import {
   TrendingUp,
   OctagonAlert,
   ChevronDown,
-  // HandCoins,
   LucideIcon,
   PiggyBank,
   HandCoins
 } from 'lucide-react';
+import { Button } from '../ui/button';
+import logo from "@/assets/elcomercio_logo.webp";
 
 // Definimos interfaces para mejorar el tipado
 interface ChildMenuItem {
@@ -69,8 +70,6 @@ const Header: React.FC = () => {
         { to: "/devoluciones/periodicos", text: "Periódicos" },
       ]
     },
-    { to: "/finanzas", text: "Finanzas", icon: HandCoins },
-    // { to: "/cobranzas", text: "Cobranzas", icon: HandCoins },
     {
       text: "Inventario",
       icon: Package,
@@ -81,6 +80,7 @@ const Header: React.FC = () => {
       ]
     },
     { to: "/clientes", text: "Clientes", icon: Users },
+    { to: "/finanzas", text: "Finanzas", icon: HandCoins },
     { to: "/deudores", text: "Deudores", icon: OctagonAlert },
     { to: "/reportes", text: "Reportes", icon: TrendingUp },
     { to: "/caja", text: "Caja", icon: PiggyBank },
@@ -95,7 +95,6 @@ const Header: React.FC = () => {
   // Manejar clics fuera del dropdown y menú móvil
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
-      // Cerrar dropdown si se hace clic fuera
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -103,7 +102,6 @@ const Header: React.FC = () => {
         setDropdownOpen(null);
       }
 
-      // Cerrar menú móvil si se hace clic fuera
       if (
         isOpen &&
         mobileMenuRef.current &&
@@ -120,170 +118,267 @@ const Header: React.FC = () => {
     };
   }, [isOpen]);
 
-  return (
-    <header className="text-white bg-gradient-to-r from-slate-900 to-gray-950 shadow-lg">
-      <nav className="container lg:mx-auto p-4">
-        <div className="flex items-center justify-between">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden text-white rounded-md p-2 hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+  // Bloquear scroll cuando el menú móvil está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:flex-1 lg:justify-between lg:items-center">
-            <ul className="flex items-center space-x-1">
-              {menuItems.map((item) => (
-                <li key={item.text} className="relative">
-                  {!item.children ? (
-                    <Link
-                      to={item.to || "#"}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${activeItem === item.text
-                        ? 'bg-blue-600 text-white font-medium'
-                        : 'hover:bg-gray-800'
-                        }`}
-                      onClick={() => setActiveItem(item.text)}
-                    >
-                      <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
-                      <span>{item.text}</span>
-                    </Link>
-                  ) : (
-                    <div className="relative">
-                      <button
-                        onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all ${activeItem === item.text
-                          ? 'bg-blue-600 text-white font-medium'
-                          : 'hover:bg-gray-800'
+  return (
+    <header className="sticky top-0 text-gray-900 bg-white shadow-md">
+      {/* Top Bar - Logo y Logout */}
+      <div className="border-b border-gray-200">
+        <div className="container px-4 mx-auto">
+          <div className="flex items-center justify-between py-3 md:py-4">
+            {/* Logo y Título */}
+            <div className="flex items-center flex-1 min-w-0 space-x-2 md:space-x-4">
+              <img
+                src={logo}
+                alt="Logo"
+                className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16"
+              />
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-sm font-bold truncate md:text-base lg:text-xl xl:text-2xl">
+                  Sistema de Gestión de Distribución
+                </h1>
+                <span className="hidden text-xs text-gray-600 sm:block md:text-sm">
+                  Administra productos, asignaciones y reportes
+                </span>
+              </div>
+            </div>
+
+            {/* Botón de Logout - Responsive */}
+            <Button
+              onClick={handleLogout}
+              className="flex items-center flex-shrink-0 px-3 py-2 ml-2 space-x-1 text-xs font-medium text-white transition-colors bg-red-600 rounded-md md:space-x-2 md:px-4 md:py-2 md:text-sm hover:bg-red-700"
+            >
+              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">Cerrar sesión</span>
+              <span className="sm:hidden">Salir</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Bar */}
+      <nav>
+        <div className="container px-4 mx-auto">
+          <div className="flex items-center justify-between py-3">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex items-center justify-center w-10 h-10 text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg shadow-sm lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-default"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+
+            {/* Mobile Title */}
+            <span className="text-sm font-semibold text-gray-700 lg:hidden">
+              Menú Principal
+            </span>
+
+            {/* Spacer for mobile */}
+            <div className="w-10 lg:hidden"></div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex lg:flex-1">
+              <ul className="flex flex-wrap items-center gap-1">
+                {menuItems.map((item) => (
+                  <li key={item.text} className="relative">
+                    {!item.children ? (
+                      <Link
+                        to={item.to || "#"}
+                        className={`group flex items-center space-x-2 px-3 py-2 rounded-md transition-all text-sm xl:text-base ${activeItem === item.text
+                          ? 'bg-default text-white font-medium shadow-md'
+                          : 'text-gray-700 hover:bg-default hover:text-white'
                           }`}
-                        aria-expanded={dropdownOpen === item.text}
+                        onClick={() => setActiveItem(item.text)}
                       >
-                        <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
-                        <span>{item.text}</span>
-                        <ChevronDown
-                          size={16}
-                          className={`ml-1 transition-transform duration-200 ${dropdownOpen === item.text ? 'rotate-180' : ''
+                        <item.icon
+                          size={18}
+                          className={`flex-shrink-0 ${activeItem === item.text
+                            ? 'text-white'
+                            : 'text-gray-700 group-hover:text-white'
                             }`}
                         />
-                      </button>
-                      {dropdownOpen === item.text && (
-                        <ul
-                          ref={dropdownRef}
-                          className="absolute left-0 z-20 mt-1 bg-gray-800 rounded-md shadow-lg w-48 py-1 animate-fadeIn"
+                        <span className="whitespace-nowrap">{item.text}</span>
+                      </Link>
+                    ) : (
+                      <div className="relative">
+                        <button
+                          onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
+                          className={`group flex items-center space-x-2 px-3 py-2 rounded-md transition-all text-sm xl:text-base ${activeItem === item.text
+                            ? 'bg-default text-white font-medium shadow-md'
+                            : 'text-gray-700 hover:bg-default hover:text-white'
+                            }`}
                         >
-                          {item.children.map((child) => (
-                            <li key={child.to}>
-                              <Link
-                                to={child.to}
-                                className="block px-4 py-2 text-sm transition-colors hover:bg-gray-700 hover:text-blue-400"
-                                onClick={() => {
-                                  setDropdownOpen(null);
-                                  setActiveItem(item.text);
-                                }}
-                              >
-                                {child.text}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors ml-4"
-            >
-              <LogOut size={18} />
-              <span>Cerrar sesión</span>
-            </button>
+                          <item.icon
+                            size={18}
+                            className={`flex-shrink-0 transition-colors ${activeItem === item.text
+                              ? 'text-white'
+                              : 'text-gray-700 group-hover:text-white'
+                              }`}
+                          />
+                          <span className="whitespace-nowrap">{item.text}</span>
+                          <ChevronDown
+                            size={16}
+                            className={`flex-shrink-0 transition-transform ${dropdownOpen === item.text ? 'rotate-180' : ''
+                              }`}
+                          />
+                        </button>
+                        {dropdownOpen === item.text && (
+                          <ul
+                            ref={dropdownRef}
+                            className="absolute left-0 z-20 py-2 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl w-52 animate-fadeIn"
+                          >
+                            {item.children.map((child) => (
+                              <li key={child.to}>
+                                <Link
+                                  to={child.to}
+                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-default hover:text-white"
+                                  onClick={() => {
+                                    setDropdownOpen(null);
+                                    setActiveItem(item.text);
+                                  }}
+                                >
+                                  {child.text}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Full Screen Overlay */}
         {isOpen && (
-          <div
-            ref={mobileMenuRef}
-            className="lg:hidden mt-4 bg-gray-900 rounded-lg shadow-xl border border-gray-800 animate-slideDown"
-          >
-            <ul className="py-2">
-              {menuItems.map((item) => (
-                <li key={item.text} className="px-3 py-1">
-                  {!item.children ? (
-                    <Link
-                      to={item.to || "#"}
-                      className={`flex items-center space-x-3 p-2 rounded-md ${activeItem === item.text
-                        ? 'bg-blue-600 text-white'
-                        : 'hover:bg-gray-800'
-                        }`}
-                      onClick={() => {
-                        setActiveItem(item.text);
-                        setIsOpen(false);
-                      }}
-                    >
-                      <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
-                      <span>{item.text}</span>
-                    </Link>
-                  ) : (
-                    <div>
-                      <button
-                        onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
-                        className={`w-full flex items-center justify-between p-2 rounded-md ${activeItem === item.text
-                          ? 'bg-blue-600 text-white'
-                          : 'hover:bg-gray-800'
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Mobile Menu */}
+            <div
+              ref={mobileMenuRef}
+              className="fixed inset-x-0 top-0 z-50 h-screen overflow-y-auto bg-white lg:hidden animate-slideInRight"
+            >
+              {/* Mobile Menu Header */}
+              <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-4 bg-gradient-to-r from-default to-default/90">
+                <div className="flex items-center space-x-3">
+                  <img src={logo} alt="Logo" className="w-10 h-10" />
+                  <span className="text-lg font-bold text-white">Menú</span>
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center w-10 h-10 text-white transition-colors bg-white/20 rounded-lg hover:bg-white/30"
+                  aria-label="Cerrar menú"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Mobile Menu Items */}
+              <ul className="px-4 py-4 space-y-2">
+                {menuItems.map((item) => (
+                  <li key={item.text}>
+                    {!item.children ? (
+                      <Link
+                        to={item.to || "#"}
+                        className={`flex items-center space-x-3 p-3 rounded-lg transition-all ${activeItem === item.text
+                          ? 'bg-default text-white shadow-md'
+                          : 'text-gray-700 hover:bg-gray-100'
                           }`}
+                        onClick={() => {
+                          setActiveItem(item.text);
+                          setIsOpen(false);
+                        }}
                       >
-                        <div className="flex items-center space-x-3">
-                          <item.icon size={18} className={activeItem === item.text ? 'text-white' : 'text-blue-400'} />
-                          <span>{item.text}</span>
-                        </div>
-                        <ChevronDown
-                          size={16}
-                          className={`transition-transform duration-200 ${dropdownOpen === item.text ? 'rotate-180' : ''
+                        <item.icon
+                          size={20}
+                          className={`flex-shrink-0 ${activeItem === item.text ? 'text-white' : 'text-gray-700'
                             }`}
                         />
-                      </button>
+                        <span className="font-medium">{item.text}</span>
+                      </Link>
+                    ) : (
+                      <div>
+                        <button
+                          onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
+                          className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${activeItem === item.text
+                            ? 'bg-default text-white shadow-md'
+                            : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <item.icon
+                              size={20}
+                              className={`flex-shrink-0 ${activeItem === item.text ? 'text-white' : 'text-gray-700'
+                                }`}
+                            />
+                            <span className="font-medium">{item.text}</span>
+                          </div>
+                          <ChevronDown
+                            size={20}
+                            className={`flex-shrink-0 transition-transform duration-200 ${dropdownOpen === item.text ? 'rotate-180' : ''
+                              }`}
+                          />
+                        </button>
 
-                      {dropdownOpen === item.text && (
-                        <ul className="ml-6 mt-1 space-y-1 border-l-2 border-gray-700 pl-3">
-                          {item.children.map((child) => (
-                            <li key={child.to}>
-                              <Link
-                                to={child.to}
-                                className="block p-2 text-sm transition-colors rounded-md hover:bg-gray-800 hover:text-blue-400"
-                                onClick={() => {
-                                  setActiveItem(item.text);
-                                  setIsOpen(false);
-                                  setDropdownOpen(null);
-                                }}
-                              >
-                                {child.text}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-                </li>
-              ))}
+                        {dropdownOpen === item.text && (
+                          <ul className="pl-4 mt-2 space-y-1 border-l-2 border-default/30">
+                            {item.children.map((child) => (
+                              <li key={child.to}>
+                                <Link
+                                  to={child.to}
+                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors rounded-lg hover:bg-default/10 hover:text-default"
+                                  onClick={() => {
+                                    setActiveItem(item.text);
+                                    setIsOpen(false);
+                                    setDropdownOpen(null);
+                                  }}
+                                >
+                                  {child.text}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
 
-              <li className="px-3 py-2 mt-3 border-t border-gray-700">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center space-x-2 bg-gray-800 p-2 rounded-md hover:bg-red-600 transition-colors"
+              {/* Mobile Menu Footer */}
+              <div className="px-4 py-4 mt-auto border-t border-gray-200">
+                <Button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                  className="flex items-center justify-center w-full py-3 space-x-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                 >
-                  <LogOut size={18} />
-                  <span>Cerrar sesión</span>
-                </button>
-              </li>
-            </ul>
-          </div>
+                  <LogOut size={20} />
+                  <span className="font-medium">Cerrar Sesión</span>
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </nav>
     </header>

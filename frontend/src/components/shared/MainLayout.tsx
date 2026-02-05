@@ -3,9 +3,9 @@ import Header from "./Header";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <main>{children}</main>
+      <main className="flex-1 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">{children}</main>
       <Toaster />
     </div>
   )

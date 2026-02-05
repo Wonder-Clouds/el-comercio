@@ -10,6 +10,7 @@ import { FileDown, Plus, Search, X } from "lucide-react";
 import { debounce } from "lodash";
 import { getItems } from "@/api/Product.api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ItemsUpdate from "@/components/items/ItemsUpdate";
 
 const Items = () => {
   const { type } = useParams();
@@ -28,6 +29,8 @@ const Items = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -38,6 +41,16 @@ const Items = () => {
       console.error(error);
     }
   }, [page, itemType, pageSize]);
+
+  const openUpdateModal = (item: Item) => {
+    setSelectedItem(item);
+    setShowUpdateModal(true);
+  };
+
+  const closeUpdateModal = () => {
+    setSelectedItem(null);
+    setShowUpdateModal(false)
+  }
 
   useEffect(() => {
     fetchItems();
@@ -150,6 +163,7 @@ const Items = () => {
               page={page}
               pageSize={pageSize}
               totalCount={totalCount}
+              onEdit={openUpdateModal}
               onPageChange={handlePageChange}
               tableRef={tableRef}
             />
@@ -162,6 +176,14 @@ const Items = () => {
           type={itemType}
           closeModal={() => setIsModalOpen(false)}
           updateData={fetchItems}
+        />
+      )}
+
+      {showUpdateModal && selectedItem && (
+        <ItemsUpdate
+          closeModal={closeUpdateModal}
+          updateData={fetchItems}
+          item={selectedItem}
         />
       )}
     </div>

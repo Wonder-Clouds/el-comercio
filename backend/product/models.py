@@ -14,9 +14,6 @@ class Product(TimeStampedModel):
     type_product = models.ForeignKey(TypeProduct, on_delete=models.CASCADE, null=True, blank=True)
     assignments = models.ManyToManyField('assignment.Assignment', related_name='products', blank=True)
 
-    class Meta:
-        unique_together = ('name', 'type_product')
-
     @property
     def available_stock(self):
         """
