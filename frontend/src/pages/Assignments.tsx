@@ -23,7 +23,7 @@ const Assignments = () => {
   const itemType = type === "productos" ? Types.PRODUCT : Types.NEWSPAPER;
 
   const pageTitle = itemType === Types.PRODUCT ? "Entregas de Productos" : "Entregas de Periódicos";
-  const assignmentButton = itemType === Types.PRODUCT ? "Asignar productos" : "Asignar periódicos";
+  const assignmentButton = itemType === Types.PRODUCT ? "Asignar Productos" : "Asignar Periódicos";
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Item[]>([]);
@@ -154,7 +154,7 @@ const Assignments = () => {
   return (
     <div className="max-w-full lg:container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
               {pageTitle}
@@ -205,7 +205,7 @@ const Assignments = () => {
                   <Button
                     onClick={() => setShowCreateModal(true)}
                     size="lg"
-                    className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
+                    className="bg-primary hover:bg-primary-hover font-semibold p-4 text-base"
                     disabled={creating}
                   >
                     {creating ? (

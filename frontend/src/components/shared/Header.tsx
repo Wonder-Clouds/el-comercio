@@ -173,7 +173,7 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-center w-10 h-10 text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg shadow-sm lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-default"
+              className="flex items-center justify-center w-10 h-10 text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg shadow-sm lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
               aria-label="Toggle menu"
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -189,15 +189,15 @@ const Header: React.FC = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex lg:flex-1">
-              <ul className="flex flex-wrap items-center gap-1">
+              <ul className="flex flex-wrap items-center gap-4">
                 {menuItems.map((item) => (
                   <li key={item.text} className="relative">
                     {!item.children ? (
                       <Link
                         to={item.to || "#"}
                         className={`group flex items-center space-x-2 px-3 py-2 rounded-md transition-all text-sm xl:text-base ${activeItem === item.text
-                          ? 'bg-default text-white font-medium shadow-md'
-                          : 'text-gray-700 hover:bg-default hover:text-white'
+                          ? 'bg-primary text-white font-medium shadow-md'
+                          : 'text-gray-700 hover:bg-primary hover:text-white'
                           }`}
                         onClick={() => setActiveItem(item.text)}
                       >
@@ -215,8 +215,8 @@ const Header: React.FC = () => {
                         <button
                           onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
                           className={`group flex items-center space-x-2 px-3 py-2 rounded-md transition-all text-sm xl:text-base ${activeItem === item.text
-                            ? 'bg-default text-white font-medium shadow-md'
-                            : 'text-gray-700 hover:bg-default hover:text-white'
+                            ? 'bg-primary text-white font-medium shadow-md'
+                            : 'text-gray-700 hover:bg-primary hover:text-white'
                             }`}
                         >
                           <item.icon
@@ -242,7 +242,7 @@ const Header: React.FC = () => {
                               <li key={child.to}>
                                 <Link
                                   to={child.to}
-                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-default hover:text-white"
+                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary hover:text-white"
                                   onClick={() => {
                                     setDropdownOpen(null);
                                     setActiveItem(item.text);
@@ -278,7 +278,7 @@ const Header: React.FC = () => {
               className="fixed inset-x-0 top-0 z-50 h-screen overflow-y-auto bg-white lg:hidden animate-slideInRight"
             >
               {/* Mobile Menu Header */}
-              <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-4 bg-gradient-to-r from-default to-default/90">
+              <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-4 bg-gradient-to-r from-primary to-primary/90">
                 <div className="flex items-center space-x-3">
                   <img src={logo} alt="Logo" className="w-10 h-10" />
                   <span className="text-lg font-bold text-white">Menú</span>
@@ -300,7 +300,7 @@ const Header: React.FC = () => {
                       <Link
                         to={item.to || "#"}
                         className={`flex items-center space-x-3 p-3 rounded-lg transition-all ${activeItem === item.text
-                          ? 'bg-default text-white shadow-md'
+                          ? 'bg-primary text-white shadow-md'
                           : 'text-gray-700 hover:bg-gray-100'
                           }`}
                         onClick={() => {
@@ -320,7 +320,7 @@ const Header: React.FC = () => {
                         <button
                           onClick={() => setDropdownOpen(dropdownOpen === item.text ? null : item.text)}
                           className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${activeItem === item.text
-                            ? 'bg-default text-white shadow-md'
+                            ? 'bg-primary text-white shadow-md'
                             : 'text-gray-700 hover:bg-gray-100'
                             }`}
                         >
@@ -340,12 +340,12 @@ const Header: React.FC = () => {
                         </button>
 
                         {dropdownOpen === item.text && (
-                          <ul className="pl-4 mt-2 space-y-1 border-l-2 border-default/30">
+                          <ul className="pl-4 mt-2 space-y-1 border-l-2 border-primary/30">
                             {item.children.map((child) => (
                               <li key={child.to}>
                                 <Link
                                   to={child.to}
-                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors rounded-lg hover:bg-default/10 hover:text-default"
+                                  className="block px-4 py-2 text-sm text-gray-700 transition-colors rounded-lg hover:bg-primary/10 hover:text-primary"
                                   onClick={() => {
                                     setActiveItem(item.text);
                                     setIsOpen(false);

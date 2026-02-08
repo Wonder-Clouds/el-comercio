@@ -34,19 +34,19 @@ interface TextOptions {
 
 const generatePDFTicket = (
   row: Assignment,
-  filteredDetails: DetailAssignment[]
+  filteredDetails: DetailAssignment[],
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
-    format: [100, 148],
+    format: [80, 297],
   });
 
   // Configuración
   const config = {
     lineHeight: 4.5,
-    pageWidth: 100,
-    margin: 8,
+    pageWidth: 80,
+    margin: 5,
     fontSize: {
       title: 14,
       subtitle: 10,
@@ -81,14 +81,13 @@ const generatePDFTicket = (
     text: string,
     x: number,
     y: number,
-    options?: TextOptions
+    options?: TextOptions,
   ) => {
     doc.text(text, x, y, options as TextOptionsLight);
   };
 
   const setStyle = (font: string, size: number, style = "normal") => {
-    console.log(font);
-    doc.setFont("courier", style);
+    doc.setFont(font, style);
     doc.setFontSize(size);
   };
 
@@ -108,7 +107,7 @@ const generatePDFTicket = (
   // Información del vendedor
   setStyle("courier", fontSize.subtitle, "bold");
   addText("INFORMACIÓN DEL VENDEDOR", margin, yPosition);
-  yPosition += lineHeight;
+  yPosition += lineHeight - 2;
 
   drawSeparator(0.3);
 
@@ -129,22 +128,23 @@ const generatePDFTicket = (
     yPosition += lineHeight;
   });
 
-  yPosition += lineHeight;
   drawDoubleSeparator();
 
   // Encabezado de productos
   setStyle("courier", fontSize.subtitle, "bold");
   addText("PRODUCTOS A DEVOLVER", margin, yPosition);
-  yPosition += lineHeight;
+  yPosition += lineHeight - 2;
 
   drawSeparator(0.3);
 
   setStyle("courier", fontSize.normal, "bold");
   addText("Producto", margin, yPosition);
-  addText("Cant.", centerX, yPosition);
+  addText("Cant.", centerX - 15, yPosition);
+  addText("Dev.", centerX, yPosition);
+  addText("Pend.", centerX + 15, yPosition);
   addText("Total", rightX, yPosition, { align: "right" });
-  yPosition += lineHeight;
-  drawSeparator();
+  yPosition += lineHeight - 2;
+  drawSeparator(0.3);
 
   // Lista de productos
   let totalGeneral = 0;
@@ -165,7 +165,9 @@ const generatePDFTicket = (
     }
 
     addText(detail.product.name, margin, yPosition);
-    addText(pending.toString(), centerX, yPosition);
+    addText(qty.toString(), centerX - 15, yPosition);
+    addText(returned.toString(), centerX, yPosition);
+    addText(pending.toString(), centerX + 15, yPosition);
     addText(`S/ ${totalToPay.toFixed(2)}`, rightX, yPosition, {
       align: "right",
     });
@@ -177,11 +179,11 @@ const generatePDFTicket = (
   });
 
   yPosition += lineHeight;
-  drawDoubleSeparator();
+  drawSeparator();
 
   // Total final
-  setStyle("courier", fontSize.total, "bold");
-  addText("TOTAL A DEVOLVER:", margin, yPosition);
+  setStyle("courier", fontSize.subtitle, "bold");
+  addText("TOTAL A PAGAR:", margin, yPosition);
   addText(`S/ ${totalGeneral.toFixed(2)}`, rightX, yPosition, {
     align: "right",
   });
