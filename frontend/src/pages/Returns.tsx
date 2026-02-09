@@ -142,7 +142,7 @@ const Returns = () => {
               <Button
                 onClick={() => setActiveCalendar(!activeCalendar)}
                 variant="outline"
-                className="flex items-center gap-2 border-2 border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha

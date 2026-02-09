@@ -6,6 +6,8 @@ from type_product.models import TypeProduct
 class Product(TimeStampedModel):
     name = models.CharField(max_length=255, default='', null=False, blank=False)
     returns_date = models.IntegerField(default=0, null=False, blank=False)
+    base_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0.00)
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, null=True, blank=True) # Example 0.15 for 15% discount
     product_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0.00)
     status_product = models.BooleanField(default=False, null=False, blank=False)
     total_quantity = models.IntegerField(default=0, null=True, blank=True)
@@ -13,6 +15,12 @@ class Product(TimeStampedModel):
 
     type_product = models.ForeignKey(TypeProduct, on_delete=models.CASCADE, null=True, blank=True)
     assignments = models.ManyToManyField('assignment.Assignment', related_name='products', blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.base_price is not None and self.discount_percent is not None:
+            discount = self.base_price * self.discount_percent
+            self.product_price = self.base_price - discount
+        super().save(*args, **kwargs)
 
     @property
     def available_stock(self):

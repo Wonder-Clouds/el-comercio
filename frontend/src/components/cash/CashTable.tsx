@@ -61,7 +61,7 @@ const CashTable: React.FC<CashProps> = ({ data, cashRows, setCashRows }) => {
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
-                  className={`px-6 py-3 text-sm font-medium tracking-wider text-left text-gray-500 uppercase bg-blue-50`}
+                  className={`px-6 py-3 text-sm font-medium tracking-wider text-left text-gray-600 uppercase bg-accent`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

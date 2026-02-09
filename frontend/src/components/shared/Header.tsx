@@ -131,7 +131,7 @@ const Header: React.FC = () => {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 text-gray-900 bg-white shadow-md">
+    <header className="sticky top-0 text-gray-900 bg-white shadow-md z-50">
       {/* Top Bar - Logo y Logout */}
       <div className="border-b border-gray-200">
         <div className="container px-4 mx-auto">
@@ -156,11 +156,10 @@ const Header: React.FC = () => {
             {/* Botón de Logout - Responsive */}
             <Button
               onClick={handleLogout}
-              className="flex items-center flex-shrink-0 px-3 py-2 ml-2 space-x-1 text-xs font-medium text-white transition-colors bg-red-600 rounded-md md:space-x-2 md:px-4 md:py-2 md:text-sm hover:bg-red-700"
+              className="flex items-center flex-shrink-0 px-3 py-2 ml-2 text-xs font-medium text-white transition-colors bg-red-600 rounded-md md:px-4 md:py-2 md:text-sm hover:bg-red-700"
             >
-              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="hidden sm:inline">Cerrar sesión</span>
-              <span className="sm:hidden">Salir</span>
+              <LogOut />
+              <span>Cerrar sesión</span>
             </Button>
           </div>
         </div>
@@ -371,9 +370,9 @@ const Header: React.FC = () => {
                     setIsOpen(false);
                     handleLogout();
                   }}
-                  className="flex items-center justify-center w-full py-3 space-x-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
+                  className="flex items-center justify-center w-full py-3 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                 >
-                  <LogOut size={20} />
+                  <LogOut />
                   <span className="font-medium">Cerrar Sesión</span>
                 </Button>
               </div>

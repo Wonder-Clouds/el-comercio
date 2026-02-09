@@ -28,6 +28,22 @@ export const columnsItems = (onUpdate: (item: Item) => void): ColumnDef<Item>[] 
     },
   },
   {
+    accessorKey: "base_price",
+    header: "Precio base",
+    cell: ({ row }) => {
+      const product = row.original;
+      return <span>{product.base_price}</span>;
+    },
+  },
+  {
+    accessorKey: "discount_percent",
+    header: "Descuento (%)",
+    cell: ({ row }) => {
+      const product = row.original;
+      return <span>{product.discount_percent}</span>;
+    },
+  },
+  {
     accessorKey: "product_price",
     header: "Precio producto",
     cell: ({ row }) => {

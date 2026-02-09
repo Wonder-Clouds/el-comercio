@@ -12,13 +12,13 @@ import { Seller } from '@/models/Seller';
 interface UpdateCardProps {
   closeModal: () => void;
   updateData: () => void;
-  sellerData: Seller; 
+  sellerData: Seller;
 }
 
 const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => {
   const [formData, setFormData] = useState<Seller>(sellerData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast(); 
+  const { toast } = useToast();
 
   useEffect(() => {
     setFormData(prev => (prev.id !== sellerData.id ? sellerData : prev));
@@ -76,7 +76,7 @@ const UpdateCard = ({ closeModal, updateData, sellerData }: UpdateCardProps) => 
     }
   };
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <Card className="w-[35rem]">
         <CardHeader>
           <CardTitle className="text-2xl">Actualizar vendedor</CardTitle>

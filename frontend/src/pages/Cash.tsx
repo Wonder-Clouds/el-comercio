@@ -223,7 +223,7 @@ const Cash = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-3xl font-bold">Caja</CardTitle>
@@ -233,7 +233,7 @@ const Cash = () => {
               <Button
                 onClick={() => setActiveCalendar(!activeCalendar)}
                 variant="outline"
-                className="flex items-center gap-2 border-2 text-black border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 text-black transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha
@@ -271,14 +271,14 @@ const Cash = () => {
                   <TabsTrigger value="cash_count">Conteo de billetes</TabsTrigger>
                   <TabsTrigger value="yape">YAPE</TabsTrigger>
                 </TabsList>
-                <Button className="bg-indigo-950" onClick={() => generateCashReportPdf(cashComercio[0], cashOjo[0], yapes)}>Generar reporte del día</Button>
+                <Button className="bg-primary" onClick={() => generateCashReportPdf(cashComercio[0], cashOjo[0], yapes)}>Generar reporte del día</Button>
               </div>
 
               <TabsContent value="cash_count" className="flex flex-row px-1">
                 <div className="px-4 w-1/2">
                   <div className="flex justify-between">
                     <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">COMERCIO</h4>
-                    <Button className="bg-indigo-950"
+                    <Button className="bg-primary"
                       onClick={
                         cashComercio && cashComercio.length > 0
                           ? handleUpdateCashComercio
@@ -296,7 +296,7 @@ const Cash = () => {
                 <div className="px-4 w-1/2">
                   <div className="flex justify-between">
                     <h4 className="text-3xl text-gray-800 p-2 text-center font-bold">OJO</h4>
-                    <Button className="bg-indigo-950"
+                    <Button className="bg-primary"
                       onClick={
                         cashOjo && cashOjo.length > 0
                           ? handleUpdateCashOjo
@@ -337,7 +337,7 @@ const Cash = () => {
                   />
                   <Button
                     onClick={handleAddYape}
-                    className="bg-blue-800 hover:bg-blue-900 font-semibold px-4 py-2 text-md flex items-center gap-2"
+                    className="bg-primary font-semibold px-4 py-2 text-md flex items-center gap-2"
                   >
                     <FileInput className="h-4 w-4" />
                     <span className="hidden md:inline">Añadir yape</span>

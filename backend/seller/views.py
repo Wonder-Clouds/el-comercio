@@ -11,6 +11,8 @@ from detail_assignment.serializer import DetailAssignmentSerializer
 from seller.models import Seller
 from seller.serializer import SellerSerializer
 
+import secrets
+
 class SellerViewSet(viewsets.ModelViewSet):
     # JWT Authentication
     authentication_classes = [JWTAuthentication]
@@ -94,3 +96,15 @@ class SellerViewSet(viewsets.ModelViewSet):
                 })
 
         return Response(result, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='generate-code')
+    def generate_seller_code(self, request):
+        def generate_code():
+            return f"CAN-{secrets.randbelow(9000) + 1000}"
+
+        code = generate_code()
+
+        while Seller.objects.filter(number_seller=code).exists():
+            code = generate_code()
+
+        return Response({"code": code})

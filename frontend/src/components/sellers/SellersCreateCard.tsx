@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Ban, Save } from "lucide-react";
-import { createSeller } from "@/api/Seller.api.ts";
+import { createSeller, generateUniqueSellerCode } from "@/api/Seller.api.ts";
 import { Label } from "@/components/ui/label.tsx";
 import { defaultSeller, Seller } from "@/models/Seller.ts";
 import { useToast } from "@/hooks/use-toast.ts";
@@ -72,8 +72,22 @@ const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, update
     }
   };
 
+  const generateCode = async () => {
+    try {
+      const code = await generateUniqueSellerCode();
+      setFormData({ ...formData, number_seller: code });
+    } catch (error) {
+      console.error("Error al generar el código único", error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al generar el código único",
+        variant: "destructive"
+      });
+    }
+  }
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <Card className="w-[35rem]">
         <CardHeader>
           <CardTitle className="text-2xl">Crear vendedor</CardTitle>
@@ -82,8 +96,31 @@ const CreateCard = ({ closeModal, updateData }: { closeModal: () => void, update
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid w-full items-center gap-5">
+              <div className="flex flex-row gap-3 w-full items-end">
+                <div className="flex flex-col space-y-2 flex-1">
+                  <Label htmlFor="number_seller">Código Único</Label>
+                  <Input
+                    className="p-2"
+                    id="number_seller"
+                    value={formData.number_seller as string}
+                    onChange={handleChange}
+                    disabled={true}
+                  />
+                  {formErrors.number_seller && (
+                    <span className="text-red-500 text-sm">{formErrors.number_seller}</span>
+                  )}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={generateCode}
+                >
+                  Generar Código
+                </Button>
+              </div>
+
               {[
-                { id: "number_seller", label: "Código Único" },
                 { id: "name", label: "Nombre" },
                 { id: "last_name", label: "Apellidos" },
                 { id: "dni", label: "DNI", placeholder: "Debe tener 8 dígitos", maxLength: 8 },
