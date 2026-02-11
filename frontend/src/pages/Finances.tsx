@@ -39,7 +39,7 @@ const FinanceForm = ({
       value={formData.amount}
       onChange={(e) => setFormData((prev) => ({ ...prev, amount: e.target.value }))}
     />
-    <Button onClick={onSubmit} className="bg-blue-800 hover:bg-blue-900 font-semibold p-5 text-md">
+    <Button onClick={onSubmit} className="bg-primary font-semibold p-5 text-md">
       <FileInput className="h-4 w-4" />
       <span className="hidden md:inline">{label}</span>
     </Button>
@@ -143,7 +143,7 @@ const Finances = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-3xl font-bold">Finanzas</CardTitle>
@@ -153,7 +153,7 @@ const Finances = () => {
               <Button
                 onClick={() => setActiveCalendar(!activeCalendar)}
                 variant="outline"
-                className="flex items-center gap-2 border-2 text-black border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 text-black transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha

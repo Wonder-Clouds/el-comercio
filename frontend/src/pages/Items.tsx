@@ -104,7 +104,7 @@ const Items = () => {
   return (
     <div className="max-w-full lg:container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
               {pageTitle}

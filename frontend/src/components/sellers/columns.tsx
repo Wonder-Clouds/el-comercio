@@ -11,7 +11,7 @@ interface ColumnsProps {
 export const getColumns = ({ onDelete, onUpdate }: ColumnsProps): ColumnDef<Seller>[] => [
   {
     accessorKey: "number_seller",
-    header: "Numero",
+    header: "ID",
   },
   {
     accessorKey: "name",

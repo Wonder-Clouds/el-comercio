@@ -91,10 +91,10 @@ const Home = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="container mx-auto">
+    <div className="flex flex-col flex-1 min-h-full p-4">
+      <div className="flex-1 container mx-auto">
         {/* Welcome Header */}
-        <div className="flex flex-col gap-6 p-4 md:flex-row md:justify-between md:items-center md:p-6">
+        <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-center my-5">
           <div className="flex flex-col text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start mb-2 space-x-3">
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-5xl">
@@ -223,13 +223,12 @@ const Home = () => {
             ))}
           </div>
         </div>
-
-        {/* Footer Info */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500">
-            Sistema de Gestión Empresarial · Distribuciones El Comercio
-          </p>
-        </div>
+      </div>
+      {/* Footer Info */}
+      <div className="mt-auto text-center">
+        <p className="text-sm text-gray-500">
+          Sistema de Gestión Empresarial · Distribuciones El Comercio
+        </p>
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
   const [name, setName] = useState("");
   const [returnDays, setReturnDays] = useState("");
   const [price, setPrice] = useState("");
+  const [discount, setDiscount] = useState("0");
   const [totalQuantity, setTotalQuantity] = useState("");
   const [products, setProducts] = useState<ItemCreateData[]>([]);
   const [options, setOptions] = useState<TypeProduct[]>([]);
@@ -38,10 +39,13 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
 
       if (!selectedTypeProduct) return; // Protección extra
 
+      const discountValue = Number(discount) / 100;
+
       const newProduct: ItemCreateData = {
         id: products.length + 1,
         name,
-        product_price: parseFloat(price),
+        base_price: parseFloat(price),
+        discount_percent: discountValue,
         returns_date: parseInt(returnDays),
         total_quantity: parseInt(totalQuantity),
         type_product: selectedTypeProduct.id,
@@ -55,7 +59,12 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
       setReturnDays("");
       setPrice("");
       setTotalQuantity("");
+      setDiscount("0");
     }
+  };
+
+  const getDiscountedPrice = (base: number, discount: number) => {
+    return base - (base * discount);
   };
 
   const handleAddProducts = async () => {
@@ -64,7 +73,6 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
     console.log("Nuevos productos a crear:", products);
 
     if (products.length > 0) {
-      console.log("Creando Productos...")
       await Promise.all(products.map(element => createItem(element)));
     }
 
@@ -87,7 +95,11 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalPrice = products.reduce((sum, product) => sum + (product.product_price * product.total_quantity), 0).toFixed(2);
+  const totalPrice = products.reduce((sum, product) => {
+    const discounted = getDiscountedPrice(product.base_price, product.discount_percent);
+    return sum + (discounted * product.total_quantity);
+  }, 0).toFixed(2);
+
   const totalItems = products.reduce((sum, product) => sum + product.total_quantity, 0);
 
   const fetchTypeProducts = async () => {
@@ -154,7 +166,7 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
             <X className="h-5 w-5" />
           </button>
 
-          <CardHeader className="bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-t-lg">
+          <CardHeader className="bg-primary text-white rounded-t-lg">
             <CardTitle className="text-2xl flex items-center gap-2">
               <Package className="h-6 w-6" />
               Crear {getTypeName()}
@@ -200,7 +212,7 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
             </div>
 
             {/* Grid del formulario */}
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-5 gap-4 mb-6">
               <div>
                 <Label htmlFor="total_quantity" className="text-sm font-medium">Cantidad</Label>
                 <Input
@@ -229,7 +241,7 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
                 />
               </div>
               <div>
-                <Label htmlFor="price" className="text-sm font-medium">Precio</Label>
+                <Label htmlFor="price" className="text-sm font-medium">Precio Base (S/.)</Label>
                 <Input
                   id="price"
                   type="number"
@@ -243,10 +255,48 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
                   required
                 />
               </div>
+              <div>
+                <Label htmlFor="price" className="text-sm font-medium">Descuento (%)</Label>
+                <Input
+                  id="discount"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={discount}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    // Permitir campo vacío
+                    if (value === '') {
+                      setDiscount('');
+                      return;
+                    }
+
+                    // Convertir a número y validar
+                    const numValue = Number(value);
+
+                    // Validar que sea un número válido y esté en el rango
+                    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                      // Guardar como string del número (elimina ceros a la izquierda automáticamente)
+                      setDiscount(numValue.toString());
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Al perder el foco, asegurar que hay un valor válido
+                    if (e.target.value === '') {
+                      setDiscount('0');
+                    }
+                  }}
+                  placeholder="25%"
+                  className="mt-1"
+                />
+
+              </div>
               <div className="flex items-end">
                 <Button
                   onClick={handleAddSingleProduct}
-                  className="bg-blue-800 hover:bg-blue-900 w-full"
+                  className="bg-primary w-full"
                   disabled={!name || !returnDays || !price || !totalQuantity}
                 >
                   <Plus className="h-4 w-4 mr-1" /> Guardar
@@ -327,13 +377,16 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
                             <TableCell className="text-right font-medium">
                               <span className="flex items-center justify-end">
                                 S/.
-                                {Number(product.product_price).toFixed(2)}
+                                {getDiscountedPrice(product.base_price, product.discount_percent).toFixed(2)}
                               </span>
                             </TableCell>
                             <TableCell className="text-right font-bold text-blue-800">
                               <span className="flex items-center justify-end">
                                 S/.
-                                {(Number(product.product_price) * Number(product.total_quantity)).toFixed(2)}
+                                {(
+                                  getDiscountedPrice(product.base_price, product.discount_percent) *
+                                  product.total_quantity
+                                ).toFixed(2)}
                               </span>
                             </TableCell>
                             <TableCell>
@@ -384,7 +437,7 @@ const ItemsModal = ({ type, closeModal, updateData }: ItemsModalProps) => {
             </Button>
             <Button
               disabled={isSubmitting}
-              className="bg-blue-800 hover:bg-blue-900"
+              className="bg-primary"
               onClick={handleAddProducts}
             >
               <Save className="h-4 w-4" />

@@ -137,7 +137,7 @@ function Sellers() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-bold">Vendedores</h1>
           <div className="flex flex-wrap gap-3">
-            <Button onClick={openCreateModal} className="flex items-center gap-2 bg-blue-900 hover:bg-blue-700">
+            <Button onClick={openCreateModal} className="flex items-center gap-2 bg-primary">
               <UserPlus className="w-4 h-4" />
               Crear vendedor
             </Button>

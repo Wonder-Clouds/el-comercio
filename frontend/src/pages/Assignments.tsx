@@ -14,7 +14,7 @@ import { Types } from "@/models/TypeProduct";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { addOneDay, formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import { AlertCircle, Calendar, FileDown, Pencil, RefreshCw } from "lucide-react";
+import { AlertCircle, Calendar, FileDown, Pencil, Plus, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { motion } from "motion/react"
 
@@ -23,7 +23,7 @@ const Assignments = () => {
   const itemType = type === "productos" ? Types.PRODUCT : Types.NEWSPAPER;
 
   const pageTitle = itemType === Types.PRODUCT ? "Entregas de Productos" : "Entregas de Periódicos";
-  const assignmentButton = itemType === Types.PRODUCT ? "Asignar productos" : "Asignar periódicos";
+  const assignmentButton = itemType === Types.PRODUCT ? "Asignar Productos" : "Asignar Periódicos";
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [products, setProducts] = useState<Item[]>([]);
@@ -154,7 +154,7 @@ const Assignments = () => {
   return (
     <div className="max-w-full lg:container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
               {pageTitle}
@@ -171,7 +171,7 @@ const Assignments = () => {
               <Button
                 onClick={() => setActiveCalendar(!activeCalendar)}
                 variant="outline"
-                className="flex items-center gap-2 border-2 border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha
@@ -205,7 +205,7 @@ const Assignments = () => {
                   <Button
                     onClick={() => setShowCreateModal(true)}
                     size="lg"
-                    className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
+                    className="bg-primary font-semibold p-4 text-base [&_svg]:size-5"
                     disabled={creating}
                   >
                     {creating ? (
@@ -215,7 +215,7 @@ const Assignments = () => {
                       </>
                     ) : (
                       <>
-                        <Pencil className="h-5 w-5" />
+                        <Plus />
                         {assignmentButton}
                       </>
                     )}
@@ -224,7 +224,7 @@ const Assignments = () => {
                   <Button
                     onClick={() => setShowCreateModal(true)}
                     size="lg"
-                    className="bg-blue-800 hover:bg-blue-900 font-bold px-6 py-6 text-lg"
+                    className="bg-primary font-bold px-6 py-6 text-lg"
                   >
                     <Pencil className="h-6 w-6" />
                     Editar productos asignados

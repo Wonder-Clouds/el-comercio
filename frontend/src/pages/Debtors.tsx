@@ -89,7 +89,7 @@ function Debtors() {
   return (
     <div className="max-w-full lg:container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="flex justify-between  bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="flex justify-between  bg-primary text-white rounded-t-lg p-6">
           <CardTitle className="text-3xl font-bold">
             Deudores
           </CardTitle>
@@ -128,9 +128,9 @@ function Debtors() {
                   <span className="hidden md:inline ml-2">Actualizar</span>
                 </Button>
 
-                <Button onClick={() => generateDebtorsReport(filteredDebtors)} className="bg-blue-800 hover:bg-blue-900 font-semibold h-10 px-4">
+                <Button onClick={() => generateDebtorsReport(filteredDebtors)} className="bg-primary font-semibold h-10 px-4">
                   <FileText className="h-4 w-4" />
-                  <span className="hidden md:inline ml-2">Exportar</span>
+                  <span className="hidden md:inline">Exportar</span>
                 </Button>
               </div>
             </div>

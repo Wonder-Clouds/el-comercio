@@ -125,7 +125,7 @@ const Returns = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="bg-white shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-indigo-950 to-indigo-900 text-white rounded-t-lg p-6">
+        <CardHeader className="bg-primary text-white rounded-t-lg p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">
               {pageTitle}
@@ -142,7 +142,7 @@ const Returns = () => {
               <Button
                 onClick={() => setActiveCalendar(!activeCalendar)}
                 variant="outline"
-                className="flex items-center gap-2 border-2 border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Cambiar fecha
