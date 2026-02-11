@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import { Calendar, FileInput } from "lucide-react";
+import { Calendar, DollarSign, Eye, FileInput, Newspaper, Package } from "lucide-react";
 import { motion } from "motion/react";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import CashTable from "@/components/cash/CashTable";
@@ -17,6 +17,14 @@ import { getCash, patchCash, postCash } from "@/api/Cash.api";
 import { Cash as CashModel, CashRow, cashToRows, defaultCash, TypesCash } from "@/models/Cash";
 import { Input } from "@/components/ui/input";
 import generateCashReportPdf from "@/utils/generatePdfs/generateCashReportPdf";
+import { getTopNewsPapers, getTopProducts } from "@/api/Reports.api";
+
+const formatSoles = (value: number) =>
+  new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "PEN",
+    minimumFractionDigits: 2,
+  }).format(value || 0);
 
 const Cash = () => {
   const [cashComercio, setCashComercio] = useState<CashModel[]>([]);
@@ -28,6 +36,11 @@ const Cash = () => {
   const [yapeCodigo, setYapeCodigo] = useState("");
   const [yapeMonto, setYapeMonto] = useState("");
   const [yapes, setYapes] = useState<Yape[]>([]);
+
+  const [totalNewspapers, setTotalNewspapers] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalOjo, setTotalOjo] = useState(0);
+  const [totalFinances, setTotalFinances] = useState(0);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -78,6 +91,53 @@ const Cash = () => {
     const dateTo = date.toISOString().split("T")[0];
     const response = await getYapes(baseDate, dateTo);
     setYapes(response);
+  }, [selectedDate]);
+
+  const fetchDailySalesTotals = useCallback(async () => {
+    const baseDate = selectedDate || getLocalDate();
+
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + 1);
+    const dateTo = date.toISOString().split("T")[0];
+
+    try {
+      const [productsData, newspapersData] = await Promise.all([
+        getTopProducts(baseDate, dateTo),
+        getTopNewsPapers(baseDate, dateTo),
+      ]);
+
+      const totalProductsAmount = (productsData as { total_amount: number }[]).reduce(
+        (sum, item) => sum + Number(item.total_amount ?? 0),
+        0
+      );
+
+      let newspapersAmount = 0;
+      let ojoAmount = 0;
+
+      (newspapersData as { product__name: string; total_amount: number }[]).forEach((item) => {
+        const amount = Number(item.total_amount ?? 0);
+        if (item.product__name?.toUpperCase().includes("OJO")) {
+          ojoAmount += amount;
+        } else {
+          newspapersAmount += amount;
+        }
+      });
+
+      setTotalProducts(totalProductsAmount);
+      setTotalNewspapers(newspapersAmount);
+      setTotalOjo(ojoAmount);
+      setTotalFinances(totalProductsAmount + newspapersAmount + ojoAmount);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error al obtener totales de ventas:", error.message);
+      } else {
+        console.error("Error al obtener totales de ventas:", error);
+      }
+      setTotalProducts(0);
+      setTotalNewspapers(0);
+      setTotalOjo(0);
+      setTotalFinances(0);
+    }
   }, [selectedDate]);
 
   const handleSaveCashComercio = async () => {
@@ -218,7 +278,8 @@ const Cash = () => {
     fetchCashComercio();
     fetchCashOjo();
     fetchYapeData();
-  }, [fetchCashComercio, fetchCashOjo, fetchYapeData]);
+    fetchDailySalesTotals();
+  }, [fetchCashComercio, fetchCashOjo, fetchYapeData, fetchDailySalesTotals]);
 
   return (
     <div className="container mx-auto p-4">
@@ -263,6 +324,68 @@ const Cash = () => {
               </Card>
             </motion.div>
           )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
+            {/* Total Venta Periódicos */}
+            <div className="bg-white rounded-xl border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-blue-50 p-3 rounded-t-lg group-hover:bg-blue-100 transition-colors">
+                <Newspaper className="h-6 w-6 text-blue-600" />
+                <h3 className="text-gray-600 text-base font-medium">
+                  Total Venta Periódicos
+                </h3>
+              </div>
+              <div className="px-6 py-2">
+                <p className="text-gray-900 text-3xl font-bold">
+                  {formatSoles(totalNewspapers)}
+                </p>
+              </div>
+            </div>
+
+            {/* Total Venta Productos */}
+            <div className="bg-white rounded-xl border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-purple-50 p-3 rounded-t-lg group-hover:bg-purple-100 transition-colors">
+                <Package className="h-6 w-6 text-purple-600" />
+                <h3 className="text-gray-600 text-base font-medium">
+                  Total Venta Productos
+                </h3>
+              </div>
+              <div className="px-6 py-2">
+                <p className="text-gray-900 text-3xl font-bold">
+                  {formatSoles(totalProducts)}
+                </p>
+              </div>
+            </div>
+
+            {/* Total Venta Ojo */}
+            <div className="bg-white rounded-xl border-2 border-amber-100 hover:border-amber-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-amber-50 p-3 rounded-t-lg group-hover:bg-amber-100 transition-colors">
+                <Eye className="h-6 w-6 text-amber-600" />
+                <h3 className="text-gray-600 text-base font-medium">
+                  Total Venta Ojo
+                </h3>
+              </div>
+              <div className="px-6 py-2">
+                <p className="text-gray-900 text-3xl font-bold">
+                  {formatSoles(totalOjo)}
+                </p>
+              </div>
+            </div>
+
+            {/* Total Finanzas */}
+            <div className="bg-white rounded-xl border-2 border-emerald-100 hover:border-emerald-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-emerald-50 p-3 rounded-t-lg group-hover:bg-emerald-100 transition-colors">
+                <DollarSign className="h-6 w-6 text-emerald-600" />
+                <h3 className="text-gray-600 text-base font-medium">
+                  Total Finanzas
+                </h3>
+              </div>
+              <div className="px-6 py-2">
+                <p className="text-gray-900 text-3xl font-bold">
+                  {formatSoles(totalFinances)}
+                </p>
+              </div>
+            </div>
+          </div>
 
           <div className="flex flex-col md:flex-row gap-4 w-full">
             <Tabs defaultValue="cash_count" className="w-full">
