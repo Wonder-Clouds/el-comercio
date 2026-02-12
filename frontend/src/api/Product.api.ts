@@ -21,6 +21,25 @@ export const getItems = async (
   return response.data;
 };
 
+export const getActiveItems = async (
+  page: number,
+  pageSize: number,
+  itemType?: Types,
+  name?: string,
+): Promise<PaginatedResponse<Item>> => {
+  const response = await api.get("/products/", {
+    params: {
+      page,
+      page_size: pageSize,
+      product_type: itemType,
+      status_product: true,
+      ...(name && { product_name: name }),
+    },
+  });
+
+  return response.data;
+};
+
 export const getProductsByDate = async (date: string, product_type: Types) => {
   const response = await api.get(`/products/by-date/`, {
     params: { date, product_type },

@@ -185,18 +185,6 @@ const AssignmentTable: React.FC<TableProps> = ({
     return totals;
   }, [data, products]);
 
-  // Calcular stock restante para mostrar en los totales
-  const remainingStock = useMemo(() => {
-    const remaining: { [key: number]: number } = {};
-
-    products.forEach(product => {
-      const totalUsed = productTotals[product.id] || 0;
-      remaining[product.id] = Math.max(0, product.total_quantity - totalUsed);
-    });
-
-    return remaining;
-  }, [products, productTotals]);
-
   const table = useReactTable({
     data,
     columns: [
@@ -262,7 +250,7 @@ const AssignmentTable: React.FC<TableProps> = ({
               <td key={`total-${product.id}`} className="px-6 py-4 whitespace-nowrap text-center">
                 <div className="font-bold">{productTotals[product.id] || 0}</div>
                 <div className="text-xs text-gray-500">
-                  Restante: {remainingStock[product.id]}
+                  Restante: {product.available_stock !== undefined ? product.available_stock : 0}
                 </div>
               </td>
             ))}

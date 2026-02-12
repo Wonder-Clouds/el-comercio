@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { Item } from "@/models/Product";
-import { getItems } from "@/api/Product.api";
+import { getActiveItems } from "@/api/Product.api";
 import { Types } from "@/models/TypeProduct";
 
 interface AssignmentModalProps {
@@ -51,7 +51,7 @@ const AssignmentModal = ({
   const [searchSeleccionados, setSearchSeleccionados] = useState("");
 
   const fetchItems = async () => {
-    const response = await getItems(1, 500, type);
+    const response = await getActiveItems(1, 500, type);
     setDisponibles(response.results);
   };
 
