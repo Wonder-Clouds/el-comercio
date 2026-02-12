@@ -20,6 +20,12 @@ class Product(TimeStampedModel):
         if self.base_price is not None and self.discount_percent is not None:
             discount = self.base_price * self.discount_percent
             self.product_price = self.base_price - discount
+
+        if self.total_quantity is not None and self.reserved_quantity is not None:
+            if self.available_stock <= 0:
+                self.status_product = False
+            else:
+                self.status_product = True
         super().save(*args, **kwargs)
 
     @property

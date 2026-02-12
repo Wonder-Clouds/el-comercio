@@ -60,6 +60,14 @@ export const columnsItems = (onUpdate: (item: Item) => void): ColumnDef<Item>[] 
     },
   },
   {
+    accessorKey: "available_stock",
+    header: "Stock disponible",
+    cell: ({ row }) => {
+      const product = row.original;
+      return <span>{product.available_stock}</span>;
+    },
+  },
+  {
     id: "status_product",
     header: "Estado",
     cell: ({ row }) => {
