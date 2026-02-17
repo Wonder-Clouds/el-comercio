@@ -1,11 +1,12 @@
-import jsPDF from "jspdf";
+import jsPDF, { TextOptionsLight } from "jspdf";
 import { Cash } from "@/models/Cash";
 import { Yape } from "@/models/Yape";
+import { TextOptions } from "./TextOptions";
 
 const generateCashReportPdf = (
   cashComercio: Cash,
   cashOjo: Cash,
-  yape: Yape[]
+  yape: Yape[],
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -43,8 +44,13 @@ const generateCashReportPdf = (
     yPosition += 5;
   };
 
-  const addText = (text: string, x: number, y: number, options?: any) => {
-    doc.text(text, x, y, options);
+  const addText = (
+    text: string,
+    x: number,
+    y: number,
+    options?: TextOptions,
+  ) => {
+    doc.text(text, x, y, options as TextOptionsLight);
   };
 
   // ================
@@ -136,7 +142,7 @@ const generateCashReportPdf = (
       addText(
         new Date(yp.date_yape).toLocaleDateString("es-PE"),
         config.margin,
-        yPosition
+        yPosition,
       );
       addText(yp.name, centerX - 20, yPosition);
       addText(`S/ ${amount.toFixed(2)}`, rightX, yPosition, { align: "right" });

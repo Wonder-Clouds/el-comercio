@@ -6,7 +6,7 @@ import { Search, FileText, RefreshCw } from "lucide-react";
 import { DetailAssignment } from "@/models/DetailAssignment";
 import DebtorCard from "@/components/debtors/DebtorCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateDebtorsReport } from "@/utils/generatePdfs/generateDebtorsReport";
+import { generateDebtorsReport } from "@/utils/tickets/generateDebtorsReport";
 
 interface DebtorsProps {
   seller_id: number;

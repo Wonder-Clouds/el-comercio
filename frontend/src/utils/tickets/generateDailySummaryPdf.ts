@@ -1,10 +1,11 @@
-import jsPDF from "jspdf";
+import jsPDF, { TextOptionsLight } from "jspdf";
 import { Assignment } from "@/models/Assignment";
 import { Types } from "@/models/TypeProduct";
+import { TextOptions } from "./TextOptions";
 
 const generateDailySummaryPDF = (
   assignments: Assignment[],
-  itemType: Types
+  itemType: Types,
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -50,8 +51,13 @@ const generateDailySummaryPDF = (
     yPosition += 5; // espacio extra después de la doble línea
   };
 
-  const addText = (text: string, x: number, y: number, options?: any) => {
-    doc.text(text, x, y, options);
+  const addText = (
+    text: string,
+    x: number,
+    y: number,
+    options?: TextOptions,
+  ) => {
+    doc.text(text, x, y, options as TextOptionsLight);
   };
 
   // Encabezado
@@ -92,7 +98,7 @@ const generateDailySummaryPDF = (
     addText(
       `Vendedor ${i + 1}: ${fullName} (Código: ${code})`,
       config.margin,
-      yPosition
+      yPosition,
     );
     yPosition += config.lineHeight;
 
@@ -112,7 +118,7 @@ const generateDailySummaryPDF = (
       const unitPrice = parseFloat(
         detail.unit_price?.toString() ||
           detail.product.product_price?.toString() ||
-          "0"
+          "0",
       );
       const toPay = (quantity - returned) * unitPrice;
 

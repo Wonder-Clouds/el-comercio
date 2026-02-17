@@ -10,7 +10,7 @@ import { Item } from '@/models/Product';
 import { DevolutionQuantity } from '@/models/Devolution';
 import { postDevolution } from '@/api/Devolution.api';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
-import generatePDFTicket from '@/utils/generatePdfs/generatePdfTicket';
+import generatePDFTicket from '@/utils/tickets/generatePdfTicket';
 import { Types } from '@/models/TypeProduct';
 
 interface TableProps {
