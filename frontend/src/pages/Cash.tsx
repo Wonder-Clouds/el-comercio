@@ -16,7 +16,7 @@ import YapeTable from "@/components/yape/YapeTable";
 import { getCash, patchCash, postCash } from "@/api/Cash.api";
 import { Cash as CashModel, CashRow, cashToRows, defaultCash, TypesCash } from "@/models/Cash";
 import { Input } from "@/components/ui/input";
-import generateCashReportPdf from "@/utils/generatePdfs/generateCashReportPdf";
+import generateCashReportPdf from "@/utils/tickets/generateCashReportPdf";
 import { getTopNewsPapers, getTopProducts } from "@/api/Reports.api";
 
 const formatSoles = (value: number) =>

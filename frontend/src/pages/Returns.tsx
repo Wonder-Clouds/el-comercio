@@ -8,14 +8,14 @@ import { getLocalDate } from "@/utils/getLocalDate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Calendar, ClipboardList, DollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import generateDailySummaryPDF from "@/utils/generatePdfs/generateDailySummaryPdf";
+import generateDailySummaryPDF from "@/utils/tickets/generateDailySummaryPdf";
 import { motion } from "motion/react"
 import { Skeleton } from "@/components/ui/skeleton";
 import DevolutionTable from "@/components/devolutions/DevolutionsTable";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router";
-import generateSalesReport from "@/utils/generatePdfs/generateSalesReport";
+import generateSalesReport from "@/utils/tickets/generateSalesReport";
 import { Types } from "@/models/TypeProduct";
 
 const Returns = () => {
