@@ -9,13 +9,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface FinancesProps {
   data: Finance[];
+  total: number;
   page: number;
   pageSize: number;
   totalCount: number
   onPageChange: (page: number) => void;
 }
 
-const FinancesTable: React.FC<FinancesProps> = ({ data, page, pageSize, totalCount, onPageChange }) => {
+const FinancesTable: React.FC<FinancesProps> = ({ data, total, page, pageSize, totalCount, onPageChange }) => {
 
   const table = useReactTable({
     data,
@@ -61,9 +62,30 @@ const FinancesTable: React.FC<FinancesProps> = ({ data, page, pageSize, totalCou
               ))}
             </tr>
           ))}
+          <tr className="font-bold bg-gray-100">
+            {table.getAllLeafColumns().map((column, index) => {
+              if (index === 0) {
+                return (
+                  <td key={column.id} className="px-2 py-4">
+                    TOTAL
+                  </td>
+                );
+              }
+
+              if (column.id === "amount") {
+                return (
+                  <td key={column.id} className="px-2 py-4">
+                    {total.toFixed(2)}
+                  </td>
+                );
+              }
+
+              return <td key={column.id} className="p-2"></td>;
+            })}
+          </tr>
         </tbody>
       </table>
-      <div className="flex flex-col items-center justify-between px-2 mt-6 bg-blue-50 md:flex-row">
+      <div className="flex flex-col items-center justify-between px-2 bg-blue-50 md:flex-row">
         <div className="p-4 text-sm font-medium text-gray-500">
           Página {page} de {totalPages}
         </div>
