@@ -12,7 +12,7 @@ import { Item } from '@/models/Product';
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Types } from '@/models/TypeProduct';
-import generateAssignmentTicket from '@/utils/generatePdfs/generateAssignmentTicket';
+import generateAssignmentTicket from '@/utils/tickets/generateAssignmentTicket';
 
 interface TableProps {
   data: Assignment[];

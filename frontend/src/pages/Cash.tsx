@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import capitalizeFirstLetter from "@/utils/capitalize";
 import { formatDateToSpanishSafe } from "@/utils/formatDate";
 import { getLocalDate } from "@/utils/getLocalDate";
-import { Calendar, DollarSign, Eye, FileInput, Newspaper, Package } from "lucide-react";
+import { Calendar, DollarSign, Eye, FileInput, Newspaper, Package, TrendingUp } from "lucide-react";
 import { motion } from "motion/react";
 import CalendarPicker from "@/components/shared/CalendarPicker";
 import CashTable from "@/components/cash/CashTable";
@@ -16,15 +16,11 @@ import YapeTable from "@/components/yape/YapeTable";
 import { getCash, patchCash, postCash } from "@/api/Cash.api";
 import { Cash as CashModel, CashRow, cashToRows, defaultCash, TypesCash } from "@/models/Cash";
 import { Input } from "@/components/ui/input";
-import generateCashReportPdf from "@/utils/generatePdfs/generateCashReportPdf";
+import generateCashReportPdf from "@/utils/tickets/generateCashReportPdf";
 import { getTopNewsPapers, getTopProducts } from "@/api/Reports.api";
-
-const formatSoles = (value: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 2,
-  }).format(value || 0);
+import { formatCurrency } from "@/utils/formatCurrency";
+import { getFinances } from "@/api/Finances.api";
+import { OperationType } from "@/models/Finance";
 
 const Cash = () => {
   const [cashComercio, setCashComercio] = useState<CashModel[]>([]);
@@ -41,6 +37,7 @@ const Cash = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalOjo, setTotalOjo] = useState(0);
   const [totalFinances, setTotalFinances] = useState(0);
+  const [totalGeneral, setTotalGeneral] = useState(0);
 
   const [activeCalendar, setActiveCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(getLocalDate());
@@ -126,7 +123,6 @@ const Cash = () => {
       setTotalProducts(totalProductsAmount);
       setTotalNewspapers(newspapersAmount);
       setTotalOjo(ojoAmount);
-      setTotalFinances(totalProductsAmount + newspapersAmount + ojoAmount);
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error al obtener totales de ventas:", error.message);
@@ -136,6 +132,28 @@ const Cash = () => {
       setTotalProducts(0);
       setTotalNewspapers(0);
       setTotalOjo(0);
+    }
+  }, [selectedDate]);
+
+  const fetchFinancesTotal = useCallback(async () => {
+    const date = selectedDate || getLocalDate();
+    try {
+      const [incomes, expenses] = await Promise.all([
+        getFinances(1, 1000, OperationType.INCOME, date),
+        getFinances(1, 1000, OperationType.EXPENSE, date),
+      ]);
+
+      const incomesTotal = incomes.results.reduce((sum, item) => sum + Number(item.amount), 0);
+      const expensesTotal = expenses.results.reduce((sum, item) => sum + Number(item.amount), 0);
+      const total = incomesTotal - expensesTotal;
+
+      setTotalFinances(total);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error al obtener total de finanzas:", error.message);
+      } else {
+        console.error("Error al obtener total de finanzas:", error);
+      }
       setTotalFinances(0);
     }
   }, [selectedDate]);
@@ -279,7 +297,13 @@ const Cash = () => {
     fetchCashOjo();
     fetchYapeData();
     fetchDailySalesTotals();
-  }, [fetchCashComercio, fetchCashOjo, fetchYapeData, fetchDailySalesTotals]);
+    fetchFinancesTotal();
+  }, [fetchCashComercio, fetchCashOjo, fetchYapeData, fetchDailySalesTotals, fetchFinancesTotal]);
+
+  useEffect(() => {
+    const total = totalNewspapers + totalProducts + totalOjo + totalFinances;
+    setTotalGeneral(total);
+  }, [totalNewspapers, totalProducts, totalOjo, totalFinances]);
 
   return (
     <div className="container mx-auto p-4">
@@ -325,18 +349,18 @@ const Cash = () => {
             </motion.div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 p-4">
             {/* Total Venta Periódicos */}
-            <div className="bg-white rounded-xl border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-lg group">
-              <div className="flex flex-row space-x-5 bg-blue-50 p-3 rounded-t-lg group-hover:bg-blue-100 transition-colors">
-                <Newspaper className="h-6 w-6 text-blue-600" />
+            <div className="bg-white rounded-xl border-2 border-red-100 hover:border-red-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-red-50 p-3 rounded-t-lg group-hover:bg-red-100 transition-colors">
+                <Newspaper className="h-6 w-6 text-red-600" />
                 <h3 className="text-gray-600 text-base font-medium">
                   Total Venta Periódicos
                 </h3>
               </div>
               <div className="px-6 py-2">
                 <p className="text-gray-900 text-3xl font-bold">
-                  {formatSoles(totalNewspapers)}
+                  {formatCurrency(totalNewspapers)}
                 </p>
               </div>
             </div>
@@ -351,7 +375,7 @@ const Cash = () => {
               </div>
               <div className="px-6 py-2">
                 <p className="text-gray-900 text-3xl font-bold">
-                  {formatSoles(totalProducts)}
+                  {formatCurrency(totalProducts)}
                 </p>
               </div>
             </div>
@@ -366,11 +390,10 @@ const Cash = () => {
               </div>
               <div className="px-6 py-2">
                 <p className="text-gray-900 text-3xl font-bold">
-                  {formatSoles(totalOjo)}
+                  {formatCurrency(totalOjo)}
                 </p>
               </div>
             </div>
-
             {/* Total Finanzas */}
             <div className="bg-white rounded-xl border-2 border-emerald-100 hover:border-emerald-300 transition-all duration-300 hover:shadow-lg group">
               <div className="flex flex-row space-x-5 bg-emerald-50 p-3 rounded-t-lg group-hover:bg-emerald-100 transition-colors">
@@ -381,7 +404,21 @@ const Cash = () => {
               </div>
               <div className="px-6 py-2">
                 <p className="text-gray-900 text-3xl font-bold">
-                  {formatSoles(totalFinances)}
+                  {formatCurrency(totalFinances)}
+                </p>
+              </div>
+            </div>
+            {/* Total General */}
+            <div className="bg-white rounded-xl border-2 border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg group">
+              <div className="flex flex-row space-x-5 bg-indigo-50 p-3 rounded-t-lg group-hover:bg-indigo-100 transition-colors">
+                <TrendingUp className="h-6 w-6 text-indigo-600" />
+                <h3 className="text-gray-600 text-base font-medium">
+                  Total
+                </h3>
+              </div>
+              <div className="px-6 py-2">
+                <p className="text-gray-900 text-3xl font-bold">
+                  {formatCurrency(totalGeneral)}
                 </p>
               </div>
             </div>
